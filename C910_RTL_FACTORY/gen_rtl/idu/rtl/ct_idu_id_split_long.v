@@ -4381,9 +4381,9 @@ begin
   end
 // &CombEnd; @2774
 end
-
+test//
 //----------------------------------------------------------
-//                  foredal inst 3/7
+//                  foredal inst 3/7 test
 //----------------------------------------------------------
 assign vec_fored_split_inst3_src0[5:0]                      = {1'b0,vec_fored_srcv0_vreg_3[4:0]};
 assign vec_fored_split_inst3_src1[5:0]                      = 6'b100000;
