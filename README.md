@@ -23,4 +23,4 @@
 
 # 成员
 
-<img src="https://github.com/Jeremy-Jia/CORE_RTL/images/sdu.jpg" />
+<img src="https://github.com/Jeremy-Jia/CORE_RTL/blob/master/images/sdu.jpg" />
