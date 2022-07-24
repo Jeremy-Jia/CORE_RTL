@@ -404,7 +404,25 @@ output  [3 :0]  ibuf_ibdp_inst2_vec;
 output  [7 :0]  ibuf_ibdp_inst2_vl;                    
 output          ibuf_ibdp_inst2_vl_pred;               
 output  [1 :0]  ibuf_ibdp_inst2_vlmul;                 
-output  [2 :0]  ibuf_ibdp_inst2_vsew;                  
+output  [2 :0]  ibuf_ibdp_inst2_vsew;
+//modify to generate 4 inst //jeremy
+output  [31:0]  ibuf_ibdp_inst4;                       
+output          ibuf_ibdp_inst4_bkpta;                 
+output          ibuf_ibdp_inst4_bkptb;                 
+output          ibuf_ibdp_inst4_ecc_err;               
+output          ibuf_ibdp_inst4_expt_vld;              
+output          ibuf_ibdp_inst4_fence;                 
+output          ibuf_ibdp_inst4_high_expt;             
+output          ibuf_ibdp_inst4_no_spec;               
+output  [14:0]  ibuf_ibdp_inst4_pc;                    
+output          ibuf_ibdp_inst4_split0;                
+output          ibuf_ibdp_inst4_split1;                
+output          ibuf_ibdp_inst4_valid;                 
+output  [3 :0]  ibuf_ibdp_inst4_vec;                   
+output  [7 :0]  ibuf_ibdp_inst4_vl;                    
+output          ibuf_ibdp_inst4_vl_pred;               
+output  [1 :0]  ibuf_ibdp_inst4_vlmul;                 
+output  [2 :0]  ibuf_ibdp_inst4_vsew;                   
 output          ibuf_lbuf_empty;                       
 
 // &Regs; @24
@@ -7915,9 +7933,10 @@ always @( pop_h1_vsew[2:0]
        or pop_h1_split1
        or pop_h4_expt)
 begin
+  // modify to generate 4 inst //jeremy 
 casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
        pop_h3_32_start,pop_h4_32_start})
-       5'b000?? : begin
+       5'b0000? : begin
                   ibuf_pop_inst0_valid      = pop_h0_vld;
                   ibuf_pop_inst0_data[31:0] = {16'b0,pop_h0_data[15:0]};
                   ibuf_pop_inst0_pc[14:0]   = pop_h0_pc[14:0];                  
@@ -7969,6 +7988,25 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   ibuf_pop_inst2_vlmul[1:0] = pop_h2_vlmul[1:0];
                   ibuf_pop_inst2_vsew[2:0]  = pop_h2_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h2_vl[7:0];
+                    // modify to generate 4 inst //jeremy
+                  ibuf_pop_inst3_valid      = pop_h3_vld;
+                  ibuf_pop_inst3_data[31:0] = {16'b0,pop_h3_data[15:0]};
+                  ibuf_pop_inst3_pc[14:0]   = pop_h3_pc[14:0];
+                  ibuf_pop_inst3_expt       = pop_h3_expt;
+                  ibuf_pop_inst3_vec[3:0]   = pop_h3_vec[3:0];
+                  ibuf_pop_inst3_high_expt  = pop_h3_high_expt;
+                  ibuf_pop_inst3_ecc_err    = pop_h3_ecc_err;
+                  ibuf_pop_inst3_split1     = pop_h3_split1;
+                  ibuf_pop_inst3_split0     = pop_h3_split0;
+                  ibuf_pop_inst3_fence      = pop_h3_fence;
+                  ibuf_pop_inst3_bkpta      = pop_h3_bkpta;
+                  ibuf_pop_inst3_bkptb      = pop_h3_bkptb;
+                  ibuf_pop_inst3_no_spec    = pop_h3_no_spec;
+                  ibuf_pop_inst3_vl_pred    = pop_h3_vl_pred;
+                  ibuf_pop_inst3_vlmul[1:0] = pop_h3_vlmul[1:0];
+                  ibuf_pop_inst3_vsew[2:0]  = pop_h3_vsew[2:0];
+                  ibuf_pop_inst3_vl[7:0]    = pop_h3_vl[7:0];
+                    // modify to generate 4 inst //jeremy  
                   ibuf_pop3_half_num[2:0]   = 3'b011;
                   ibuf_pop3_retire_vld[5:0] = 6'b111000;
                   end
