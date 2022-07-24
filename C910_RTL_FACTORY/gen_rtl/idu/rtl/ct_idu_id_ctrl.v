@@ -201,7 +201,7 @@ output         idu_ifu_id_stall;
 reg            ctrl_id_pipedown_inst1_vld;        
 reg            ctrl_id_pipedown_inst2_vld;        
 reg            ctrl_id_pipedown_inst3_vld;   
-//reg            ctrl_id_pipedown_inst3_vld; 
+reg            ctrl_id_pipedown_inst3_vld; 
 
 reg            debug_id_inst0_vld;                
 reg            debug_id_inst1_vld;                
