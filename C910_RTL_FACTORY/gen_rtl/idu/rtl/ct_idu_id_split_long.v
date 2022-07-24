@@ -2002,8 +2002,8 @@ assign vperm_srcv0_inst0_count[2:0] = {vpr_counter[0],vperm_srcv0_index[1:0]};
 assign vperm_srcv0_inst1_count[2:0] = {vpr_counter[0],vperm_srcv0_index[3:2]};
 assign vperm_srcv0_inst2_count[2:0] = {vpr_counter[0],vperm_srcv0_index[5:4]};
 assign vperm_srcv0_inst3_count[2:0] = {vpr_counter[0],vperm_srcv0_index[7:6]};
-*/
 
+*/
 // &CombBeg; @889
 always @( vperm_srcv1_reg[4:0]
        or vperm_inst_split_last[0]
