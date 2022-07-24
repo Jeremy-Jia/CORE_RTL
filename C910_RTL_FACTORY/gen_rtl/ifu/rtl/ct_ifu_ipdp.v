@@ -5905,6 +5905,7 @@ assign pipe_hn_jal[7:0]          = (rtu_yy_xx_dbgon) ? ip_had_jal[7:0]      : ip
 assign pipe_hn_jalr[7:0]         = (rtu_yy_xx_dbgon) ? ip_had_jalr[7:0]     : ip_jalr[7:0];
 assign pipe_hn_no_spec[7:0]      = (rtu_yy_xx_dbgon) ? ip_had_no_spec[7:0]  : ip_no_spec[7:0];
 assign pipe_hn_vl_pred[7:0]      = (rtu_yy_xx_dbgon) ? ip_had_vl_pred[7:0]  : ip_vl_pred[7:0];
+// indicate hn is a start of a 32 bit inst(dual  hn) //jeremy
 assign pipe_hn_32_start[7:0]     = (rtu_yy_xx_dbgon) ? ip_had_bry_data[7:0] & ip_had_inst_32[7:0]
                                                      : ip_bry_data[7:0]     & ip_inst_32[7:0];
 assign pipe_hn_pc_oper[7:0]      = (rtu_yy_xx_dbgon) ? ip_had_pc_oper[7:0]  : ip_pc_oper[7:0];
