@@ -20,3 +20,7 @@
 
 # 注意：
 不要用中文注释@xuelixiao
+
+# 成员
+
+<img src="https://github.com/T-head-Semi/openc906/blob/main/doc/QR_code_openXuantie.png" />
