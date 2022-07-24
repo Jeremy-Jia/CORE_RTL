@@ -1,17 +1,18 @@
 /*Copyright 2019-2021 T-Head Semiconductor Co., Ltd.
-
+tester、
+1111111
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
-
+sxxxxxx
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-*/
+*/git config --global http.proxy
 
 // &ModuleBeg; @24
 module ct_idu_id_split_long(
@@ -1997,13 +1998,13 @@ case(vperm_srcv0_inc[2:0])
 endcase  
 // &CombEnd; @881
 end
-
+/*
 assign vperm_srcv0_inst0_count[2:0] = {vpr_counter[0],vperm_srcv0_index[1:0]};
 assign vperm_srcv0_inst1_count[2:0] = {vpr_counter[0],vperm_srcv0_index[3:2]};
 assign vperm_srcv0_inst2_count[2:0] = {vpr_counter[0],vperm_srcv0_index[5:4]};
 assign vperm_srcv0_inst3_count[2:0] = {vpr_counter[0],vperm_srcv0_index[7:6]};
 
-
+*/
 // &CombBeg; @889
 always @( vperm_srcv1_reg[4:0]
        or vperm_inst_split_last[0]
@@ -4381,9 +4382,9 @@ begin
   end
 // &CombEnd; @2774
 end
-
+test//
 //----------------------------------------------------------
-//                  foredal inst 3/7
+//                  foredal inst 3/7 test
 //----------------------------------------------------------
 assign vec_fored_split_inst3_src0[5:0]                      = {1'b0,vec_fored_srcv0_vreg_3[4:0]};
 assign vec_fored_split_inst3_src1[5:0]                      = 6'b100000;
