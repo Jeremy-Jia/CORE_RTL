@@ -1,3 +1,23 @@
+**山东大学微电子学院RISC-V课题组**
+
+*计划：*
+
+删除各个流水级**向量冗余代码**
+
+取指级**4条**指令带宽
+
+译码级**4条**指令带宽
+
+**uOP级**增加
+
+重命名**5uOP**
+
+**ROB**128项
+
+**Pre**File128个
+
+**4条**指令退休
+
 # IP Readme
 
   Welcome to C910! Some key directories are shown below.
@@ -52,22 +72,3 @@ You can get the debugger, IDE and SDK from the url:https://occ.t-head.cn/communi
 ```
 
 
-## Discussion
-    If you are interested in participating in discussions or improving the "openXuantie" cores, you can scan the DingDing QR code below to join the discussion group.
-<img src="https://github.com/T-head-Semi/openc906/blob/main/doc/QR_code_openXuantie.png" />
-
-
-#/*Copyright 2019-2021 T-Head Semiconductor Co., Ltd.
-#
-#Licensed under the Apache License, Version 2.0 (the "License");
-#you may not use this file except in compliance with the License.
-#You may obtain a copy of the License at
-#
-###    http://www.apache.org/licenses/LICENSE-2.0
-#
-#Unless required by applicable law or agreed to in writing, software
-#distributed under the License is distributed on an "AS IS" BASIS,
-#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#See the License for the specific language governing permissions and
-#limitations under the License.
-#*/
