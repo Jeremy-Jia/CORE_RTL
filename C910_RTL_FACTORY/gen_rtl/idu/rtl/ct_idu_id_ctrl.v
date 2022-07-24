@@ -162,12 +162,12 @@ output         ctrl_dp_id_debug_id_pipedown3;  //？
 output         ctrl_dp_id_inst0_vld;              
 output         ctrl_dp_id_inst1_vld;              
 output         ctrl_dp_id_inst2_vld; 
-//output         ctrl_dp_id_inst3_vld;
+output         ctrl_dp_id_inst3_vld;
 
 output         ctrl_dp_id_pipedown_1_inst;        
 output         ctrl_dp_id_pipedown_2_inst;        
 output         ctrl_dp_id_pipedown_3_inst; 
-//output         ctrl_dp_id_pipedown_4_inst; 
+output         ctrl_dp_id_pipedown_4_inst; 
 
 output         ctrl_dp_id_stall;                  
 output         ctrl_fence_id_inst_vld;            
@@ -185,7 +185,7 @@ output         ctrl_split_long_id_stall;
 output         ctrl_top_id_inst0_vld;             
 output         ctrl_top_id_inst1_vld;             
 output         ctrl_top_id_inst2_vld;  
-//output         ctrl_top_id_inst3_vld;   
+output         ctrl_top_id_inst3_vld;   
 
 output         idu_had_id_inst0_vld;              
 output         idu_had_id_inst1_vld;              
