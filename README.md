@@ -23,4 +23,4 @@
 
 # 成员
 
-<img src="https://github.com/T-head-Semi/openc906/blob/main/doc/QR_code_openXuantie.png" />
+<img src="https://github.com/Jeremy-Jia/CORE_RTL/tree/master/images/sdu.jpg" />
