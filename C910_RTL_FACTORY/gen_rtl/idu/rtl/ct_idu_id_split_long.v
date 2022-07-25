@@ -1161,6 +1161,9 @@ assign amo_more_than_4    = amo_split_inst //？
                             &&  amo_aq
                             &&  amo_rl;
 
+//change amo fsm？
+
+
 //----------------------------------------------------------
 //              FSM of inst amo ctrl logic
 //----------------------------------------------------------
@@ -1591,6 +1594,9 @@ endcase
 // &CombEnd; @554
 end
 
+
+//delete vec
+//tudo
 
 ////========================================================
 //// YES, IT IS PERMUTATION. -> Mainly for vrgather, vcompress, vslide

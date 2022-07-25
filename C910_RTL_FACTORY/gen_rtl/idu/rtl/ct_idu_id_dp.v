@@ -908,6 +908,8 @@ ct_idu_id_decd  x_ct_idu_id_decd2 (
 );
 
 
+//add decode 3
+
 // &Force ("nonport","id_inst1_fence_type"); @353
 // &Force ("nonport","id_inst2_fence_type"); @354
 assign dp_fence_id_fence_type[2:0] = id_inst0_fence_type[2:0];
@@ -1486,6 +1488,8 @@ ct_idu_id_split_short  x_ct_idu_id_split_short2 (
   .split_short_dp_inst1_data      (split_short2_dp_inst1_data    )
 );
 
+//need split short3?
+
 // &Connect(.dp_split_short_inst       (id_inst2_data[ID_OPCODE:ID_OPCODE-31]), @690
 //          .dp_split_short_type       (id_inst2_split_short_type[6:0]), @691
 //          .dp_split_short_bkpta_inst (id_inst2_data[ID_BKPTA_INST]), @692
@@ -1767,6 +1771,9 @@ begin
     dp_id_pipedown_dep_info[DEP_WIDTH-1:0] = {DEP_WIDTH{1'b0}};
 // &CombEnd; @894
 end
+
+//add inst3 data path
+//tudo
 
 // &ModuleEnd; @896
 endmodule
