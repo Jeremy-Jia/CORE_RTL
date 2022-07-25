@@ -224,11 +224,13 @@ wire           ctrl_dp_id_debug_id_pipedown3;
 wire           ctrl_dp_id_inst0_vld;              
 wire           ctrl_dp_id_inst1_vld;              
 wire           ctrl_dp_id_inst2_vld; 
-//wire           ctrl_dp_id_inst3_vld;            
+wire           ctrl_dp_id_inst3_vld;   
+
 wire           ctrl_dp_id_pipedown_1_inst;        
 wire           ctrl_dp_id_pipedown_2_inst;        
 wire           ctrl_dp_id_pipedown_3_inst; 
-//wire           ctrl_dp_id_pipedown_4_inst;          
+wire           ctrl_dp_id_pipedown_4_inst; 
+
 wire           ctrl_dp_id_stall;                  
 wire           ctrl_fence_id_inst_vld;            
 wire           ctrl_fence_id_stall;
@@ -236,7 +238,7 @@ wire           ctrl_fence_id_stall;
 wire           ctrl_ib_pipedown_inst0_vld;        
 wire           ctrl_ib_pipedown_inst1_vld;        
 wire           ctrl_ib_pipedown_inst2_vld; 
-//wire         ctrl_ib_pipedown_inst3_vld; 
+wire         ctrl_ib_pipedown_inst3_vld; 
 
 wire           ctrl_id_1_fence_inst;              
 wire           ctrl_id_1_split_long_inst;         
@@ -255,16 +257,17 @@ wire           ctrl_id_inst2_fence;
 wire           ctrl_id_inst2_normal;              
 wire           ctrl_id_inst2_split_long;          
 wire           ctrl_id_inst2_split_short; 
-/*
+
 wire           ctrl_id_inst3_fence;               
 wire           ctrl_id_inst3_normal;              
 wire           ctrl_id_inst3_split_long;          
 wire           ctrl_id_inst3_split_short; 
-*/
+
 wire           ctrl_id_pipedown_1_inst;           
 wire           ctrl_id_pipedown_2_inst;           
 wire           ctrl_id_pipedown_3_inst;
-//wire         ctrl_id_pipedown_4_inst;
+wire           ctrl_id_pipedown_4_inst;
+
 wire           ctrl_id_pipedown_3_inst_for_bypass; //?
 
 wire           ctrl_id_pipedown_gateclk;          
@@ -281,7 +284,7 @@ wire           ctrl_split_long_id_stall;
 wire           ctrl_top_id_inst0_vld;             
 wire           ctrl_top_id_inst1_vld;             
 wire           ctrl_top_id_inst2_vld; 
-//wire           ctrl_top_id_inst3_vld; 
+wire           ctrl_top_id_inst3_vld; 
 
 wire           debug_id_inst_clk;                 
 wire           debug_id_inst_clk_en;              
@@ -301,17 +304,17 @@ wire           dp_ctrl_id_inst2_fence;
 wire           dp_ctrl_id_inst2_normal;           
 wire           dp_ctrl_id_inst2_split_long;       
 wire           dp_ctrl_id_inst2_split_short;  
-/*
+
 wire           dp_ctrl_id_inst3_fence;            
 wire           dp_ctrl_id_inst3_normal;           
 wire           dp_ctrl_id_inst3_split_long;       
 wire           dp_ctrl_id_inst3_split_short;  
-*/
+
 wire           fence_ctrl_id_stall;               
 wire           fence_ctrl_inst0_vld;              
 wire           fence_ctrl_inst1_vld;              
 wire           fence_ctrl_inst2_vld;
-//wire           fence_ctrl_inst3_vld;
+wire           fence_ctrl_inst3_vld;
 
 wire           forever_cpuclk;                    
 wire           had_idu_debug_id_inst_en;          
@@ -322,7 +325,7 @@ wire           id_inst_clk_en;
 wire           idu_had_id_inst0_vld;              
 wire           idu_had_id_inst1_vld;              
 wire           idu_had_id_inst2_vld;
-//wire           idu_had_id_inst3_vld;
+wire           idu_had_id_inst3_vld;
 
 wire           idu_had_pipe_stall;                
 wire           idu_hpcp_backend_stall;            
@@ -332,7 +335,8 @@ wire           idu_ifu_id_stall;
 wire           ifu_idu_ib_inst0_vld;              
 wire           ifu_idu_ib_inst1_vld;              
 wire           ifu_idu_ib_inst2_vld; 
-//wire           ifu_idu_ib_inst3_vld;       
+wire           ifu_idu_ib_inst3_vld;      
+
 wire           ifu_idu_ib_pipedown_gateclk;       
 wire           iu_yy_xx_cancel;                   
 wire           pad_yy_icg_scan_en;                
@@ -694,7 +698,7 @@ begin
     ctrl_id_pipedown_inst3_vld = 1'b0;
   else if(ctrl_id_inst2_split_long)
     ctrl_id_pipedown_inst3_vld = 1'b0;  
-  else if  (ctrl_id_inst2_split_short&&ctrl_id_inst0_normal&&ctrl_id_inst1_normal)
+  else if  (ctrl_id_inst2_split_short && ctrl_id_inst0_normal && ctrl_id_inst1_normal)
     ctrl_id_pipedown_inst3_vld = 1'b1;
 
  //consider id inst3 type
@@ -875,6 +879,7 @@ assign ctrl_id_pipedown_3_inst_for_bypass = ctrl_id_pipedown_3_inst;
 assign ctrl_dp_id_pipedown_1_inst = ctrl_id_pipedown_1_inst;
 assign ctrl_dp_id_pipedown_2_inst = ctrl_id_pipedown_2_inst;
 assign ctrl_dp_id_pipedown_3_inst = ctrl_id_pipedown_3_inst;
+assign ctrl_dp_id_pipedown_4_inst = ctrl_id_pipedown_4_inst;
 
 //==========================================================
 //                     ID stage stall
