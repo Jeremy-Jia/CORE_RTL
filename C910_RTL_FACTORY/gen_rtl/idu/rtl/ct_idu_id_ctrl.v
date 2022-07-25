@@ -94,7 +94,7 @@ module ct_idu_id_ctrl(
   ifu_idu_ib_inst0_vld,
   ifu_idu_ib_inst1_vld,
   ifu_idu_ib_inst2_vld,
-//ifu_idu_ib_inst3_vld
+  ifu_idu_ib_inst3_vld
   ifu_idu_ib_pipedown_gateclk,
   iu_yy_xx_cancel,
   pad_yy_icg_scan_en,
