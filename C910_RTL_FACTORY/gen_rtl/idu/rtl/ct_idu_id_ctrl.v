@@ -23,11 +23,11 @@ module ct_idu_id_ctrl(
   ctrl_dp_id_inst0_vld,
   ctrl_dp_id_inst1_vld,
   ctrl_dp_id_inst2_vld,
-//ctrl_dp_id_inst3_vld
+  ctrl_dp_id_inst3_vld
   ctrl_dp_id_pipedown_1_inst,
   ctrl_dp_id_pipedown_2_inst,
   ctrl_dp_id_pipedown_3_inst,
-//ctrl_dp_id_pipedown_4_inst
+  ctrl_dp_id_pipedown_4_inst
 
   ctrl_dp_id_stall,
   ctrl_fence_id_inst_vld,
@@ -48,7 +48,7 @@ module ct_idu_id_ctrl(
   ctrl_top_id_inst0_vld,
   ctrl_top_id_inst1_vld,
   ctrl_top_id_inst2_vld,
-//ctrl_top_id_inst3_vld
+  ctrl_top_id_inst3_vld
 
   dp_ctrl_id_inst0_fence,
   dp_ctrl_id_inst0_normal,
@@ -65,17 +65,17 @@ module ct_idu_id_ctrl(
   dp_ctrl_id_inst2_split_long,
   dp_ctrl_id_inst2_split_short,
 
-/*dp_ctrl_id_inst3_fence,
+  dp_ctrl_id_inst3_fence,
   dp_ctrl_id_inst3_normal,
   dp_ctrl_id_inst3_split_long,
   dp_ctrl_id_inst3_split_short,
-  */
+  
 
   fence_ctrl_id_stall,
   fence_ctrl_inst0_vld,
   fence_ctrl_inst1_vld,
   fence_ctrl_inst2_vld,
-//fence_ctrl_inst3_vld,
+  fence_ctrl_inst3_vld,
 
 
   forever_cpuclk,
