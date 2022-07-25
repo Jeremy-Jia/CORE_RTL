@@ -796,7 +796,7 @@ assign ctrl_id_1_split_long_inst = ctrl_id_inst0_split_long
                                 || ctrl_id_inst2_split_long
                                 || ctrl_id_inst3_split_long;
 
-//123
+
 //----------------------------------------------------------
 //                    Pipedown 1 Inst//
 //----------------------------------------------------------
@@ -819,10 +819,6 @@ assign ctrl_id_pipedown_1_inst =
 assign ctrl_id_pipedown_2_inst =
             (ctrl_id_inst0_normal || ctrl_id_inst0_split_short)
          && (ctrl_id_inst1_normal || ctrl_id_inst1_split_short)
-         && (ctrl_id_inst2_normal 
-             && ctrl_id_inst0_split_short && ctrl_id_inst1_split_short
-          || ctrl_id_inst2_split_short
-             && (ctrl_id_inst0_split_short || ctrl_id_inst1_split_short)
           || ctrl_id_inst2_split_long
           || ctrl_id_inst2_fence);
 
@@ -832,13 +828,41 @@ assign ctrl_id_pipedown_2_inst =
 //pipedown 3 inst when:
 //1. no fence inst and no long split inst and no 2 or more short split inst
 //   (except inst0/1 are short split insts and inst 2 is normal inst)
+assign pipedown3_1 = 
+              (ctrl_id_inst0_split_short & ctrl_id_inst1_split_short & ctrl_id_inst2_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst1_split_short & ctrl_id_inst2_split_short)
+             ||(ctrl_id_inst0_split_short & ctrl_id_inst1_normal & ctrl_id_inst2_split_short);
+
+assign pipedown3_2 = 
+              (ctrl_id_inst0_split_short & ctrl_id_inst1_normal & ctrl_id_inst2_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst1_split_short & ctrl_id_inst2_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst1_normal & ctrl_id_inst2_split_short)
+              && !ctrl_id_inst3_normal;
+  
+assign pipedown3_3 = 
+            (ctrl_id_inst0_normal & ctrl_id_inst1_normal & ctrl_id_inst2_normal)&
+            (ctrl_id_inst3_fence || ctrl_id_inst3_split_long);
+
+
 assign ctrl_id_pipedown_3_inst =
             !ctrl_id_1_fence_inst
          && !ctrl_id_1_split_long_inst
-         && !(ctrl_id_inst2_split_short
-              && (ctrl_id_inst0_split_short || ctrl_id_inst1_split_short))
-         && !(id_inst2_vld
-              && (ctrl_id_inst0_split_short && ctrl_id_inst1_split_short));
+         && (pipedown3_1 || pipedown3_2 || pipedown3_3);
+
+
+assign pipedown4_1 =(ctrl_id_inst0_split_short & ctrl_id_inst1_normal & ctrl_id_inst2_normal & ctrl_id_inst3_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst1_split_short & ctrl_id_inst2_normal & ctrl_id_inst3_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst0_normal & ctrl_id_inst0_split_short & ctrl_id_inst3_normal)   
+             ||(ctrl_id_inst0_normal & ctrl_id_inst0_normal & ctrl_id_inst0_normal & ctrl_id_inst3_split_short);
+
+assign pipedown4_2 = ctrl_id_inst0_normal & ctrl_id_inst1_normal & ctrl_id_inst2_normal & ctrl_id_inst3_normal；
+
+assign ctrl_id_pipedown_3_inst = !ctrl_id_0_fence_inst 
+                                  && !ctrl_id_1_fence_inst 
+                                  && !ctrl_id_2_fence_inst 
+                                  &&!ctrl_id_3_fence_inst 
+                                &&  (pipedown4_1 || pipedown4_2);
+
 
 //pipedown 3 inst signal for IFU ibuf bypass with timing optimization:
 //no timing optimization
