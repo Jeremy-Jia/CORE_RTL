@@ -77,7 +77,6 @@ module ct_idu_id_ctrl(
   fence_ctrl_inst2_vld,
   fence_ctrl_inst3_vld,
 
-
   forever_cpuclk,
   had_idu_debug_id_inst_en,
   hpcp_idu_cnt_en,
@@ -129,17 +128,17 @@ input          dp_ctrl_id_inst2_fence;
 input          dp_ctrl_id_inst2_normal;           
 input          dp_ctrl_id_inst2_split_long;       
 input          dp_ctrl_id_inst2_split_short;
-/*
+
 input          dp_ctrl_id_inst3_fence;            
 input          dp_ctrl_id_inst3_normal;           
 input          dp_ctrl_id_inst3_split_long;       
 input          dp_ctrl_id_inst3_split_short;
-*/
+
 input          fence_ctrl_id_stall;               
 input          fence_ctrl_inst0_vld;              
 input          fence_ctrl_inst1_vld;              
 input          fence_ctrl_inst2_vld;
-//input          fence_ctrl_inst3_vld;
+input          fence_ctrl_inst3_vld;
 
 input          forever_cpuclk;                    
 input          had_idu_debug_id_inst_en;          
@@ -148,7 +147,7 @@ input          hpcp_idu_cnt_en;
 input          ifu_idu_ib_inst0_vld;              
 input          ifu_idu_ib_inst1_vld;              
 input          ifu_idu_ib_inst2_vld;
-//input          ifu_idu_ib_inst3_vld;      
+input          ifu_idu_ib_inst3_vld;      
 input          ifu_idu_ib_pipedown_gateclk;       
 input          iu_yy_xx_cancel;                   
 input          pad_yy_icg_scan_en;                
@@ -206,13 +205,13 @@ reg            ctrl_id_pipedown_inst3_vld;
 reg            debug_id_inst0_vld;                
 reg            debug_id_inst1_vld;                
 reg            debug_id_inst2_vld; 
-//reg            debug_id_inst3_vld; 
+reg            debug_id_inst3_vld; 
 
 reg            debug_id_pipedown3;                
 reg            id_inst0_vld;                      
 reg            id_inst1_vld;                      
 reg            id_inst2_vld; 
-//reg            id_inst3_vld;                     
+reg            id_inst3_vld;                     
 
 // &Wires; @30
 wire           cp0_idu_icg_en;                    
