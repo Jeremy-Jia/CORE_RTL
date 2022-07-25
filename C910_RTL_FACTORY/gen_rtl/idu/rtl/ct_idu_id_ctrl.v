@@ -85,7 +85,7 @@ module ct_idu_id_ctrl(
   idu_had_id_inst0_vld,
   idu_had_id_inst1_vld,
   idu_had_id_inst2_vld,
-//idu_had_id_inst3_vld
+  idu_had_id_inst3_vld
 
   idu_had_pipe_stall,
   idu_hpcp_backend_stall,
