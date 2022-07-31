@@ -31,12 +31,19 @@ module ct_idu_ir_ctrl(
   ctrl_id_pipedown_inst1_vld,
   ctrl_id_pipedown_inst2_vld,
   ctrl_id_pipedown_inst3_vld,
+
+  ctrl_id_pipedown_inst4_vld,  //add uop4 vld signal
+
   ctrl_ir_pipedown,
   ctrl_ir_pipedown_gateclk,
+
   ctrl_ir_pipedown_inst0_vld,
   ctrl_ir_pipedown_inst1_vld,
   ctrl_ir_pipedown_inst2_vld,
   ctrl_ir_pipedown_inst3_vld,
+
+  ctrl_ir_pipedown_inst4_vld,//add uop5 vld signal
+
   ctrl_ir_pre_dis_aiq0_create0_en,
   ctrl_ir_pre_dis_aiq0_create0_sel,
   ctrl_ir_pre_dis_aiq0_create1_en,
@@ -49,24 +56,33 @@ module ct_idu_ir_ctrl(
   ctrl_ir_pre_dis_biq_create0_sel,
   ctrl_ir_pre_dis_biq_create1_en,
   ctrl_ir_pre_dis_biq_create1_sel,
+
   ctrl_ir_pre_dis_inst0_vld,
   ctrl_ir_pre_dis_inst1_vld,
   ctrl_ir_pre_dis_inst2_vld,
   ctrl_ir_pre_dis_inst3_vld,
+
+  ctrl_ir_pre_dis_inst4_vld,//add inst4 pre dispatch signal
+
   ctrl_ir_pre_dis_lsiq_create0_en,
   ctrl_ir_pre_dis_lsiq_create0_sel,
   ctrl_ir_pre_dis_lsiq_create1_en,
   ctrl_ir_pre_dis_lsiq_create1_sel,
-  ctrl_ir_pre_dis_pipedown2,
+
+  ctrl_ir_pre_dis_pipedown2,//tudo
+
   ctrl_ir_pre_dis_pst_create1_iid_sel,
   ctrl_ir_pre_dis_pst_create2_iid_sel,
   ctrl_ir_pre_dis_pst_create3_iid_sel,
+
   ctrl_ir_pre_dis_rob_create0_sel,
   ctrl_ir_pre_dis_rob_create1_en,
   ctrl_ir_pre_dis_rob_create1_sel,
   ctrl_ir_pre_dis_rob_create2_en,
   ctrl_ir_pre_dis_rob_create2_sel,
   ctrl_ir_pre_dis_rob_create3_en,
+//tudo
+
   ctrl_ir_pre_dis_sdiq_create0_en,
   ctrl_ir_pre_dis_sdiq_create0_sel,
   ctrl_ir_pre_dis_sdiq_create1_en,
@@ -83,13 +99,18 @@ module ct_idu_ir_ctrl(
   ctrl_ir_pre_dis_vmb_create0_sel,
   ctrl_ir_pre_dis_vmb_create1_en,
   ctrl_ir_pre_dis_vmb_create1_sel,
+
   ctrl_ir_stage_stall,
   ctrl_ir_stall,
   ctrl_ir_type_stall_inst2_vld,
   ctrl_ir_type_stall_inst3_vld,
+//need  tudo
+  
   ctrl_is_dis_type_stall,
+
   ctrl_is_inst2_vld,
   ctrl_is_inst3_vld,
+
   ctrl_is_stall,
   ctrl_lsiq_ir_bar_inst_vld,
   ctrl_rt_inst0_vld,
@@ -397,7 +418,7 @@ reg     [6 :0]  ctrl_ir_hpcp_inst2_type;
 reg             ctrl_ir_hpcp_inst2_vld_ff;             
 reg     [6 :0]  ctrl_ir_hpcp_inst3_type;               
 reg             ctrl_ir_hpcp_inst3_vld_ff;             
-reg     [1 :0]  ctrl_ir_pre_dis_aiq0_create0_sel;      
+reg     [2 :0]  ctrl_ir_pre_dis_aiq0_create0_sel;  //增加uop需要扩展一位    
 reg     [1 :0]  ctrl_ir_pre_dis_aiq0_create1_sel;      
 reg     [1 :0]  ctrl_ir_pre_dis_aiq1_create0_sel;      
 reg     [1 :0]  ctrl_ir_pre_dis_aiq1_create1_sel;      
@@ -871,7 +892,8 @@ assign ir_inst_clk_en = ctrl_id_pipedown_gateclk
                         || ir_inst0_vld
                         || ir_inst1_vld
                         || ir_inst2_vld
-                        || ir_inst3_vld;
+                        || ir_inst3_vld
+                        ;
 // &Instance("gated_clk_cell", "x_ir_inst_gated_clk"); @63
 gated_clk_cell  x_ir_inst_gated_clk (
   .clk_in             (forever_cpuclk    ),
@@ -903,24 +925,28 @@ begin
     ir_inst1_vld <= 1'b0;
     ir_inst2_vld <= 1'b0;
     ir_inst3_vld <= 1'b0;
+    ir_inst4_vld <= 1'b0;//add uop5
   end
   else if(rtu_idu_flush_fe || iu_yy_xx_cancel) begin
     ir_inst0_vld <= 1'b0;
     ir_inst1_vld <= 1'b0;
     ir_inst2_vld <= 1'b0;
     ir_inst3_vld <= 1'b0;
+    ir_inst4_vld <= 1'b0;//add uop5
   end
   else if(!ctrl_ir_stall) begin
     ir_inst0_vld <= ctrl_id_pipedown_inst0_vld;
     ir_inst1_vld <= ctrl_id_pipedown_inst1_vld;
     ir_inst2_vld <= ctrl_id_pipedown_inst2_vld;
     ir_inst3_vld <= ctrl_id_pipedown_inst3_vld;
+    ir_inst4_vld <= ctrl_id_pipedown_inst4_vld;//add uop5
   end
   else begin
     ir_inst0_vld <= ir_inst0_vld;
     ir_inst1_vld <= ir_inst1_vld;
     ir_inst2_vld <= ir_inst2_vld;
     ir_inst3_vld <= ir_inst3_vld;
+        ir_inst3_vld <= ir_inst3_vld;//add uop5
   end
 end
 
@@ -929,11 +955,13 @@ assign ctrl_dp_ir_inst0_vld = ir_inst0_vld;
 //for is type stall, ignore type stall
 assign ctrl_ir_type_stall_inst2_vld = ir_inst2_vld;
 assign ctrl_ir_type_stall_inst3_vld = ir_inst3_vld;
+//tudo
 
 assign ctrl_top_ir_inst0_vld = ir_inst0_vld;
 assign ctrl_top_ir_inst1_vld = ir_inst1_vld;
 assign ctrl_top_ir_inst2_vld = ir_inst2_vld;
 assign ctrl_top_ir_inst3_vld = ir_inst3_vld;
+assign ctrl_top_ir_inst4_vld = ir_inst4_vld;//add uop5
 
 //----------------------------------------------------------
 //             IR pipedown inst valid signals
@@ -950,8 +978,9 @@ assign ctrl_top_ir_inst3_vld = ir_inst3_vld;
 //  however creg stall does not affect IS stage shift inst
 //so pipedown inst valid can ignore both dispatch stall and type
 //stall, but should consider creg stall.
-assign ctrl_ir_pipedown_stall = ctrl_ir_stage_stall || ctrl_is_dis_type_stall;
 
+assign ctrl_ir_pipedown_stall = ctrl_ir_stage_stall || ctrl_is_dis_type_stall;
+//ctrl_xx_is_inst_sel  tudo
 assign ir_pipedown_inst0_vld =
             ctrl_xx_is_inst0_sel[0] && ctrl_is_inst2_vld
          || ctrl_xx_is_inst0_sel[1] && ir_inst0_vld && !ctrl_ir_pipedown_stall;
@@ -967,6 +996,11 @@ assign ir_pipedown_inst3_vld =
             ctrl_xx_is_inst_sel[0] && ir_inst1_vld && !ctrl_ir_pipedown_stall
          || ctrl_xx_is_inst_sel[1] && ir_inst2_vld && !ctrl_ir_pipedown_stall
          || ctrl_xx_is_inst_sel[2] && ir_inst3_vld && !ctrl_ir_pipedown_stall;
+//add uop5 logic  tudo
+assign ir_pipedown_inst4_vld =
+            ctrl_xx_is_inst_sel[0] && ir_inst1_vld && !ctrl_ir_pipedown_stall
+         || ctrl_xx_is_inst_sel[1] && ir_inst2_vld && !ctrl_ir_pipedown_stall
+         || ctrl_xx_is_inst_sel[2] && ir_inst3_vld && !ctrl_ir_pipedown_stall;
 
 //----------------------------------------------------------
 //            Rename Table inst valid signals
@@ -979,7 +1013,8 @@ assign ctrl_rt_inst0_vld = ir_inst0_vld;
 assign ctrl_rt_inst1_vld = ir_inst1_vld;
 assign ctrl_rt_inst2_vld = ir_inst2_vld;
 assign ctrl_rt_inst3_vld = ir_inst3_vld;
-
+//add uop5 logic
+assign ctrl_rt_inst4_vld = ir_inst4_vld;
 //----------------------------------------------------------
 //            Fence pipeline emtry signal
 //----------------------------------------------------------
@@ -992,7 +1027,8 @@ assign ctrl_fence_ir_pipe_empty = !ir_inst0_vld;
 assign ctrl_lsiq_ir_bar_inst_vld = ir_inst0_vld && dp_ctrl_ir_inst0_bar
                                 || ir_inst1_vld && dp_ctrl_ir_inst1_bar
                                 || ir_inst2_vld && dp_ctrl_ir_inst2_bar
-                                || ir_inst3_vld && dp_ctrl_ir_inst3_bar;
+                                || ir_inst3_vld && dp_ctrl_ir_inst3_bar
+                                || ir_inst4_vld && dp_ctrl_ir_inst4_bar;//add uop 5
 
 //----------------------------------------------------------
 //            Rename pipedown inst valid signals
@@ -1001,6 +1037,8 @@ assign ctrl_ir_pipedown_inst0_vld = ir_pipedown_inst0_vld;
 assign ctrl_ir_pipedown_inst1_vld = ir_pipedown_inst1_vld;
 assign ctrl_ir_pipedown_inst2_vld = ir_pipedown_inst2_vld;
 assign ctrl_ir_pipedown_inst3_vld = ir_pipedown_inst3_vld;
+assign ctrl_ir_pipedown_inst3_vld = ir_pipedown_inst4_vld;//add  uop5
+
 
 //==========================================================
 //                IR stage pipedown signals
@@ -1009,13 +1047,17 @@ assign ctrl_ir_pipedown_inst3_vld = ir_pipedown_inst3_vld;
 assign ctrl_ir_pipedown         = (ir_pipedown_inst0_vld
                                 || ir_pipedown_inst1_vld
                                 || ir_pipedown_inst2_vld
-                                || ir_pipedown_inst3_vld);
+                                || ir_pipedown_inst3_vld
+                                || ir_pipedown_inst4_vld//add uop5
+                                );
 assign ctrl_ir_pipedown_gateclk = (ctrl_is_inst2_vld
                                 || ctrl_is_inst3_vld
                                 || ir_inst0_vld
                                 || ir_inst1_vld
                                 || ir_inst2_vld
-                                || ir_inst3_vld);
+                                || ir_inst3_vld
+                                || ir_inst4_vld//add uop5
+                                );
 
 //==========================================================
 //                  IR stage stall signals
@@ -1025,42 +1067,52 @@ assign ctrl_ir_preg_stall =
      ir_inst0_vld && dp_ctrl_ir_inst0_dst_vld && !rtu_idu_alloc_preg0_vld
   || ir_inst1_vld && dp_ctrl_ir_inst1_dst_vld && !rtu_idu_alloc_preg1_vld
   || ir_inst2_vld && dp_ctrl_ir_inst2_dst_vld && !rtu_idu_alloc_preg2_vld
-  || ir_inst3_vld && dp_ctrl_ir_inst3_dst_vld && !rtu_idu_alloc_preg3_vld;
+  || ir_inst3_vld && dp_ctrl_ir_inst3_dst_vld && !rtu_idu_alloc_preg3_vld
+  || ir_inst4_vld && dp_ctrl_ir_inst4_dst_vld && !rtu_idu_alloc_preg4_vld;//add uop5
 //vreg stall siganls
 assign ctrl_ir_vreg_stall =
      ir_inst0_vld && dp_ctrl_ir_inst0_dstv_vld && !rtu_idu_alloc_vreg0_vld
   || ir_inst1_vld && dp_ctrl_ir_inst1_dstv_vld && !rtu_idu_alloc_vreg1_vld
   || ir_inst2_vld && dp_ctrl_ir_inst2_dstv_vld && !rtu_idu_alloc_vreg2_vld
-  || ir_inst3_vld && dp_ctrl_ir_inst3_dstv_vld && !rtu_idu_alloc_vreg3_vld;
+  || ir_inst3_vld && dp_ctrl_ir_inst3_dstv_vld && !rtu_idu_alloc_vreg3_vld
+  || ir_inst4_vld && dp_ctrl_ir_inst4_dstv_vld && !rtu_idu_alloc_vreg4_vld;//add uop5
 //freg stall siganls
 assign ctrl_ir_freg_stall =
      ir_inst0_vld && dp_ctrl_ir_inst0_dstf_vld && !rtu_idu_alloc_freg0_vld
   || ir_inst1_vld && dp_ctrl_ir_inst1_dstf_vld && !rtu_idu_alloc_freg1_vld
   || ir_inst2_vld && dp_ctrl_ir_inst2_dstf_vld && !rtu_idu_alloc_freg2_vld
-  || ir_inst3_vld && dp_ctrl_ir_inst3_dstf_vld && !rtu_idu_alloc_freg3_vld;
+  || ir_inst3_vld && dp_ctrl_ir_inst3_dstf_vld && !rtu_idu_alloc_freg3_vld
+  || ir_inst4_vld && dp_ctrl_ir_inst4_dstf_vld && !rtu_idu_alloc_freg4_vld;//add uop5
 //ereg stall siganls
 assign ctrl_ir_ereg_stall =
      ir_inst0_vld && dp_ctrl_ir_inst0_dste_vld && !rtu_idu_alloc_ereg0_vld
   || ir_inst1_vld && dp_ctrl_ir_inst1_dste_vld && !rtu_idu_alloc_ereg1_vld
   || ir_inst2_vld && dp_ctrl_ir_inst2_dste_vld && !rtu_idu_alloc_ereg2_vld
-  || ir_inst3_vld && dp_ctrl_ir_inst3_dste_vld && !rtu_idu_alloc_ereg3_vld;
+  || ir_inst3_vld && dp_ctrl_ir_inst3_dste_vld && !rtu_idu_alloc_ereg3_vld
+  || ir_inst3_vld && dp_ctrl_ir_inst3_dste_vld && !rtu_idu_alloc_ereg3_vld;//add uop5
 
 assign ctrl_top_ir_preg_not_vld = !(rtu_idu_alloc_preg0_vld
                                  && rtu_idu_alloc_preg1_vld
                                  && rtu_idu_alloc_preg2_vld
-                                 && rtu_idu_alloc_preg3_vld);
+                                 && rtu_idu_alloc_preg3_vld
+                                 && rtu_idu_alloc_preg4_vld);//add uop5
 assign ctrl_top_ir_vreg_not_vld = !(rtu_idu_alloc_vreg0_vld
                                  && rtu_idu_alloc_vreg1_vld
                                  && rtu_idu_alloc_vreg2_vld
-                                 && rtu_idu_alloc_vreg3_vld);
+                                 && rtu_idu_alloc_vreg3_vld
+                                 && rtu_idu_alloc_vreg4_vld);//add uop5
 assign ctrl_top_ir_freg_not_vld = !(rtu_idu_alloc_freg0_vld
                                  && rtu_idu_alloc_freg1_vld
                                  && rtu_idu_alloc_freg2_vld
-                                 && rtu_idu_alloc_freg3_vld);
+                                 && rtu_idu_alloc_freg3_vld
+                                 && rtu_idu_alloc_freg4_vld//add uop5
+                                 );
 assign ctrl_top_ir_ereg_not_vld = !(rtu_idu_alloc_ereg0_vld
                                  && rtu_idu_alloc_ereg1_vld
                                  && rtu_idu_alloc_ereg2_vld
-                                 && rtu_idu_alloc_ereg3_vld);
+                                 && rtu_idu_alloc_ereg3_vld
+                                 && rtu_idu_alloc_ereg4_vld//add uop5
+                                 );
 
 //ir stage stall signal
 // &Force("output","ctrl_ir_stage_stall"); @244
@@ -1097,6 +1149,12 @@ assign idu_rtu_ir_preg3_alloc_vld = ir_inst3_vld
                                     && dp_ctrl_ir_inst3_dst_vld
                                     && !dp_ctrl_ir_inst3_dst_x0;
 
+assign idu_rtu_ir_preg4_alloc_vld = ir_inst4_vld //add uop5
+                                    && !ctrl_ir_stall
+                                    && dp_ctrl_ir_inst4_dst_vld
+                                    && !dp_ctrl_ir_inst4_dst_x0;
+                                  
+
 assign idu_rtu_ir_vreg0_alloc_vld = ir_inst0_vld
                                     && !ctrl_ir_stall
                                     && dp_ctrl_ir_inst0_dstv_vld;
@@ -1108,7 +1166,10 @@ assign idu_rtu_ir_vreg2_alloc_vld = ir_inst2_vld
                                     && dp_ctrl_ir_inst2_dstv_vld;
 assign idu_rtu_ir_vreg3_alloc_vld = ir_inst3_vld
                                     && !ctrl_ir_stall
-                                    && dp_ctrl_ir_inst3_dstv_vld;
+                                    && dp_ctrl_ir_inst3_dstv_vl
+assign idu_rtu_ir_vreg4_alloc_vld = ir_inst4_vld//add uop5
+                                    && !ctrl_ir_stall
+                                    && dp_ctrl_ir_inst4_dstv_vld;                               
 
 assign idu_rtu_ir_freg0_alloc_vld = ir_inst0_vld
                                     && !ctrl_ir_stall
@@ -1122,6 +1183,10 @@ assign idu_rtu_ir_freg2_alloc_vld = ir_inst2_vld
 assign idu_rtu_ir_freg3_alloc_vld = ir_inst3_vld
                                     && !ctrl_ir_stall
                                     && dp_ctrl_ir_inst3_dstf_vld;
+assign idu_rtu_ir_freg4_alloc_vld = ir_inst4_vld
+                                    && !ctrl_ir_stall
+                                    && dp_ctrl_ir_inst4_dstf_vld;//add uop5
+
 
 assign idu_rtu_ir_ereg0_alloc_vld = ir_inst0_vld
                                     && !ctrl_ir_stall
@@ -1135,30 +1200,42 @@ assign idu_rtu_ir_ereg2_alloc_vld = ir_inst2_vld
 assign idu_rtu_ir_ereg3_alloc_vld = ir_inst3_vld
                                     && !ctrl_ir_stall
                                     && dp_ctrl_ir_inst3_dste_vld;
+assign idu_rtu_ir_ereg4_alloc_vld = ir_inst4_vld
+                                    && !ctrl_ir_stall
+                                    && dp_ctrl_ir_inst4_dste_vld;//add uop5
+                                                                       
 
 assign idu_rtu_ir_preg_alloc_gateclk_vld =
             ir_inst0_vld && dp_ctrl_ir_inst0_dst_vld
          || ir_inst1_vld && dp_ctrl_ir_inst1_dst_vld
          || ir_inst2_vld && dp_ctrl_ir_inst2_dst_vld
-         || ir_inst3_vld && dp_ctrl_ir_inst3_dst_vld;
+         || ir_inst3_vld && dp_ctrl_ir_inst3_dst_vld
+          || ir_inst4_vld && dp_ctrl_ir_inst4_dst_vld;//add uop5
+                  ;
 
 assign idu_rtu_ir_vreg_alloc_gateclk_vld =
             ir_inst0_vld && dp_ctrl_ir_inst0_dstv_vld
          || ir_inst1_vld && dp_ctrl_ir_inst1_dstv_vld
          || ir_inst2_vld && dp_ctrl_ir_inst2_dstv_vld
-         || ir_inst3_vld && dp_ctrl_ir_inst3_dstv_vld;
+         || ir_inst3_vld && dp_ctrl_ir_inst3_dstv_vld
+         || ir_inst4_vld && dp_ctrl_ir_inst4_dstv_vld//add uop5
+         ;
 
 assign idu_rtu_ir_freg_alloc_gateclk_vld =
             ir_inst0_vld && dp_ctrl_ir_inst0_dstf_vld
          || ir_inst1_vld && dp_ctrl_ir_inst1_dstf_vld
          || ir_inst2_vld && dp_ctrl_ir_inst2_dstf_vld
-         || ir_inst3_vld && dp_ctrl_ir_inst3_dstf_vld;
+         || ir_inst3_vld && dp_ctrl_ir_inst3_dstf_vld
+         || ir_inst4_vld && dp_ctrl_ir_inst4_dstf_vld//add uop5
+         ;
 
 assign idu_rtu_ir_ereg_alloc_gateclk_vld =
             ir_inst0_vld && dp_ctrl_ir_inst0_dste_vld
          || ir_inst1_vld && dp_ctrl_ir_inst1_dste_vld
          || ir_inst2_vld && dp_ctrl_ir_inst2_dste_vld
-         || ir_inst3_vld && dp_ctrl_ir_inst3_dste_vld;
+         || ir_inst3_vld && dp_ctrl_ir_inst3_dste_vld
+        || ir_inst4_vld && dp_ctrl_ir_inst4_dste_vld //add uop5
+         ;
 
 //==========================================================
 //                 Prepare Dispatch Signals
@@ -1166,6 +1243,8 @@ assign idu_rtu_ir_ereg_alloc_gateclk_vld =
 //----------------------------------------------------------
 //            MUX between IR inst and IS shift inst
 //----------------------------------------------------------
+
+//tudo
 assign ir_pipedown_inst0_ctrl_info[IS_CTRL_WIDTH-1:0] = 
     {IS_CTRL_WIDTH{ctrl_xx_is_inst0_sel[0]}} & dp_ctrl_is_dis_inst2_ctrl_info[IS_CTRL_WIDTH-1:0]
   | {IS_CTRL_WIDTH{ctrl_xx_is_inst0_sel[1]}} & dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_WIDTH-1:0];
@@ -1193,70 +1272,86 @@ assign ctrl_ir_inst2_aiq0          = ir_pipedown_inst2_ctrl_info[IS_CTRL_DIV]
                                   || ir_pipedown_inst2_ctrl_info[IS_CTRL_SPECIAL];
 assign ctrl_ir_inst3_aiq0          = ir_pipedown_inst3_ctrl_info[IS_CTRL_DIV] 
                                   || ir_pipedown_inst3_ctrl_info[IS_CTRL_SPECIAL];
+assign ctrl_ir_inst4_aiq0          = ir_pipedown_inst4_ctrl_info[IS_CTRL_DIV] //add uop5
+                                  || ir_pipedown_inst4_ctrl_info[IS_CTRL_SPECIAL];                                  
 
 assign ctrl_ir_inst0_aiq1_bef_dlb  = ir_pipedown_inst0_ctrl_info[IS_CTRL_MULT];
 assign ctrl_ir_inst1_aiq1_bef_dlb  = ir_pipedown_inst1_ctrl_info[IS_CTRL_MULT];
 assign ctrl_ir_inst2_aiq1_bef_dlb  = ir_pipedown_inst2_ctrl_info[IS_CTRL_MULT];
 assign ctrl_ir_inst3_aiq1_bef_dlb  = ir_pipedown_inst3_ctrl_info[IS_CTRL_MULT];
+assign ctrl_ir_inst3_aiq1_bef_dlb  = ir_pipedown_inst3_ctrl_info[IS_CTRL_MULT];//add uop5
 
 assign ctrl_ir_inst0_aiq01_bef_dlb = ir_pipedown_inst0_ctrl_info[IS_CTRL_ALU];
 assign ctrl_ir_inst1_aiq01_bef_dlb = ir_pipedown_inst1_ctrl_info[IS_CTRL_ALU];
 assign ctrl_ir_inst2_aiq01_bef_dlb = ir_pipedown_inst2_ctrl_info[IS_CTRL_ALU];
 assign ctrl_ir_inst3_aiq01_bef_dlb = ir_pipedown_inst3_ctrl_info[IS_CTRL_ALU];
+//tudo
 
 assign ctrl_ir_inst0_biq           = ir_pipedown_inst0_ctrl_info[IS_CTRL_BJU];
 assign ctrl_ir_inst1_biq           = ir_pipedown_inst1_ctrl_info[IS_CTRL_BJU];
 assign ctrl_ir_inst2_biq           = ir_pipedown_inst2_ctrl_info[IS_CTRL_BJU];
 assign ctrl_ir_inst3_biq           = ir_pipedown_inst3_ctrl_info[IS_CTRL_BJU];
+assign ctrl_ir_inst4_biq           = ir_pipedown_inst3_ctrl_info[IS_CTRL_BJU];//add uop5
 
 assign ctrl_ir_inst0_lsiq          = ir_pipedown_inst0_ctrl_info[IS_CTRL_LSU];
 assign ctrl_ir_inst1_lsiq          = ir_pipedown_inst1_ctrl_info[IS_CTRL_LSU];
 assign ctrl_ir_inst2_lsiq          = ir_pipedown_inst2_ctrl_info[IS_CTRL_LSU];
 assign ctrl_ir_inst3_lsiq          = ir_pipedown_inst3_ctrl_info[IS_CTRL_LSU];
+assign ctrl_ir_inst4_lsiq          = ir_pipedown_inst3_ctrl_info[IS_CTRL_LSU];//uop5
 
 assign ctrl_ir_inst0_split         = ir_pipedown_inst0_ctrl_info[IS_CTRL_SPLIT];
 assign ctrl_ir_inst1_split         = ir_pipedown_inst1_ctrl_info[IS_CTRL_SPLIT];
 assign ctrl_ir_inst2_split         = ir_pipedown_inst2_ctrl_info[IS_CTRL_SPLIT];
 assign ctrl_ir_inst3_split         = ir_pipedown_inst3_ctrl_info[IS_CTRL_SPLIT];
+assign ctrl_ir_inst4_split         = ir_pipedown_inst4_ctrl_info[IS_CTRL_SPLIT];//add uop5
 
 assign ctrl_ir_inst0_intmask       = ir_pipedown_inst0_ctrl_info[IS_CTRL_INTMASK];
 assign ctrl_ir_inst1_intmask       = ir_pipedown_inst1_ctrl_info[IS_CTRL_INTMASK];
 assign ctrl_ir_inst2_intmask       = ir_pipedown_inst2_ctrl_info[IS_CTRL_INTMASK];
 assign ctrl_ir_inst3_intmask       = ir_pipedown_inst3_ctrl_info[IS_CTRL_INTMASK];
+assign ctrl_ir_inst4_intmask       = ir_pipedown_inst4_ctrl_info[IS_CTRL_INTMASK];//add uop5
+
 
 assign ctrl_ir_inst0_sdiq          = ir_pipedown_inst0_ctrl_info[IS_CTRL_STADDR];
 assign ctrl_ir_inst1_sdiq          = ir_pipedown_inst1_ctrl_info[IS_CTRL_STADDR];
 assign ctrl_ir_inst2_sdiq          = ir_pipedown_inst2_ctrl_info[IS_CTRL_STADDR];
 assign ctrl_ir_inst3_sdiq          = ir_pipedown_inst3_ctrl_info[IS_CTRL_STADDR];
+assign ctrl_ir_inst4_sdiq          = ir_pipedown_inst4_ctrl_info[IS_CTRL_STADDR];//add uop5
 
 assign ctrl_ir_inst0_special       = ir_pipedown_inst0_ctrl_info[IS_CTRL_SPECIAL];
 assign ctrl_ir_inst1_special       = ir_pipedown_inst1_ctrl_info[IS_CTRL_SPECIAL];
 assign ctrl_ir_inst2_special       = ir_pipedown_inst2_ctrl_info[IS_CTRL_SPECIAL];
 assign ctrl_ir_inst3_special       = ir_pipedown_inst3_ctrl_info[IS_CTRL_SPECIAL];
+assign ctrl_ir_inst4_special       = ir_pipedown_inst4_ctrl_info[IS_CTRL_SPECIAL];//add uop5
 
 assign ctrl_ir_inst0_viq0          = ir_pipedown_inst0_ctrl_info[IS_CTRL_PIPE6];
 assign ctrl_ir_inst1_viq0          = ir_pipedown_inst1_ctrl_info[IS_CTRL_PIPE6];
 assign ctrl_ir_inst2_viq0          = ir_pipedown_inst2_ctrl_info[IS_CTRL_PIPE6];
 assign ctrl_ir_inst3_viq0          = ir_pipedown_inst3_ctrl_info[IS_CTRL_PIPE6];
+assign ctrl_ir_inst4_viq0          = ir_pipedown_inst4_ctrl_info[IS_CTRL_PIPE6];//add uop5
 
+//tudo
 assign ctrl_ir_inst0_viq1_bef_dlb  = ir_pipedown_inst0_ctrl_info[IS_CTRL_PIPE7];
 assign ctrl_ir_inst1_viq1_bef_dlb  = ir_pipedown_inst1_ctrl_info[IS_CTRL_PIPE7];
 assign ctrl_ir_inst2_viq1_bef_dlb  = ir_pipedown_inst2_ctrl_info[IS_CTRL_PIPE7];
 assign ctrl_ir_inst3_viq1_bef_dlb  = ir_pipedown_inst3_ctrl_info[IS_CTRL_PIPE7];
+assign ctrl_ir_inst4_viq1_bef_dlb  = ir_pipedown_inst4_ctrl_info[IS_CTRL_PIPE7];//add uop5
 
 assign ctrl_ir_inst0_viq01_bef_dlb = ir_pipedown_inst0_ctrl_info[IS_CTRL_PIPE67];
 assign ctrl_ir_inst1_viq01_bef_dlb = ir_pipedown_inst1_ctrl_info[IS_CTRL_PIPE67];
 assign ctrl_ir_inst2_viq01_bef_dlb = ir_pipedown_inst2_ctrl_info[IS_CTRL_PIPE67];
 assign ctrl_ir_inst3_viq01_bef_dlb = ir_pipedown_inst3_ctrl_info[IS_CTRL_PIPE67];
+assign ctrl_ir_inst4_viq01_bef_dlb = ir_pipedown_inst4_ctrl_info[IS_CTRL_PIPE67];//add uop5
 
 assign ctrl_ir_inst0_vmb           = ir_pipedown_inst0_ctrl_info[IS_CTRL_VMB];
 assign ctrl_ir_inst1_vmb           = ir_pipedown_inst1_ctrl_info[IS_CTRL_VMB];
 assign ctrl_ir_inst2_vmb           = ir_pipedown_inst2_ctrl_info[IS_CTRL_VMB];
 assign ctrl_ir_inst3_vmb           = ir_pipedown_inst3_ctrl_info[IS_CTRL_VMB];
-
+assign ctrl_ir_inst4_vmb           = ir_pipedown_inst4_ctrl_info[IS_CTRL_VMB];//add uop5
 //----------------------------------------------------------
 //             Dynamic Load Balance (DLB) of AIQ
 //----------------------------------------------------------
+//tudo
 assign dlb_clk_en = ctrl_aiq_dlb_en
                     || aiq0_ctrl_entry_cnt_updt_vld
                     || aiq1_ctrl_entry_cnt_updt_vld
@@ -1281,7 +1376,7 @@ gated_clk_cell  x_dlb_gated_clk (
 //          .local_en    (dlb_clk_en), @449
 //          .clk_out     (dlb_clk)); @450
 
-
+//diff aiq0 - aiq1      dlb enable logic
 assign ctrl_aiq_entry_cnt_diff[3:0] = aiq0_ctrl_entry_cnt_updt_val[3:0]
                                       - aiq1_ctrl_entry_cnt_updt_val[3:0];
 assign ctrl_aiq_entry_cnt_diff_8    = (aiq0_ctrl_entry_cnt_updt_val[3:0] == 4'd8)
@@ -1342,6 +1437,8 @@ end
 //----------------------------------------------------------
 //when dynamic load balance enable, change inst type from aiq01 to aiq1
 //if inst0 and inst1 is both changed, do not change inst2 and inst3
+
+//tudo 5uop logic
 assign ctrl_ir_inst0_aiq1  = 
             ctrl_ir_inst0_aiq1_bef_dlb
          || ctrl_ir_inst0_aiq01_bef_dlb && ctrl_aiq_dlb_en;
@@ -1351,7 +1448,7 @@ assign ctrl_ir_inst0_aiq01 =
 assign ctrl_ir_inst1_aiq1  =
             ctrl_ir_inst1_aiq1_bef_dlb
          || ctrl_ir_inst1_aiq01_bef_dlb && ctrl_aiq_dlb_en;
-assign ctrl_ir_inst1_aiq01 =
+assign ctrl_ir_inst1_aiq01 = 
             ctrl_ir_inst1_aiq01_bef_dlb && !ctrl_aiq_dlb_en;
 
 assign ctrl_ir_inst2_aiq1  =
@@ -1422,70 +1519,161 @@ assign ctrl_ir_pre_dis_inst2_vld = ir_pipedown_inst2_vld
                                    && !ctrl_ir_pre_dis_type_stall_pipedown2;
 assign ctrl_ir_pre_dis_inst3_vld = ir_pipedown_inst3_vld
                                    && !ctrl_ir_pre_dis_type_stall_pipedown2;
+assign ctrl_ir_pre_dis_inst4_vld = ir_pipedown_inst4_vld
+                                   && !ctrl_ir_pre_dis_type_stall_pipedown2;  //add uop5                                
 
 //----------------------------------------------------------
 //             prepare IS dispatch type stall
 //----------------------------------------------------------
+
+//add uop 5 dispatch
+
 assign ctrl_ir_inst0_aiq0_vld = ir_pipedown_inst0_vld && ctrl_ir_inst0_aiq0;
 assign ctrl_ir_inst1_aiq0_vld = ir_pipedown_inst1_vld && ctrl_ir_inst1_aiq0;
 assign ctrl_ir_inst2_aiq0_vld = ir_pipedown_inst2_vld && ctrl_ir_inst2_aiq0;
 assign ctrl_ir_inst3_aiq0_vld = ir_pipedown_inst3_vld && ctrl_ir_inst3_aiq0;
+assign ctrl_ir_inst4_aiq0_vld = ir_pipedown_inst4_vld && ctrl_ir_inst4_aiq0;//add uop5
 
 assign ctrl_ir_inst0_aiq1_vld = ir_pipedown_inst0_vld && ctrl_ir_inst0_aiq1;
 assign ctrl_ir_inst1_aiq1_vld = ir_pipedown_inst1_vld && ctrl_ir_inst1_aiq1;
 assign ctrl_ir_inst2_aiq1_vld = ir_pipedown_inst2_vld && ctrl_ir_inst2_aiq1;
 assign ctrl_ir_inst3_aiq1_vld = ir_pipedown_inst3_vld && ctrl_ir_inst3_aiq1;
+assign ctrl_ir_inst4_aiq1_vld = ir_pipedown_inst4_vld && ctrl_ir_inst4_aiq1;//add uop5
 
 assign ctrl_ir_inst0_biq_vld = ir_pipedown_inst0_vld && ctrl_ir_inst0_biq;
 assign ctrl_ir_inst1_biq_vld = ir_pipedown_inst1_vld && ctrl_ir_inst1_biq;
 assign ctrl_ir_inst2_biq_vld = ir_pipedown_inst2_vld && ctrl_ir_inst2_biq;
 assign ctrl_ir_inst3_biq_vld = ir_pipedown_inst3_vld && ctrl_ir_inst3_biq;
+assign ctrl_ir_inst4_biq_vld = ir_pipedown_inst4_vld && ctrl_ir_inst4_biq;//add uop5
 
 assign ctrl_ir_inst0_lsiq_vld = ir_pipedown_inst0_vld && ctrl_ir_inst0_lsiq;
 assign ctrl_ir_inst1_lsiq_vld = ir_pipedown_inst1_vld && ctrl_ir_inst1_lsiq;
 assign ctrl_ir_inst2_lsiq_vld = ir_pipedown_inst2_vld && ctrl_ir_inst2_lsiq;
 assign ctrl_ir_inst3_lsiq_vld = ir_pipedown_inst3_vld && ctrl_ir_inst3_lsiq;
+assign ctrl_ir_inst4_lsiq_vld = ir_pipedown_inst4_vld && ctrl_ir_inst4_lsiq;//add uop5
 
 assign ctrl_ir_inst0_viq0_vld = ir_pipedown_inst0_vld && ctrl_ir_inst0_viq0;
 assign ctrl_ir_inst1_viq0_vld = ir_pipedown_inst1_vld && ctrl_ir_inst1_viq0;
 assign ctrl_ir_inst2_viq0_vld = ir_pipedown_inst2_vld && ctrl_ir_inst2_viq0;
 assign ctrl_ir_inst3_viq0_vld = ir_pipedown_inst3_vld && ctrl_ir_inst3_viq0;
+assign ctrl_ir_inst4_viq0_vld = ir_pipedown_inst4_vld && ctrl_ir_inst4_viq0;//add uop5
 
 assign ctrl_ir_inst0_viq1_vld = ir_pipedown_inst0_vld && ctrl_ir_inst0_viq1;
 assign ctrl_ir_inst1_viq1_vld = ir_pipedown_inst1_vld && ctrl_ir_inst1_viq1;
 assign ctrl_ir_inst2_viq1_vld = ir_pipedown_inst2_vld && ctrl_ir_inst2_viq1;
 assign ctrl_ir_inst3_viq1_vld = ir_pipedown_inst3_vld && ctrl_ir_inst3_viq1;
+assign ctrl_ir_inst4_viq1_vld = ir_pipedown_inst4_vld && ctrl_ir_inst4_viq1;//add uop5
 
-assign ctrl_ir_pre_dis_3_biq_inst =
+//此处逻辑需要大改 
+/*assign ctrl_ir_pre_dis_3_biq_inst =
             ctrl_ir_inst0_biq_vld && ctrl_ir_inst1_biq_vld && ctrl_ir_inst2_biq_vld
          || ctrl_ir_inst0_biq_vld && ctrl_ir_inst1_biq_vld && ctrl_ir_inst3_biq_vld
          || ctrl_ir_inst0_biq_vld && ctrl_ir_inst2_biq_vld && ctrl_ir_inst3_biq_vld
          || ctrl_ir_inst1_biq_vld && ctrl_ir_inst2_biq_vld && ctrl_ir_inst3_biq_vld;
+*/
+//new logic
+assign ctrl_ir_pre_dis_3_biq_inst =
+            ctrl_ir_inst0_biq_vld && ctrl_ir_inst1_biq_vld && ctrl_ir_inst2_biq_vld
+         || ctrl_ir_inst0_biq_vld && ctrl_ir_inst1_biq_vld && ctrl_ir_inst3_biq_vld
+         || ctrl_ir_inst0_biq_vld && ctrl_ir_inst1_biq_vld && ctrl_ir_inst4_biq_vld
+         || ctrl_ir_inst0_biq_vld && ctrl_ir_inst2_biq_vld && ctrl_ir_inst3_biq_vld
+         || ctrl_ir_inst0_biq_vld && ctrl_ir_inst2_biq_vld && ctrl_ir_inst4_biq_vld
+         || ctrl_ir_inst0_biq_vld && ctrl_ir_inst3_biq_vld && ctrl_ir_inst4_biq_vld                           
+         || ctrl_ir_inst1_biq_vld && ctrl_ir_inst2_biq_vld && ctrl_ir_inst3_biq_vld
+         || ctrl_ir_inst1_biq_vld && ctrl_ir_inst2_biq_vld && ctrl_ir_inst4_biq_vld
+         || ctrl_ir_inst1_biq_vld && ctrl_ir_inst3_biq_vld && ctrl_ir_inst4_biq_vld
+         || ctrl_ir_inst2_biq_vld && ctrl_ir_inst3_biq_vld && ctrl_ir_inst4_biq_vld ;
+/*
 assign ctrl_ir_pre_dis_3_aiq0_inst =
             ctrl_ir_inst0_aiq0_vld && ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst2_aiq0_vld
          || ctrl_ir_inst0_aiq0_vld && ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst3_aiq0_vld
          || ctrl_ir_inst0_aiq0_vld && ctrl_ir_inst2_aiq0_vld && ctrl_ir_inst3_aiq0_vld
-         || ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst2_aiq0_vld && ctrl_ir_inst3_aiq0_vld;
+         || ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst2_aiq0_vld && ctrl_ir_inst3_aiq0_vld;*/
+
+assign ctrl_ir_pre_dis_3_aiq0_inst =
+            ctrl_ir_inst0_aiq0_vld && ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst2_aiq0_vld
+         || ctrl_ir_inst0_aiq0_vld && ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst3_aiq0_vld
+         || ctrl_ir_inst0_aiq0_vld && ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst4_aiq0_vld
+         || ctrl_ir_inst0_aiq0_vld && ctrl_ir_inst2_aiq0_vld && ctrl_ir_inst3_aiq0_vld
+         || ctrl_ir_inst0_aiq0_vld && ctrl_ir_inst2_aiq0_vld && ctrl_ir_inst4_aiq0_vld
+         || ctrl_ir_inst0_aiq0_vld && ctrl_ir_inst3_aiq0_vld && ctrl_ir_inst4_aiq0_vld                           
+         || ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst2_aiq0_vld && ctrl_ir_inst3_aiq0_vld
+         || ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst2_aiq0_vld && ctrl_ir_inst4_aiq0_vld
+         || ctrl_ir_inst1_aiq0_vld && ctrl_ir_inst3_aiq0_vld && ctrl_ir_inst4_aiq0_vld
+         || ctrl_ir_inst2_aiq0_vld && ctrl_ir_inst3_aiq0_vld && ctrl_ir_inst4_aiq0_vld ;
+
+/*
 assign ctrl_ir_pre_dis_3_aiq1_inst =
             ctrl_ir_inst0_aiq1_vld && ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst2_aiq1_vld
          || ctrl_ir_inst0_aiq1_vld && ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst3_aiq1_vld
          || ctrl_ir_inst0_aiq1_vld && ctrl_ir_inst2_aiq1_vld && ctrl_ir_inst3_aiq1_vld
-         || ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst2_aiq1_vld && ctrl_ir_inst3_aiq1_vld;
+         || ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst2_aiq1_vld && ctrl_ir_inst3_aiq1_vld;*/
+assign ctrl_ir_pre_dis_3_aiq1_inst =
+            ctrl_ir_inst0_aiq1_vld && ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst2_aiq1_vld
+         || ctrl_ir_inst0_aiq1_vld && ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst3_aiq1_vld
+         || ctrl_ir_inst0_aiq1_vld && ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst4_aiq1_vld
+         || ctrl_ir_inst0_aiq1_vld && ctrl_ir_inst2_aiq1_vld && ctrl_ir_inst3_aiq1_vld
+         || ctrl_ir_inst0_aiq1_vld && ctrl_ir_inst2_aiq1_vld && ctrl_ir_inst4_aiq1_vld
+         || ctrl_ir_inst0_aiq1_vld && ctrl_ir_inst3_aiq1_vld && ctrl_ir_inst4_aiq1_vld                           
+         || ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst2_aiq1_vld && ctrl_ir_inst3_aiq1_vld
+         || ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst2_aiq1_vld && ctrl_ir_inst4_aiq1_vld
+         || ctrl_ir_inst1_aiq1_vld && ctrl_ir_inst3_aiq1_vld && ctrl_ir_inst4_aiq1_vld
+         || ctrl_ir_inst2_aiq1_vld && ctrl_ir_inst3_aiq1_vld && ctrl_ir_inst4_aiq1_vld ;
+/*        
 assign ctrl_ir_pre_dis_3_lsiq_inst =
             ctrl_ir_inst0_lsiq_vld && ctrl_ir_inst1_lsiq_vld && ctrl_ir_inst2_lsiq_vld
          || ctrl_ir_inst0_lsiq_vld && ctrl_ir_inst1_lsiq_vld && ctrl_ir_inst3_lsiq_vld
          || ctrl_ir_inst0_lsiq_vld && ctrl_ir_inst2_lsiq_vld && ctrl_ir_inst3_lsiq_vld
          || ctrl_ir_inst1_lsiq_vld && ctrl_ir_inst2_lsiq_vld && ctrl_ir_inst3_lsiq_vld;
+*/
+assign ctrl_ir_pre_dis_3_lsiq_inst =
+            ctrl_ir_inst0_lsiq_vld && ctrl_ir_inst1_lsiq_vld && ctrl_ir_inst2_lsiq_vld
+         || ctrl_ir_inst0_lsiq_vld && ctrl_ir_inst1_lsiq_vld && ctrl_ir_inst3_lsiq_vld
+         || ctrl_ir_inst0_lsiq_vld && ctrl_ir_inst1_lsiq_vld && ctrl_ir_inst4_lsiq_vld
+         || ctrl_ir_inst0_lsiq_vld && ctrl_ir_inst2_lsiq_vld && ctrl_ir_inst3_lsiq_vld
+         || ctrl_ir_inst0_lsiq_vld && ctrl_ir_inst2_lsiq_vld && ctrl_ir_inst4_lsiq_vld
+         || ctrl_ir_inst0_lsiq_vld && ctrl_ir_inst3_lsiq_vld && ctrl_ir_inst4_lsiq_vld                           
+         || ctrl_ir_inst1_lsiq_vld && ctrl_ir_inst2_lsiq_vld && ctrl_ir_inst3_lsiq_vld
+         || ctrl_ir_inst1_lsiq_vld && ctrl_ir_inst2_lsiq_vld && ctrl_ir_inst4_lsiq_vld
+         || ctrl_ir_inst1_lsiq_vld && ctrl_ir_inst3_lsiq_vld && ctrl_ir_inst4_lsiq_vld
+         || ctrl_ir_inst2_lsiq_vld && ctrl_ir_inst3_lsiq_vld && ctrl_ir_inst4_lsiq_vld; 
+/*
 assign ctrl_ir_pre_dis_3_viq0_inst =
             ctrl_ir_inst0_viq0_vld && ctrl_ir_inst1_viq0_vld && ctrl_ir_inst2_viq0_vld
          || ctrl_ir_inst0_viq0_vld && ctrl_ir_inst1_viq0_vld && ctrl_ir_inst3_viq0_vld
          || ctrl_ir_inst0_viq0_vld && ctrl_ir_inst2_viq0_vld && ctrl_ir_inst3_viq0_vld
          || ctrl_ir_inst1_viq0_vld && ctrl_ir_inst2_viq0_vld && ctrl_ir_inst3_viq0_vld;
+*/
+assign ctrl_ir_pre_dis_3_viq0_inst =
+            ctrl_ir_inst0_viq0_vld && ctrl_ir_inst1_viq0_vld && ctrl_ir_inst2_viq0_vld
+         || ctrl_ir_inst0_viq0_vld && ctrl_ir_inst1_viq0_vld && ctrl_ir_inst3_viq0_vld
+         || ctrl_ir_inst0_viq0_vld && ctrl_ir_inst1_viq0_vld && ctrl_ir_inst4_viq0_vld
+         || ctrl_ir_inst0_viq0_vld && ctrl_ir_inst2_viq0_vld && ctrl_ir_inst3_viq0_vld
+         || ctrl_ir_inst0_viq0_vld && ctrl_ir_inst2_viq0_vld && ctrl_ir_inst4_viq0_vld
+         || ctrl_ir_inst0_viq0_vld && ctrl_ir_inst3_viq0_vld && ctrl_ir_inst4_viq0_vld                           
+         || ctrl_ir_inst1_viq0_vld && ctrl_ir_inst2_viq0_vld && ctrl_ir_inst3_viq0_vld
+         || ctrl_ir_inst1_viq0_vld && ctrl_ir_inst2_viq0_vld && ctrl_ir_inst4_viq0_vld
+         || ctrl_ir_inst1_viq0_vld && ctrl_ir_inst3_viq0_vld && ctrl_ir_inst4_viq0_vld
+         || ctrl_ir_inst2_viq0_vld && ctrl_ir_inst3_viq0_vld && ctrl_ir_inst4_viq0_vld ;
+/*
 assign ctrl_ir_pre_dis_3_viq1_inst =
             ctrl_ir_inst0_viq1_vld && ctrl_ir_inst1_viq1_vld && ctrl_ir_inst2_viq1_vld
          || ctrl_ir_inst0_viq1_vld && ctrl_ir_inst1_viq1_vld && ctrl_ir_inst3_viq1_vld
          || ctrl_ir_inst0_viq1_vld && ctrl_ir_inst2_viq1_vld && ctrl_ir_inst3_viq1_vld
          || ctrl_ir_inst1_viq1_vld && ctrl_ir_inst2_viq1_vld && ctrl_ir_inst3_viq1_vld;
+*/
+assign ctrl_ir_pre_dis_3_viq1_inst =
+            ctrl_ir_inst0_viq1_vld && ctrl_ir_inst1_viq1_vld && ctrl_ir_inst2_viq1_vld
+         || ctrl_ir_inst0_viq1_vld && ctrl_ir_inst1_viq1_vld && ctrl_ir_inst3_viq1_vld
+         || ctrl_ir_inst0_viq1_vld && ctrl_ir_inst1_viq1_vld && ctrl_ir_inst4_viq1_vld
+         || ctrl_ir_inst0_viq1_vld && ctrl_ir_inst2_viq1_vld && ctrl_ir_inst3_viq1_vld
+         || ctrl_ir_inst0_viq1_vld && ctrl_ir_inst2_viq1_vld && ctrl_ir_inst4_viq1_vld
+         || ctrl_ir_inst0_viq1_vld && ctrl_ir_inst3_viq1_vld && ctrl_ir_inst4_viq1_vld                           
+         || ctrl_ir_inst1_viq1_vld && ctrl_ir_inst2_viq1_vld && ctrl_ir_inst3_viq1_vld
+         || ctrl_ir_inst1_viq1_vld && ctrl_ir_inst2_viq1_vld && ctrl_ir_inst4_viq1_vld
+         || ctrl_ir_inst1_viq1_vld && ctrl_ir_inst3_viq1_vld && ctrl_ir_inst4_viq1_vld
+         || ctrl_ir_inst2_viq1_vld && ctrl_ir_inst3_viq1_vld && ctrl_ir_inst4_viq1_vld ;
+
 
 assign ctrl_ir_pre_dis_type_stall_pipedown2 = ctrl_ir_pre_dis_3_biq_inst
                                            || ctrl_ir_pre_dis_3_aiq0_inst
@@ -1493,6 +1681,7 @@ assign ctrl_ir_pre_dis_type_stall_pipedown2 = ctrl_ir_pre_dis_3_biq_inst
                                            || ctrl_ir_pre_dis_3_lsiq_inst
                                            || ctrl_ir_pre_dis_3_viq0_inst
                                            || ctrl_ir_pre_dis_3_viq1_inst;
+//sdiq ?? 
 
 assign ctrl_ir_pre_dis_pipedown2  = ir_pipedown_inst2_vld
                                     && ctrl_ir_pre_dis_type_stall_pipedown2;
@@ -1508,6 +1697,9 @@ assign ctrl_ir_pre_dis_inst2_aiq0       = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_aiq0;
 assign ctrl_ir_pre_dis_inst3_aiq0       = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_aiq0;
+assign ctrl_ir_pre_dis_inst4_aiq0       = ctrl_ir_pre_dis_inst4_vld
+                                          && ctrl_ir_inst4_aiq0;//add uop5
+
 assign ctrl_ir_pre_dis_inst0_aiq01      = ctrl_ir_pre_dis_inst0_vld
                                           && ctrl_ir_inst0_aiq01;
 assign ctrl_ir_pre_dis_inst1_aiq01      = ctrl_ir_pre_dis_inst1_vld
@@ -1516,6 +1708,10 @@ assign ctrl_ir_pre_dis_inst2_aiq01      = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_aiq01;
 assign ctrl_ir_pre_dis_inst3_aiq01      = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_aiq01;
+assign ctrl_ir_pre_dis_inst4_aiq01       = ctrl_ir_pre_dis_inst4_vld
+                                          && ctrl_ir_inst4_aiq01;//add uop5
+
+
 assign ctrl_ir_pre_dis_inst0_aiq1       = ctrl_ir_pre_dis_inst0_vld
                                           && ctrl_ir_inst0_aiq1;
 assign ctrl_ir_pre_dis_inst1_aiq1       = ctrl_ir_pre_dis_inst1_vld
@@ -1524,6 +1720,9 @@ assign ctrl_ir_pre_dis_inst2_aiq1       = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_aiq1;
 assign ctrl_ir_pre_dis_inst3_aiq1       = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_aiq1;
+assign ctrl_ir_pre_dis_inst4_aiq1       = ctrl_ir_pre_dis_inst4_vld
+                                          && ctrl_ir_inst4_aiq1;//add uop5
+
 assign ctrl_ir_pre_dis_inst0_biq        = ctrl_ir_pre_dis_inst0_vld
                                           && ctrl_ir_inst0_biq;
 assign ctrl_ir_pre_dis_inst1_biq        = ctrl_ir_pre_dis_inst1_vld
@@ -1532,6 +1731,9 @@ assign ctrl_ir_pre_dis_inst2_biq        = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_biq;
 assign ctrl_ir_pre_dis_inst3_biq        = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_biq;
+assign ctrl_ir_pre_dis_inst4_biq        = ctrl_ir_pre_dis_inst4_vld//add uop5
+                                          && ctrl_ir_inst4_biq;
+
 assign ctrl_ir_pre_dis_inst0_lsiq       = ctrl_ir_pre_dis_inst0_vld
                                           && ctrl_ir_inst0_lsiq;
 assign ctrl_ir_pre_dis_inst1_lsiq       = ctrl_ir_pre_dis_inst1_vld
@@ -1540,6 +1742,9 @@ assign ctrl_ir_pre_dis_inst2_lsiq       = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_lsiq;
 assign ctrl_ir_pre_dis_inst3_lsiq       = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_lsiq;
+assign ctrl_ir_pre_dis_inst4_lsiq       = ctrl_ir_pre_dis_inst4_vld//add uop5
+                                          && ctrl_ir_inst4_lsiq;
+
 assign ctrl_ir_pre_dis_inst0_sdiq       = ctrl_ir_pre_dis_inst0_vld
                                           && ctrl_ir_inst0_sdiq;
 assign ctrl_ir_pre_dis_inst1_sdiq       = ctrl_ir_pre_dis_inst1_vld
@@ -1548,6 +1753,9 @@ assign ctrl_ir_pre_dis_inst2_sdiq       = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_sdiq;
 assign ctrl_ir_pre_dis_inst3_sdiq       = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_sdiq;
+assign ctrl_ir_pre_dis_inst4_sdiq       = ctrl_ir_pre_dis_inst4_vld//add uop5
+                                          && ctrl_ir_inst4_sdiq;
+
 assign ctrl_ir_pre_dis_inst0_viq0       = ctrl_ir_pre_dis_inst0_vld
                                           && ctrl_ir_inst0_viq0;
 assign ctrl_ir_pre_dis_inst1_viq0       = ctrl_ir_pre_dis_inst1_vld
@@ -1556,6 +1764,10 @@ assign ctrl_ir_pre_dis_inst2_viq0       = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_viq0;
 assign ctrl_ir_pre_dis_inst3_viq0       = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_viq0;
+assign ctrl_ir_pre_dis_inst4_sdiq       = ctrl_ir_pre_dis_inst4_vld//add uop5
+                                          && ctrl_ir_inst4_sdiq;
+
+
 assign ctrl_ir_pre_dis_inst0_viq01      = ctrl_ir_pre_dis_inst0_vld
                                           && ctrl_ir_inst0_viq01;
 assign ctrl_ir_pre_dis_inst1_viq01      = ctrl_ir_pre_dis_inst1_vld
@@ -1564,6 +1776,9 @@ assign ctrl_ir_pre_dis_inst2_viq01      = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_viq01;
 assign ctrl_ir_pre_dis_inst3_viq01      = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_viq01;
+assign ctrl_ir_pre_dis_inst4_viq01      = ctrl_ir_pre_dis_inst4_vld//add uop5
+                                          && ctrl_ir_inst4_viq01;
+
 assign ctrl_ir_pre_dis_inst0_viq1       = ctrl_ir_pre_dis_inst0_vld
                                           && ctrl_ir_inst0_viq1;
 assign ctrl_ir_pre_dis_inst1_viq1       = ctrl_ir_pre_dis_inst1_vld
@@ -1572,6 +1787,9 @@ assign ctrl_ir_pre_dis_inst2_viq1       = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_viq1;
 assign ctrl_ir_pre_dis_inst3_viq1       = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_viq1;
+assign ctrl_ir_pre_dis_inst4_viq1       = ctrl_ir_pre_dis_inst4_vld//add uop5
+                                          && ctrl_ir_inst4_viq1;
+
 assign ctrl_ir_pre_dis_inst0_vmb        = ctrl_ir_pre_dis_inst0_vld
                                           && ctrl_ir_inst0_vmb;
 assign ctrl_ir_pre_dis_inst1_vmb        = ctrl_ir_pre_dis_inst1_vld
@@ -1580,7 +1798,8 @@ assign ctrl_ir_pre_dis_inst2_vmb        = ctrl_ir_pre_dis_inst2_vld
                                           && ctrl_ir_inst2_vmb;
 assign ctrl_ir_pre_dis_inst3_vmb        = ctrl_ir_pre_dis_inst3_vld
                                           && ctrl_ir_inst3_vmb;
-
+assign ctrl_ir_pre_dis_inst4_vmb        = ctrl_ir_pre_dis_inst4_vld//add uop5
+                                          && ctrl_ir_inst4_vmb;//vmb？
 //----------------------------------------------------------
 //           AIQ0 and AIQ1 create enable prepare
 //----------------------------------------------------------
@@ -1588,38 +1807,81 @@ assign ctrl_ir_pre_dis_inst3_vmb        = ctrl_ir_pre_dis_inst3_vld
 assign ctrl_ir_pre_dis_al_1_aiq0_inst = ctrl_ir_pre_dis_inst0_aiq0
                                      || ctrl_ir_pre_dis_inst1_aiq0
                                      || ctrl_ir_pre_dis_inst2_aiq0
-                                     || ctrl_ir_pre_dis_inst3_aiq0;
+                                     || ctrl_ir_pre_dis_inst3_aiq0
+                                     || ctrl_ir_pre_dis_inst4_aiq0; //add uop5
+//origin logic
+/*
 assign ctrl_ir_pre_dis_al_2_aiq0_inst = 
             ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst1_aiq0
          || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst2_aiq0
          || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
          || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst2_aiq0
          || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
-         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst3_aiq0;
+         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst3_aiq0;*/
+//new logic
+assign ctrl_ir_pre_dis_al_2_aiq0_inst = 
+            ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst1_aiq0
+         || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst2_aiq0
+         || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
+         || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst4_aiq0        
+         || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst2_aiq0
+         || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
+         || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst4_aiq0         
+         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
+         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst4_aiq0  
+         || ctrl_ir_pre_dis_inst3_aiq0 && ctrl_ir_pre_dis_inst4_aiq0;                 
 //aiq1 inst number
 assign ctrl_ir_pre_dis_al_1_aiq1_inst = ctrl_ir_pre_dis_inst0_aiq1
                                      || ctrl_ir_pre_dis_inst1_aiq1
                                      || ctrl_ir_pre_dis_inst2_aiq1
-                                     || ctrl_ir_pre_dis_inst3_aiq1;
+                                     || ctrl_ir_pre_dis_inst3_aiq1
+                                     || ctrl_ir_pre_dis_inst4_aiq1;//add uop5
+/*origin logic
 assign ctrl_ir_pre_dis_al_2_aiq1_inst = 
             ctrl_ir_pre_dis_inst0_aiq1 && ctrl_ir_pre_dis_inst1_aiq1
          || ctrl_ir_pre_dis_inst0_aiq1 && ctrl_ir_pre_dis_inst2_aiq1
          || ctrl_ir_pre_dis_inst0_aiq1 && ctrl_ir_pre_dis_inst3_aiq1
          || ctrl_ir_pre_dis_inst1_aiq1 && ctrl_ir_pre_dis_inst2_aiq1
          || ctrl_ir_pre_dis_inst1_aiq1 && ctrl_ir_pre_dis_inst3_aiq1
-         || ctrl_ir_pre_dis_inst2_aiq1 && ctrl_ir_pre_dis_inst3_aiq1;
+         || ctrl_ir_pre_dis_inst2_aiq1 && ctrl_ir_pre_dis_inst3_aiq1;*/
+assign ctrl_ir_pre_dis_al_2_aiq1_inst = 
+            ctrl_ir_pre_dis_inst0_aiq1 && ctrl_ir_pre_dis_inst1_aiq1
+         || ctrl_ir_pre_dis_inst0_aiq1 && ctrl_ir_pre_dis_inst2_aiq1
+         || ctrl_ir_pre_dis_inst0_aiq1 && ctrl_ir_pre_dis_inst3_aiq1
+         || ctrl_ir_pre_dis_inst0_aiq1 && ctrl_ir_pre_dis_inst4_aiq1        
+         || ctrl_ir_pre_dis_inst1_aiq1 && ctrl_ir_pre_dis_inst2_aiq1
+         || ctrl_ir_pre_dis_inst1_aiq1 && ctrl_ir_pre_dis_inst3_aiq1
+         || ctrl_ir_pre_dis_inst1_aiq1 && ctrl_ir_pre_dis_inst4_aiq1         
+         || ctrl_ir_pre_dis_inst2_aiq1 && ctrl_ir_pre_dis_inst3_aiq1
+         || ctrl_ir_pre_dis_inst2_aiq1 && ctrl_ir_pre_dis_inst4_aiq1  
+         || ctrl_ir_pre_dis_inst3_aiq1 && ctrl_ir_pre_dis_inst4_aiq1;      
+
 //aiq01 inst number
 assign ctrl_ir_pre_dis_al_1_aiq01_inst = ctrl_ir_pre_dis_inst0_aiq01
                                       || ctrl_ir_pre_dis_inst1_aiq01
                                       || ctrl_ir_pre_dis_inst2_aiq01
-                                      || ctrl_ir_pre_dis_inst3_aiq01;
+                                      || ctrl_ir_pre_dis_inst3_aiq01
+                                      || ctrl_ir_pre_dis_inst4_aiq01;//add uop5
+/* origin logic
 assign ctrl_ir_pre_dis_al_2_aiq01_inst = 
             ctrl_ir_pre_dis_inst0_aiq01 && ctrl_ir_pre_dis_inst1_aiq01
          || ctrl_ir_pre_dis_inst0_aiq01 && ctrl_ir_pre_dis_inst2_aiq01
          || ctrl_ir_pre_dis_inst0_aiq01 && ctrl_ir_pre_dis_inst3_aiq01
          || ctrl_ir_pre_dis_inst1_aiq01 && ctrl_ir_pre_dis_inst2_aiq01
          || ctrl_ir_pre_dis_inst1_aiq01 && ctrl_ir_pre_dis_inst3_aiq01
-         || ctrl_ir_pre_dis_inst2_aiq01 && ctrl_ir_pre_dis_inst3_aiq01;
+         || ctrl_ir_pre_dis_inst2_aiq01 && ctrl_ir_pre_dis_inst3_aiq01;*/
+assign ctrl_ir_pre_dis_al_2_aiq01_inst = 
+            ctrl_ir_pre_dis_inst0_aiq01 && ctrl_ir_pre_dis_inst1_aiq01
+         || ctrl_ir_pre_dis_inst0_aiq01 && ctrl_ir_pre_dis_inst2_aiq01
+         || ctrl_ir_pre_dis_inst0_aiq01 && ctrl_ir_pre_dis_inst3_aiq01
+         || ctrl_ir_pre_dis_inst0_aiq01 && ctrl_ir_pre_dis_inst4_aiq01        
+         || ctrl_ir_pre_dis_inst1_aiq01 && ctrl_ir_pre_dis_inst2_aiq01
+         || ctrl_ir_pre_dis_inst1_aiq01 && ctrl_ir_pre_dis_inst3_aiq01
+         || ctrl_ir_pre_dis_inst1_aiq01 && ctrl_ir_pre_dis_inst4_aiq01         
+         || ctrl_ir_pre_dis_inst2_aiq01 && ctrl_ir_pre_dis_inst3_aiq01
+         || ctrl_ir_pre_dis_inst2_aiq01 && ctrl_ir_pre_dis_inst4_aiq01  
+         || ctrl_ir_pre_dis_inst3_aiq01 && ctrl_ir_pre_dis_inst4_aiq01;      
+//add new condition
 assign ctrl_ir_pre_dis_al_3_aiq01_inst =
                ctrl_ir_pre_dis_inst0_aiq01
             && ctrl_ir_pre_dis_inst1_aiq01
@@ -1627,12 +1889,40 @@ assign ctrl_ir_pre_dis_al_3_aiq01_inst =
          ||    ctrl_ir_pre_dis_inst0_aiq01
             && ctrl_ir_pre_dis_inst1_aiq01
             && ctrl_ir_pre_dis_inst3_aiq01
+
+         ||    ctrl_ir_pre_dis_inst0_aiq01//add logic
+            && ctrl_ir_pre_dis_inst1_aiq01
+            && ctrl_ir_pre_dis_inst4_aiq01
+
          ||    ctrl_ir_pre_dis_inst0_aiq01
             && ctrl_ir_pre_dis_inst2_aiq01
             && ctrl_ir_pre_dis_inst3_aiq01
+            
+         ||    ctrl_ir_pre_dis_inst0_aiq01//add new logic
+            && ctrl_ir_pre_dis_inst2_aiq01
+            && ctrl_ir_pre_dis_inst4_aiq01
+
+         ||    ctrl_ir_pre_dis_inst0_aiq01//add new logic
+            && ctrl_ir_pre_dis_inst3_aiq01
+            && ctrl_ir_pre_dis_inst4_aiq01
+
          ||    ctrl_ir_pre_dis_inst1_aiq01
             && ctrl_ir_pre_dis_inst2_aiq01
-            && ctrl_ir_pre_dis_inst3_aiq01;
+            && ctrl_ir_pre_dis_inst3_aiq01
+
+         ||    ctrl_ir_pre_dis_inst1_aiq01//add new logic
+            && ctrl_ir_pre_dis_inst2_aiq01
+            && ctrl_ir_pre_dis_inst4_aiq01
+
+         ||    ctrl_ir_pre_dis_inst1_aiq01//add new logic
+            && ctrl_ir_pre_dis_inst3_aiq01
+            && ctrl_ir_pre_dis_inst4_aiq01
+
+         ||    ctrl_ir_pre_dis_inst2_aiq01//add new logic
+            && ctrl_ir_pre_dis_inst3_aiq01
+            && ctrl_ir_pre_dis_inst4_aiq01;
+
+//此处需要修改逻辑  tudo
 assign ctrl_ir_pre_dis_al_4_aiq01_inst = ctrl_ir_pre_dis_inst0_aiq01
                                       && ctrl_ir_pre_dis_inst1_aiq01
                                       && ctrl_ir_pre_dis_inst2_aiq01
@@ -1651,14 +1941,16 @@ assign ctrl_ir_pre_dis_aiq0_create1_en =
             ctrl_ir_pre_dis_al_2_aiq0_inst
          || ctrl_ir_pre_dis_al_1_aiq01_inst
             && (ctrl_ir_pre_dis_al_1_aiq0_inst && ctrl_ir_pre_dis_al_1_aiq1_inst)
+
          || ctrl_ir_pre_dis_al_2_aiq01_inst
             && (ctrl_ir_pre_dis_al_1_aiq0_inst || ctrl_ir_pre_dis_al_1_aiq1_inst)
+
          || ctrl_ir_pre_dis_al_3_aiq01_inst;
 //aiq1 create0 enable
 assign ctrl_ir_pre_dis_aiq1_create0_en =
             ctrl_ir_pre_dis_al_1_aiq1_inst
          || ctrl_ir_pre_dis_al_1_aiq0_inst
-            && ctrl_ir_pre_dis_al_1_aiq01_inst
+            && ctrl_ir_pre_dis_al_1_aiq01_inst//1个aiq0 一个aiq01 ，aiq01会分配给aiq1
          || ctrl_ir_pre_dis_al_2_aiq01_inst;
 //aiq1 create1 enable1
 assign ctrl_ir_pre_dis_aiq1_create1_en =
@@ -1676,76 +1968,182 @@ assign ctrl_ir_pre_dis_aiq1_create1_en =
 //                  AIQ0 create 0 select
 //----------------------------------------------------------
 //AIQ0 create0 select
+
+//add uop5 logic
 assign ctrl_ir_pre_dis_aiq0_create0_sel_inst0 =
               ctrl_ir_pre_dis_inst0_aiq0
            || ctrl_ir_pre_dis_inst0_aiq01
               && !(ctrl_ir_pre_dis_inst1_aiq0
                 || ctrl_ir_pre_dis_inst2_aiq0
-                || ctrl_ir_pre_dis_inst3_aiq0);
+                || ctrl_ir_pre_dis_inst3_aiq0
+                || ctrl_ir_pre_dis_inst4_aiq0//add uop5
+                );
 assign ctrl_ir_pre_dis_aiq0_create0_sel_inst1 =
               ctrl_ir_pre_dis_inst1_aiq0
            || ctrl_ir_pre_dis_inst1_aiq01
               && !(ctrl_ir_pre_dis_inst2_aiq0
-                || ctrl_ir_pre_dis_inst3_aiq0);
+                || ctrl_ir_pre_dis_inst3_aiq0
+                || ctrl_ir_pre_dis_inst4_aiq0//add uop5
+                );
 assign ctrl_ir_pre_dis_aiq0_create0_sel_inst2 =
               ctrl_ir_pre_dis_inst2_aiq0
            || ctrl_ir_pre_dis_inst2_aiq01
-              && !ctrl_ir_pre_dis_inst3_aiq0;
+              && !ctrl_ir_pre_dis_inst3_aiq0
+              && !ctrl_ir_pre_dis_inst4_aiq0//add uop5
+              ;
+//add sel uop4 logic
+assign ctrl_ir_pre_dis_aiq0_create0_sel_inst3 =
+              ctrl_ir_pre_dis_inst3_aiq0
+           || ctrl_ir_pre_dis_inst3_aiq01
+              && !ctrl_ir_pre_dis_inst4_aiq0//add uop5
+              ;
+
 // &CombBeg; @862
+
+//add new logic 扩展标志位
 always @( ctrl_ir_pre_dis_aiq0_create0_sel_inst0
        or ctrl_ir_pre_dis_aiq0_create0_sel_inst2
-       or ctrl_ir_pre_dis_aiq0_create0_sel_inst1)
+       or ctrl_ir_pre_dis_aiq0_create0_sel_inst1
+       or ctrl_ir_pre_dis_aiq0_create0_sel_inst3)
 begin
   if(ctrl_ir_pre_dis_aiq0_create0_sel_inst0)
-    ctrl_ir_pre_dis_aiq0_create0_sel[1:0] = 2'd0; //sel inst 0
+    ctrl_ir_pre_dis_aiq0_create0_sel[2:0] = 2'd0; //sel inst 0
   else if(ctrl_ir_pre_dis_aiq0_create0_sel_inst1)
-    ctrl_ir_pre_dis_aiq0_create0_sel[1:0] = 2'd1; //sel inst 1
+    ctrl_ir_pre_dis_aiq0_create0_sel[2:0] = 2'd1; //sel inst 1
   else if(ctrl_ir_pre_dis_aiq0_create0_sel_inst2)
-    ctrl_ir_pre_dis_aiq0_create0_sel[1:0] = 2'd2; //sel inst 2
+    ctrl_ir_pre_dis_aiq0_create0_sel[2:0] = 2'd2; //sel inst 2
+  else if (ctrl_ir_pre_dis_aiq0_create0_sel_inst3)//add new logic       //sel inst 3
+    ctrl_ir_pre_dis_aiq0_create0_sel[2:0] = 2'd3;
   else
-    ctrl_ir_pre_dis_aiq0_create0_sel[1:0] = 2'd3; //sel inst 3
+    ctrl_ir_pre_dis_aiq0_create0_sel[2:0] = 2'd4；
 // &CombEnd; @871
 end
 
 //----------------------------------------------------------
 //                  AIQ0 create 1 select
 //----------------------------------------------------------
-assign ctrl_ir_pre_dis_inst123_aiq0 = ctrl_ir_pre_dis_inst1_aiq0
+//origin logic
+/*assign ctrl_ir_pre_dis_inst123_aiq0 = ctrl_ir_pre_dis_inst1_aiq0
                                    || ctrl_ir_pre_dis_inst2_aiq0
-                                   || ctrl_ir_pre_dis_inst3_aiq0;
+                                   || ctrl_ir_pre_dis_inst3_aiq0;*/
+//判断1234中有无 aiq0类型的
+assign ctrl_ir_pre_dis_inst1234_aiq0 = ctrl_ir_pre_dis_inst1_aiq0
+                                   || ctrl_ir_pre_dis_inst2_aiq0
+                                   || ctrl_ir_pre_dis_inst3_aiq0
+                                   || ctrl_ir_pre_dis_inst4_aiq0;
+/*
 assign ctrl_ir_pre_dis_inst123_aiq1 = ctrl_ir_pre_dis_inst1_aiq1
                                    || ctrl_ir_pre_dis_inst2_aiq1
-                                   || ctrl_ir_pre_dis_inst3_aiq1;
+                                   || ctrl_ir_pre_dis_inst3_aiq1;*/
+//判断1234中有无 aiq1类型的
+assign ctrl_ir_pre_dis_inst1234_aiq1 = ctrl_ir_pre_dis_inst1_aiq1
+                                    || ctrl_ir_pre_dis_inst2_aiq1
+                                    || ctrl_ir_pre_dis_inst3_aiq1
+                                    || ctrl_ir_pre_dis_inst4_aiq1;
+/*origin logic
 assign ctrl_ir_pre_dis_inst023_aiq0 = ctrl_ir_pre_dis_inst0_aiq0
                                    || ctrl_ir_pre_dis_inst2_aiq0
-                                   || ctrl_ir_pre_dis_inst3_aiq0;
+                                   || ctrl_ir_pre_dis_inst3_aiq0;*/
+//new logic
+assign ctrl_ir_pre_dis_inst0234_aiq0 = ctrl_ir_pre_dis_inst0_aiq0
+                                   || ctrl_ir_pre_dis_inst2_aiq0
+                                   || ctrl_ir_pre_dis_inst3_aiq0
+                                   || ctrl_ir_pre_dis_inst4_aiq0;
+/*origin logic
 assign ctrl_ir_pre_dis_inst023_aiq1 = ctrl_ir_pre_dis_inst0_aiq1
                                    || ctrl_ir_pre_dis_inst2_aiq1
-                                   || ctrl_ir_pre_dis_inst3_aiq1;
+                                   || ctrl_ir_pre_dis_inst3_aiq1;*/
+//new logic
+assign ctrl_ir_pre_dis_inst0234_aiq1 = ctrl_ir_pre_dis_inst0_aiq1
+                                   || ctrl_ir_pre_dis_inst2_aiq1
+                                   || ctrl_ir_pre_dis_inst3_aiq1
+                                   || ctrl_ir_pre_dis_inst4_aiq1;
+//add uop5 logic
+//origin logic
+/*
 assign ctrl_ir_pre_dis_inst013_aiq0 = ctrl_ir_pre_dis_inst0_aiq0
-                                   || ctrl_ir_pre_dis_inst1_aiq0
-                                   || ctrl_ir_pre_dis_inst3_aiq0;
-assign ctrl_ir_pre_dis_inst013_aiq1 = ctrl_ir_pre_dis_inst0_aiq1
+                                    || ctrl_ir_pre_dis_inst1_aiq0
+                                    || ctrl_ir_pre_dis_inst3_aiq0;
+*/
+assign ctrl_ir_pre_dis_inst0134_aiq0 = ctrl_ir_pre_dis_inst0_aiq0
+                                    || ctrl_ir_pre_dis_inst1_aiq0
+                                    || ctrl_ir_pre_dis_inst3_aiq0
+                                    || ctrl_ir_pre_dis_inst4_aiq0;
+//add uop5 logic
+//origin logic 
+/*assign ctrl_ir_pre_dis_inst0134_aiq1 = ctrl_ir_pre_dis_inst0_aiq1
                                    || ctrl_ir_pre_dis_inst1_aiq1
-                                   || ctrl_ir_pre_dis_inst3_aiq1;
-assign ctrl_ir_pre_dis_inst123_2_aiq0 =
+                                   || ctrl_ir_pre_dis_inst3_aiq1;*/
+
+assign ctrl_ir_pre_dis_inst0134_aiq1 = ctrl_ir_pre_dis_inst0_aiq1
+                                   || ctrl_ir_pre_dis_inst1_aiq1
+                                   || ctrl_ir_pre_dis_inst3_aiq1
+                                   || ctrl_ir_pre_dis_inst4_aiq1;
+//origin logic                                  
+/*assign ctrl_ir_pre_dis_inst123_2_aiq0 =
             ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst2_aiq0
          || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
-         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst3_aiq0;
+         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst3_aiq0;*/
+
+
+ assign ctrl_ir_pre_dis_inst1234_2_aiq0 =
+            ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst2_aiq0
+         || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
+         || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst4_aiq0        
+         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
+         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst4_aiq0
+         || ctrl_ir_pre_dis_inst3_aiq0 && ctrl_ir_pre_dis_inst4_aiq0;
+/*
 assign ctrl_ir_pre_dis_inst023_2_aiq0 =
             ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst2_aiq0
          || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
-         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst3_aiq0;
+         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst3_aiq0;*/
+//new logic 0234里面有两条aiq0类型的
+assign ctrl_ir_pre_dis_inst0234_2_aiq0 =
+            ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst2_aiq0
+         || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
+         || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst4_aiq0
+         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
+         || ctrl_ir_pre_dis_inst2_aiq0 && ctrl_ir_pre_dis_inst4_aiq0
+         || ctrl_ir_pre_dis_inst3_aiq0 && ctrl_ir_pre_dis_inst4_aiq0;
+
+//origin logic
+/*
 assign ctrl_ir_pre_dis_inst013_2_aiq0 =
             ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst1_aiq0
          || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
-         || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst3_aiq0;
+         || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst3_aiq0;*/
+//new logic
+assign ctrl_ir_pre_dis_inst0134_2_aiq0 =
+            ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst1_aiq0
+         || ctrl_ir_pre_dis_inst0_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
+         || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst3_aiq0
+         || ctrl_ir_pre_dis_inst1_aiq0 && ctrl_ir_pre_dis_inst4_aiq0;
 
 //AIQ0 create1 select
+/*
 assign ctrl_ir_pre_dis_aiq0_create1_sel_inst0 =
               ctrl_ir_pre_dis_inst0_aiq01
               && ctrl_ir_pre_dis_inst123_aiq0 && ctrl_ir_pre_dis_inst123_aiq1
-              && !ctrl_ir_pre_dis_inst123_2_aiq0;
+              && !ctrl_ir_pre_dis_inst123_2_aiq0;*/
+//原逻辑：aiq0 c1如果是inst0 ，需要：
+//inst0是aiq01类型的且 inst123中有aiq0和aiq1类型的
+//如果没有inst1类型的那inst0会分配给aiq1
+//且123中不能有两条aiq0类型的
+
+//新逻辑 
+assign ctrl_ir_pre_dis_aiq0_create1_sel_inst0 =
+              ctrl_ir_pre_dis_inst0_aiq01
+              && ctrl_ir_pre_dis_inst1234_aiq0 && ctrl_ir_pre_dis_inst1234_aiq1
+              && !ctrl_ir_pre_dis_inst1234_2_aiq0;
+//原逻辑: aiq0 create1 sel inst1 需要：
+//1.uop0和uop1 都是aiq0类型的
+//2.uop1是 aiq01类型时，
+  //023中有aiq0和aiq1
+  // ||023中有aiq0 且inst0是aiq01
+  // ||023中有aiq1 且inst0是aiq01
+  //  且 023中没有两个aiq0
+  /*
 assign ctrl_ir_pre_dis_aiq0_create1_sel_inst1 =
               ctrl_ir_pre_dis_inst1_aiq0
               && ctrl_ir_pre_dis_inst0_aiq0
@@ -1753,17 +2151,62 @@ assign ctrl_ir_pre_dis_aiq0_create1_sel_inst1 =
               && (ctrl_ir_pre_dis_inst023_aiq0 && ctrl_ir_pre_dis_inst023_aiq1
                || ctrl_ir_pre_dis_inst023_aiq0 && ctrl_ir_pre_dis_inst0_aiq01
                || ctrl_ir_pre_dis_inst023_aiq1 && ctrl_ir_pre_dis_inst0_aiq01)
-              && !ctrl_ir_pre_dis_inst023_2_aiq0;
+              && !ctrl_ir_pre_dis_inst023_2_aiq0;*/
+//修改的新逻辑为
+//1.uop0和uop1 都是aiq0类型的
+//2.uop1是 aiq01类型时，
+  //0234中有aiq0且0234中有inst1
+  // || 0234中有aiq0且uop0是aiq01
+  // || 0234中有aiq1且uop0是aiq01
+  //且inst0234中没有两个aiq0
+
+  assign ctrl_ir_pre_dis_aiq0_create1_sel_inst1 =
+              ctrl_ir_pre_dis_inst1_aiq0
+              && ctrl_ir_pre_dis_inst0_aiq0
+           || ctrl_ir_pre_dis_inst1_aiq01
+              && (ctrl_ir_pre_dis_inst0234_aiq0 && ctrl_ir_pre_dis_inst0234_aiq1
+               || ctrl_ir_pre_dis_inst0234_aiq0 && ctrl_ir_pre_dis_inst0_aiq01
+               || ctrl_ir_pre_dis_inst0234_aiq1 && ctrl_ir_pre_dis_inst0_aiq01)
+              && !ctrl_ir_pre_dis_inst0234_2_aiq0;  
+
+
+//原逻辑： aiq0 c1 sel uop3时逻辑为
+//1.inst2 是aiq0 且inst0或者inst1是 aiq0类型的
+//2.inst2 是aiq01类型的 且inst013中没有两个aiq0类型的
+//   inst013 有aiq0且有aiq1类型的
+//   ||inst013有aiq0类型的或者013有aiq1类型的 且inst0或者inst1是aiq01类型的
+//   ||inst0是aiq01且inst1是aiq01 
+//也就是说
+//分配优先级
+// aiq0 c0 >aiq1c0 >aiq0c1>aiq1c1
+/*
 assign ctrl_ir_pre_dis_aiq0_create1_sel_inst2 =
               ctrl_ir_pre_dis_inst2_aiq0
               && (ctrl_ir_pre_dis_inst1_aiq0
                || ctrl_ir_pre_dis_inst0_aiq0)
-           || ctrl_ir_pre_dis_inst2_aiq01
+           || ctrl_ir_pre_dis_inst2_aiq01  
               && (ctrl_ir_pre_dis_inst013_aiq0 && ctrl_ir_pre_dis_inst013_aiq1
               || (ctrl_ir_pre_dis_inst013_aiq0 || ctrl_ir_pre_dis_inst013_aiq1)
-                 && (ctrl_ir_pre_dis_inst0_aiq01 || ctrl_ir_pre_dis_inst1_aiq01)
+               && (ctrl_ir_pre_dis_inst0_aiq01 || ctrl_ir_pre_dis_inst1_aiq01)
               || (ctrl_ir_pre_dis_inst0_aiq01 && ctrl_ir_pre_dis_inst1_aiq01))
-              && !ctrl_ir_pre_dis_inst013_2_aiq0;
+           && !ctrl_ir_pre_dis_inst013_2_aiq0;*/
+//new logic
+//1.inst2 是aiq0 且inst0或者inst1是 aiq0类型的
+//2.inst2 是aiq01类型的 且inst0134中没有两个aiq0类型的
+//   inst0134 有aiq0且有aiq1类型的
+//   ||inst0134有aiq0类型的或者0134有aiq1类型的 且inst0或者inst1是aiq01类型的
+//   ||inst0是aiq01且inst1是aiq01 
+assign ctrl_ir_pre_dis_aiq0_create1_sel_inst2 =
+              ctrl_ir_pre_dis_inst2_aiq0
+              && (ctrl_ir_pre_dis_inst1_aiq0
+               || ctrl_ir_pre_dis_inst0_aiq0)
+           || ctrl_ir_pre_dis_inst2_aiq01  
+              && (ctrl_ir_pre_dis_inst0134_aiq0 && ctrl_ir_pre_dis_inst0134_aiq1
+              || (ctrl_ir_pre_dis_inst0134_aiq0 || ctrl_ir_pre_dis_inst0134_aiq1)
+               && (ctrl_ir_pre_dis_inst0_aiq01 || ctrl_ir_pre_dis_inst1_aiq01)
+              || (ctrl_ir_pre_dis_inst0_aiq01 && ctrl_ir_pre_dis_inst1_aiq01))
+           && !ctrl_ir_pre_dis_inst0134_2_aiq0;
+
 // &CombBeg; @930
 always @( ctrl_ir_pre_dis_aiq0_create1_sel_inst1
        or ctrl_ir_pre_dis_aiq0_create1_sel_inst2

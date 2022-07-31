@@ -1154,6 +1154,7 @@ assign retire_rob_srt_en = retire_srt_en
                            || rob_retire_ctc_flush_srt_en;
 assign rtu_idu_srt_en    = retire_srt_en;
 
+//tudo
 //==========================================================
 //                   Retire valid signals
 //==========================================================

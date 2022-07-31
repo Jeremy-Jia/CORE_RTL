@@ -1,9 +1,9 @@
 /*Copyright 2019-2021 T-Head Semiconductor Co., Ltd.
-xxxxxxxx
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-test
+
     http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
@@ -162,12 +162,12 @@ output         ctrl_dp_id_debug_id_pipedown3;  //？
 output         ctrl_dp_id_inst0_vld;              
 output         ctrl_dp_id_inst1_vld;              
 output         ctrl_dp_id_inst2_vld; 
-output         ctrl_dp_id_inst3_vld;
+//output         ctrl_dp_id_inst3_vld;
 
 output         ctrl_dp_id_pipedown_1_inst;        
 output         ctrl_dp_id_pipedown_2_inst;        
 output         ctrl_dp_id_pipedown_3_inst; 
-output         ctrl_dp_id_pipedown_4_inst; 
+//output         ctrl_dp_id_pipedown_4_inst; 
 
 output         ctrl_dp_id_stall;                  
 output         ctrl_fence_id_inst_vld;            
@@ -185,7 +185,7 @@ output         ctrl_split_long_id_stall;
 output         ctrl_top_id_inst0_vld;             
 output         ctrl_top_id_inst1_vld;             
 output         ctrl_top_id_inst2_vld;  
-output         ctrl_top_id_inst3_vld;   
+//output         ctrl_top_id_inst3_vld;   
 
 output         idu_had_id_inst0_vld;              
 output         idu_had_id_inst1_vld;              
@@ -201,7 +201,7 @@ output         idu_ifu_id_stall;
 reg            ctrl_id_pipedown_inst1_vld;        
 reg            ctrl_id_pipedown_inst2_vld;        
 reg            ctrl_id_pipedown_inst3_vld;   
-reg            ctrl_id_pipedown_inst3_vld; 
+//reg            ctrl_id_pipedown_inst3_vld; 
 
 reg            debug_id_inst0_vld;                
 reg            debug_id_inst1_vld;                
