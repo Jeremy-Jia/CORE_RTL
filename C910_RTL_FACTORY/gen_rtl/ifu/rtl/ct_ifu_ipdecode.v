@@ -503,7 +503,7 @@ wire    [23:0]  ipdecode_ipdp_vsew;
 //==========================================================
 //                split & Fence Predecode
 //==========================================================
-assign h0_inst[31:0] = {h1_data[15:0],h0_data[15:0]};
+assign h0_inst[31:0] = {h1_data[15:0],h0_data[15:0]};//jeremy  h0 is is update to last h8 the next cycle
 assign h1_inst[31:0] = {h2_data[15:0],h1_data[15:0]};
 assign h2_inst[31:0] = {h3_data[15:0],h2_data[15:0]};
 assign h3_inst[31:0] = {h4_data[15:0],h3_data[15:0]};

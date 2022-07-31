@@ -617,7 +617,26 @@ input   [3 :0]  ibuf_ibdp_bypass_inst2_vec;
 input   [7 :0]  ibuf_ibdp_bypass_inst2_vl;       
 input           ibuf_ibdp_bypass_inst2_vl_pred;  
 input   [1 :0]  ibuf_ibdp_bypass_inst2_vlmul;    
-input   [2 :0]  ibuf_ibdp_bypass_inst2_vsew;     
+input   [2 :0]  ibuf_ibdp_bypass_inst2_vsew;
+//jeremy add bypass ins3     
+input   [31:0]  ibuf_ibdp_bypass_inst3;          
+input           ibuf_ibdp_bypass_inst3_bkpta;    
+input           ibuf_ibdp_bypass_inst3_bkptb;    
+input           ibuf_ibdp_bypass_inst3_ecc_err;  
+input           ibuf_ibdp_bypass_inst3_expt;     
+input           ibuf_ibdp_bypass_inst3_fence;    
+input           ibuf_ibdp_bypass_inst3_high_expt; 
+input           ibuf_ibdp_bypass_inst3_no_spec;  
+input   [14:0]  ibuf_ibdp_bypass_inst3_pc;       
+input           ibuf_ibdp_bypass_inst3_split0;   
+input           ibuf_ibdp_bypass_inst3_split1;   
+input           ibuf_ibdp_bypass_inst3_valid;    
+input   [3 :0]  ibuf_ibdp_bypass_inst3_vec;      
+input   [7 :0]  ibuf_ibdp_bypass_inst3_vl;       
+input           ibuf_ibdp_bypass_inst3_vl_pred;  
+input   [1 :0]  ibuf_ibdp_bypass_inst3_vlmul;    
+input   [2 :0]  ibuf_ibdp_bypass_inst3_vsew;
+
 input   [31:0]  ibuf_ibdp_inst0;                 
 input           ibuf_ibdp_inst0_bkpta;           
 input           ibuf_ibdp_inst0_bkptb;           
@@ -668,7 +687,26 @@ input   [3 :0]  ibuf_ibdp_inst2_vec;
 input   [7 :0]  ibuf_ibdp_inst2_vl;              
 input           ibuf_ibdp_inst2_vl_pred;         
 input   [1 :0]  ibuf_ibdp_inst2_vlmul;           
-input   [2 :0]  ibuf_ibdp_inst2_vsew;            
+input   [2 :0]  ibuf_ibdp_inst2_vsew; 
+//jeremy add ibdp inst3, needed add to port list
+input   [31:0]  ibuf_ibdp_inst3;                 
+input           ibuf_ibdp_inst3_bkpta;           
+input           ibuf_ibdp_inst3_bkptb;           
+input           ibuf_ibdp_inst3_ecc_err;         
+input           ibuf_ibdp_inst3_expt_vld;        
+input           ibuf_ibdp_inst3_fence;           
+input           ibuf_ibdp_inst3_high_expt;       
+input           ibuf_ibdp_inst3_no_spec;         
+input   [14:0]  ibuf_ibdp_inst3_pc;              
+input           ibuf_ibdp_inst3_split0;          
+input           ibuf_ibdp_inst3_split1;          
+input           ibuf_ibdp_inst3_valid;           
+input   [3 :0]  ibuf_ibdp_inst3_vec;             
+input   [7 :0]  ibuf_ibdp_inst3_vl;              
+input           ibuf_ibdp_inst3_vl_pred;         
+input   [1 :0]  ibuf_ibdp_inst3_vlmul;           
+input   [2 :0]  ibuf_ibdp_inst3_vsew; 
+
 input           ipctrl_ibdp_expt_vld;            
 input           ipctrl_ibdp_vld;                 
 input   [1 :0]  ipdp_ibdp_bht_pre_result;        
@@ -848,7 +886,20 @@ input           lbuf_ibdp_inst2_split1;
 input           lbuf_ibdp_inst2_valid;           
 input   [7 :0]  lbuf_ibdp_inst2_vl;              
 input   [1 :0]  lbuf_ibdp_inst2_vlmul;           
-input   [2 :0]  lbuf_ibdp_inst2_vsew;            
+input   [2 :0]  lbuf_ibdp_inst2_vsew; 
+//jeremy add for loop buffer inst3
+input   [31:0]  lbuf_ibdp_inst3;                 
+input           lbuf_ibdp_inst3_bkpta;           
+input           lbuf_ibdp_inst3_bkptb;           
+input           lbuf_ibdp_inst3_fence;           
+input   [14:0]  lbuf_ibdp_inst3_pc;              
+input           lbuf_ibdp_inst3_split0;          
+input           lbuf_ibdp_inst3_split1;          
+input           lbuf_ibdp_inst3_valid;           
+input   [7 :0]  lbuf_ibdp_inst3_vl;              
+input   [1 :0]  lbuf_ibdp_inst3_vlmul;           
+input   [2 :0]  lbuf_ibdp_inst3_vsew; 
+
 input           pad_yy_icg_scan_en;              
 input   [7 :0]  pcfifo_if_ibdp_over_mask;        
 output  [38:0]  ibdp_addrgen_branch_base;        
@@ -864,7 +915,9 @@ output  [15:0]  ibdp_addrgen_l0_btb_hit_entry;
 output          ibdp_btb_miss;                   
 output          ibdp_debug_inst0_vld;            
 output          ibdp_debug_inst1_vld;            
-output          ibdp_debug_inst2_vld;            
+output          ibdp_debug_inst2_vld; 
+//jeremy add debug inst3, needed add to port list
+output          ibdp_debug_inst3_vld;           
 output          ibdp_debug_mmu_deny_vld;         
 output  [7 :0]  ibdp_ibctrl_chgflw_vl;           
 output  [1 :0]  ibdp_ibctrl_chgflw_vlmul;        
@@ -1070,7 +1123,10 @@ output          ifu_idu_ib_inst0_vld;
 output  [72:0]  ifu_idu_ib_inst1_data;           
 output          ifu_idu_ib_inst1_vld;            
 output  [72:0]  ifu_idu_ib_inst2_data;           
-output          ifu_idu_ib_inst2_vld;            
+output          ifu_idu_ib_inst2_vld;
+//jeremy todo add ifu-ib output inst3,send to idu
+output  [72:0]  ifu_idu_ib_inst3_data;           
+output          ifu_idu_ib_inst3_vld;              
 output          l0_btb_update_vld_for_gateclk;   
 
 // &Regs; @24
@@ -1185,7 +1241,8 @@ wire            ibdp_con_br_inst_32;
 wire    [20:0]  ibdp_con_br_offset;              
 wire            ibdp_debug_inst0_vld;            
 wire            ibdp_debug_inst1_vld;            
-wire            ibdp_debug_inst2_vld;            
+wire            ibdp_debug_inst2_vld; 
+wire            ibdp_debug_inst3_vld;            
 wire            ibdp_debug_mmu_deny_vld;         
 wire            ibdp_h0_32_start;                
 wire            ibdp_h0_bkpta;                   
@@ -2548,19 +2605,28 @@ always @( ibuf_ibdp_inst1[31:0]
        or lbuf_ibdp_inst2_split0
        or ibuf_ibdp_bypass_inst0_valid
        or lbuf_ibdp_inst1_fence
-       or bypass_inst_vld)
+       or bypass_inst_vld
+       //jeremy todo : add sensitive port list
+       )
 begin
+//jeremy  add this logic:
+//3'b100: data from bypass
+//3'b010: data from ibuf
+//3'b001: data from lbuf
 case({bypass_inst_vld,ibuf_inst_vld,lbuf_inst_vld})
- 3'b100: begin
+ 3'b100: begin//data come from bypass
          inst0[31:0]      = ibuf_ibdp_bypass_inst0[31:0];
          inst1[31:0]      = ibuf_ibdp_bypass_inst1[31:0];
          inst2[31:0]      = ibuf_ibdp_bypass_inst2[31:0];
+         inst3[31:0]      = ibuf_ibdp_bypass_inst3[31:0];
          inst0_pc[14:0]   = ibuf_ibdp_bypass_inst0_pc[14:0];
          inst1_pc[14:0]   = ibuf_ibdp_bypass_inst1_pc[14:0];
          inst2_pc[14:0]   = ibuf_ibdp_bypass_inst2_pc[14:0];
+         inst3_pc[14:0]   = ibuf_ibdp_bypass_inst3_pc[14:0];
          inst0_vld        = ibuf_ibdp_bypass_inst0_valid;
          inst1_vld        = ibuf_ibdp_bypass_inst1_valid;
          inst2_vld        = ibuf_ibdp_bypass_inst2_valid;
+         inst3_vld        = ibuf_ibdp_bypass_inst3_valid;
          inst0_expt_vld   = ibuf_ibdp_bypass_inst0_expt;
          inst0_vec[3:0]   = ibuf_ibdp_bypass_inst0_vec[3:0];
          inst0_high_expt  = ibuf_ibdp_bypass_inst0_high_expt;
@@ -2573,47 +2639,64 @@ case({bypass_inst_vld,ibuf_inst_vld,lbuf_inst_vld})
          inst2_vec[3:0]   = ibuf_ibdp_bypass_inst2_vec[3:0];
          inst2_high_expt  = ibuf_ibdp_bypass_inst2_high_expt;
          inst2_ecc_err    = ibuf_ibdp_bypass_inst2_ecc_err;
+         inst3_expt_vld   = ibuf_ibdp_bypass_inst3_expt;
+         inst3_vec[3:0]   = ibuf_ibdp_bypass_inst3_vec[3:0];
+         inst3_high_expt  = ibuf_ibdp_bypass_inst3_high_expt;
+         inst3_ecc_err    = ibuf_ibdp_bypass_inst3_ecc_err;
          inst0_split1     = ibuf_ibdp_bypass_inst0_split1;
          inst1_split1     = ibuf_ibdp_bypass_inst1_split1;
-         inst2_split1     = ibuf_ibdp_bypass_inst2_split1;  
+         inst2_split1     = ibuf_ibdp_bypass_inst2_split1; 
+         inst3_split1     = ibuf_ibdp_bypass_inst3_split1;  
          inst0_split0     = ibuf_ibdp_bypass_inst0_split0;
          inst1_split0     = ibuf_ibdp_bypass_inst1_split0;
-         inst2_split0     = ibuf_ibdp_bypass_inst2_split0;  
+         inst2_split0     = ibuf_ibdp_bypass_inst2_split0; 
+         inst3_split0     = ibuf_ibdp_bypass_inst3_split0;
          inst0_fence      = ibuf_ibdp_bypass_inst0_fence;
          inst1_fence      = ibuf_ibdp_bypass_inst1_fence;
          inst2_fence      = ibuf_ibdp_bypass_inst2_fence;  
+         inst3_fence      = ibuf_ibdp_bypass_inst3_fence;  
          inst0_bkpta      = ibuf_ibdp_bypass_inst0_bkpta;
          inst1_bkpta      = ibuf_ibdp_bypass_inst1_bkpta;
-         inst2_bkpta      = ibuf_ibdp_bypass_inst2_bkpta;  
+         inst2_bkpta      = ibuf_ibdp_bypass_inst2_bkpta;
+         inst3_bkpta      = ibuf_ibdp_bypass_inst3_bkpta;
          inst0_bkptb      = ibuf_ibdp_bypass_inst0_bkptb;
          inst1_bkptb      = ibuf_ibdp_bypass_inst1_bkptb;
-         inst2_bkptb      = ibuf_ibdp_bypass_inst2_bkptb; 
+         inst2_bkptb      = ibuf_ibdp_bypass_inst2_bkptb;
+         inst3_bkptb      = ibuf_ibdp_bypass_inst3_bkptb;
          inst0_no_spec    = ibuf_ibdp_bypass_inst0_no_spec;
          inst1_no_spec    = ibuf_ibdp_bypass_inst1_no_spec;
          inst2_no_spec    = ibuf_ibdp_bypass_inst2_no_spec;
+         inst3_no_spec    = ibuf_ibdp_bypass_inst3_no_spec;
          inst0_vl_pred    = ibuf_ibdp_bypass_inst0_vl_pred;
          inst1_vl_pred    = ibuf_ibdp_bypass_inst1_vl_pred;
          inst2_vl_pred    = ibuf_ibdp_bypass_inst2_vl_pred;
+         inst3_vl_pred    = ibuf_ibdp_bypass_inst3_vl_pred;
          inst0_vlmul[1:0] = ibuf_ibdp_bypass_inst0_vlmul[1:0];
          inst1_vlmul[1:0] = ibuf_ibdp_bypass_inst1_vlmul[1:0];
          inst2_vlmul[1:0] = ibuf_ibdp_bypass_inst2_vlmul[1:0];
+         inst3_vlmul[1:0] = ibuf_ibdp_bypass_inst3_vlmul[1:0];
          inst0_vsew[2:0]  = ibuf_ibdp_bypass_inst0_vsew[2:0];
          inst1_vsew[2:0]  = ibuf_ibdp_bypass_inst1_vsew[2:0];
          inst2_vsew[2:0]  = ibuf_ibdp_bypass_inst2_vsew[2:0];
+         inst3_vsew[2:0]  = ibuf_ibdp_bypass_inst3_vsew[2:0];
          inst0_vl[7:0]    = ibuf_ibdp_bypass_inst0_vl[7:0];
          inst1_vl[7:0]    = ibuf_ibdp_bypass_inst1_vl[7:0];
          inst2_vl[7:0]    = ibuf_ibdp_bypass_inst2_vl[7:0];
+         inst3_vl[7:0]    = ibuf_ibdp_bypass_inst3_vl[7:0];
          end
-3'b010:  begin
+3'b010:  begin//data from inst buffer
          inst0[31:0]      = ibuf_ibdp_inst0[31:0];
          inst1[31:0]      = ibuf_ibdp_inst1[31:0];
          inst2[31:0]      = ibuf_ibdp_inst2[31:0];
+         inst3[31:0]      = ibuf_ibdp_inst3[31:0];
          inst0_pc[14:0]   = ibuf_ibdp_inst0_pc[14:0];
          inst1_pc[14:0]   = ibuf_ibdp_inst1_pc[14:0];
          inst2_pc[14:0]   = ibuf_ibdp_inst2_pc[14:0];
+         inst3_pc[14:0]   = ibuf_ibdp_inst3_pc[14:0];
          inst0_vld        = ibuf_ibdp_inst0_valid;
          inst1_vld        = ibuf_ibdp_inst1_valid;
          inst2_vld        = ibuf_ibdp_inst2_valid;
+         inst3_vld        = ibuf_ibdp_inst3_valid;
          inst0_expt_vld   = ibuf_ibdp_inst0_expt_vld;
          inst0_vec[3:0]   = ibuf_ibdp_inst0_vec[3:0];
          inst0_high_expt  = ibuf_ibdp_inst0_high_expt;
@@ -2626,47 +2709,64 @@ case({bypass_inst_vld,ibuf_inst_vld,lbuf_inst_vld})
          inst2_vec[3:0]   = ibuf_ibdp_inst2_vec[3:0];
          inst2_high_expt  = ibuf_ibdp_inst2_high_expt;
          inst2_ecc_err    = ibuf_ibdp_inst2_ecc_err;
+         inst3_expt_vld   = ibuf_ibdp_inst3_expt_vld;
+         inst3_vec[3:0]   = ibuf_ibdp_inst3_vec[3:0];
+         inst3_high_expt  = ibuf_ibdp_inst3_high_expt;
+         inst3_ecc_err    = ibuf_ibdp_inst3_ecc_err;
          inst0_split1     = ibuf_ibdp_inst0_split1;
          inst1_split1     = ibuf_ibdp_inst1_split1;
-         inst2_split1     = ibuf_ibdp_inst2_split1;  
+         inst2_split1     = ibuf_ibdp_inst2_split1; 
+         inst3_split1     = ibuf_ibdp_inst3_split1; 
          inst0_split0     = ibuf_ibdp_inst0_split0;
          inst1_split0     = ibuf_ibdp_inst1_split0;
-         inst2_split0     = ibuf_ibdp_inst2_split0;  
+         inst2_split0     = ibuf_ibdp_inst2_split0; 
+         inst3_split0     = ibuf_ibdp_inst3_split0;
          inst0_fence      = ibuf_ibdp_inst0_fence;
          inst1_fence      = ibuf_ibdp_inst1_fence;
-         inst2_fence      = ibuf_ibdp_inst2_fence;  
+         inst2_fence      = ibuf_ibdp_inst2_fence;
+         inst3_fence      = ibuf_ibdp_inst3_fence;
          inst0_bkpta      = ibuf_ibdp_inst0_bkpta;
          inst1_bkpta      = ibuf_ibdp_inst1_bkpta;
-         inst2_bkpta      = ibuf_ibdp_inst2_bkpta;  
+         inst2_bkpta      = ibuf_ibdp_inst2_bkpta; 
+         inst3_bkpta      = ibuf_ibdp_inst3_bkpta; 
          inst0_bkptb      = ibuf_ibdp_inst0_bkptb;
          inst1_bkptb      = ibuf_ibdp_inst1_bkptb;
-         inst2_bkptb      = ibuf_ibdp_inst2_bkptb;  
+         inst2_bkptb      = ibuf_ibdp_inst2_bkptb;
+         inst3_bkptb      = ibuf_ibdp_inst3_bkptb; 
          inst0_no_spec    = ibuf_ibdp_inst0_no_spec;
          inst1_no_spec    = ibuf_ibdp_inst1_no_spec;
          inst2_no_spec    = ibuf_ibdp_inst2_no_spec;
+         inst3_no_spec    = ibuf_ibdp_inst3_no_spec;
          inst0_vl_pred    = ibuf_ibdp_inst0_vl_pred;
          inst1_vl_pred    = ibuf_ibdp_inst1_vl_pred;
          inst2_vl_pred    = ibuf_ibdp_inst2_vl_pred;
+         inst3_vl_pred    = ibuf_ibdp_inst3_vl_pred;
          inst0_vlmul[1:0] = ibuf_ibdp_inst0_vlmul[1:0];
          inst1_vlmul[1:0] = ibuf_ibdp_inst1_vlmul[1:0];
          inst2_vlmul[1:0] = ibuf_ibdp_inst2_vlmul[1:0];
+         inst3_vlmul[1:0] = ibuf_ibdp_inst3_vlmul[1:0];
          inst0_vsew[2:0]  = ibuf_ibdp_inst0_vsew[2:0];
          inst1_vsew[2:0]  = ibuf_ibdp_inst1_vsew[2:0];
          inst2_vsew[2:0]  = ibuf_ibdp_inst2_vsew[2:0];
+         inst3_vsew[2:0]  = ibuf_ibdp_inst3_vsew[2:0];
          inst0_vl[7:0]    = ibuf_ibdp_inst0_vl[7:0];
          inst1_vl[7:0]    = ibuf_ibdp_inst1_vl[7:0];
          inst2_vl[7:0]    = ibuf_ibdp_inst2_vl[7:0];
+         inst3_vl[7:0]    = ibuf_ibdp_inst3_vl[7:0];
          end
-3'b001:  begin
+3'b001:  begin //inst data from loop buffer
          inst0[31:0]      = lbuf_ibdp_inst0[31:0]; 
          inst1[31:0]      = lbuf_ibdp_inst1[31:0];
          inst2[31:0]      = lbuf_ibdp_inst2[31:0];
+         inst3[31:0]      = lbuf_ibdp_inst3[31:0];
          inst0_pc[14:0]   = lbuf_ibdp_inst0_pc[14:0];
-         inst1_pc[14:0]   = lbuf_ibdp_inst1_pc[14:0];
+         inst1_pc[14:0]   = lbuf_ibdp_inst1_pc[14:0]; 
          inst2_pc[14:0]   = lbuf_ibdp_inst2_pc[14:0];
+         inst3_pc[14:0]   = lbuf_ibdp_inst3_pc[14:0];
          inst0_vld        = lbuf_ibdp_inst0_valid;
          inst1_vld        = lbuf_ibdp_inst1_valid;
          inst2_vld        = lbuf_ibdp_inst2_valid;
+         inst3_vld        = lbuf_ibdp_inst3_valid;
          inst0_expt_vld   = 1'b0;
          inst0_vec[3:0]   = 4'b0;
          inst0_high_expt  = 1'b0;
@@ -2678,48 +2778,65 @@ case({bypass_inst_vld,ibuf_inst_vld,lbuf_inst_vld})
          inst2_expt_vld   = 1'b0;
          inst2_vec[3:0]   = 4'b0;
          inst2_high_expt  = 1'b0;
-         inst2_ecc_err    = 1'b0;   
+         inst2_ecc_err    = 1'b0;
+         inst3_expt_vld   = 1'b0;
+         inst3_vec[3:0]   = 4'b0;
+         inst3_high_expt  = 1'b0;
+         inst3_ecc_err    = 1'b0;
          inst0_split1     = lbuf_ibdp_inst0_split1;
          inst1_split1     = lbuf_ibdp_inst1_split1;
          inst2_split1     = lbuf_ibdp_inst2_split1;
+         inst3_split1     = lbuf_ibdp_inst3_split1;
          inst0_split0     = lbuf_ibdp_inst0_split0;
          inst1_split0     = lbuf_ibdp_inst1_split0;
          inst2_split0     = lbuf_ibdp_inst2_split0;
+         inst3_split0     = lbuf_ibdp_inst3_split0;
          inst0_fence      = lbuf_ibdp_inst0_fence;
          inst1_fence      = lbuf_ibdp_inst1_fence;
          inst2_fence      = lbuf_ibdp_inst2_fence;
+         inst3_fence      = lbuf_ibdp_inst3_fence;
          inst0_bkpta      = lbuf_ibdp_inst0_bkpta;
          inst1_bkpta      = lbuf_ibdp_inst1_bkpta;
          inst2_bkpta      = lbuf_ibdp_inst2_bkpta;
+         inst3_bkpta      = lbuf_ibdp_inst3_bkpta;
          inst0_bkptb      = lbuf_ibdp_inst0_bkptb;
          inst1_bkptb      = lbuf_ibdp_inst1_bkptb;
          inst2_bkptb      = lbuf_ibdp_inst2_bkptb;
+         inst3_bkptb      = lbuf_ibdp_inst3_bkptb;
          inst0_no_spec    = 1'b0;
          inst1_no_spec    = 1'b0;
          inst2_no_spec    = 1'b0;
+         inst3_no_spec    = 1'b0;
          inst0_vl_pred    = 1'b0;
          inst1_vl_pred    = 1'b0;
          inst2_vl_pred    = 1'b0;
+         inst3_vl_pred    = 1'b0;
          inst0_vlmul[1:0] = lbuf_ibdp_inst0_vlmul[1:0];
          inst1_vlmul[1:0] = lbuf_ibdp_inst1_vlmul[1:0];
          inst2_vlmul[1:0] = lbuf_ibdp_inst2_vlmul[1:0];
+         inst3_vlmul[1:0] = lbuf_ibdp_inst3_vlmul[1:0];
          inst0_vsew[2:0]  = lbuf_ibdp_inst0_vsew[2:0];
          inst1_vsew[2:0]  = lbuf_ibdp_inst1_vsew[2:0];
          inst2_vsew[2:0]  = lbuf_ibdp_inst2_vsew[2:0];
+         inst3_vsew[2:0]  = lbuf_ibdp_inst3_vsew[2:0];
          inst0_vl[7:0]    = lbuf_ibdp_inst0_vl[7:0];
          inst1_vl[7:0]    = lbuf_ibdp_inst1_vl[7:0];
          inst2_vl[7:0]    = lbuf_ibdp_inst2_vl[7:0];
+         inst3_vl[7:0]    = lbuf_ibdp_inst3_vl[7:0];
          end
 default: begin
          inst0[31:0]      = 32'b0;
          inst1[31:0]      = 32'b0;
          inst2[31:0]      = 32'b0;
+         inst3[31:0]      = 32'b0;
          inst0_pc[14:0]   = 15'b0;
          inst1_pc[14:0]   = 15'b0;
          inst2_pc[14:0]   = 15'b0;
+         inst3_pc[14:0]   = 15'b0;
          inst0_vld        = 1'b0; 
          inst1_vld        = 1'b0;
          inst2_vld        = 1'b0; 
+         inst3_vld        = 1'b0; 
          inst0_expt_vld   = 1'b0;
          inst0_vec[3:0]   = 4'b0;
          inst0_high_expt  = 1'b0;
@@ -2731,50 +2848,65 @@ default: begin
          inst2_expt_vld   = 1'b0;
          inst2_vec[3:0]   = 4'b0;
          inst2_high_expt  = 1'b0;
-         inst2_ecc_err    = 1'b0;   
+         inst2_ecc_err    = 1'b0;
+         inst3_expt_vld   = 1'b0;
+         inst3_vec[3:0]   = 4'b0;
+         inst3_high_expt  = 1'b0;
+         inst3_ecc_err    = 1'b0;    
          inst0_split1     = 1'b0;
          inst1_split1     = 1'b0;
          inst2_split1     = 1'b0;  
+         inst3_split1     = 1'b0;  
          inst0_split0     = 1'b0;
          inst1_split0     = 1'b0;
          inst2_split0     = 1'b0;  
+         inst3_split0     = 1'b0;  
          inst0_fence      = 1'b0;
          inst1_fence      = 1'b0;
          inst2_fence      = 1'b0;  
+         inst3_fence      = 1'b0;  
          inst0_bkpta      = 1'b0;
          inst1_bkpta      = 1'b0;
          inst2_bkpta      = 1'b0;  
+         inst3_bkpta      = 1'b0;  
          inst0_bkptb      = 1'b0;
          inst1_bkptb      = 1'b0;
          inst2_bkptb      = 1'b0;  
+         inst3_bkptb      = 1'b0;  
          inst0_no_spec    = 1'b0;
          inst1_no_spec    = 1'b0;
          inst2_no_spec    = 1'b0;
+         inst3_no_spec    = 1'b0;
          inst0_vl_pred    = 1'b0;
          inst1_vl_pred    = 1'b0;
          inst2_vl_pred    = 1'b0;
+         inst3_vl_pred    = 1'b0;
          inst0_vlmul[1:0] = 2'b0; 
          inst1_vlmul[1:0] = 2'b0;
          inst2_vlmul[1:0] = 2'b0;
+         inst3_vlmul[1:0] = 2'b0;
          inst0_vsew[2:0]  = 3'b0;
          inst1_vsew[2:0]  = 3'b0;
          inst2_vsew[2:0]  = 3'b0;
+         inst3_vsew[2:0]  = 3'b0;
          inst0_vl[7:0]    = 8'b0;
          inst1_vl[7:0]    = 8'b0;
          inst2_vl[7:0]    = 8'b0;
+         inst3_vl[7:0]    = 8'b0;
          end
 endcase
 // &CombEnd; @861
 end
 
-//Three inst vld send to idu
+//Four inst vld send to idu
 assign ifu_idu_ib_inst0_vld =  inst0_vld;
 assign ifu_idu_ib_inst1_vld =  inst1_vld;
 assign ifu_idu_ib_inst2_vld =  inst2_vld;
+assign ifu_idu_ib_inst3_vld =  inst3_vld;//jeremy send inst3 valid to idu
 //For had use
 assign ifu_had_no_inst      = !inst0_vld;
-//Three inst infor send to idu
-//if there are any expt inst
+//Four inst infor send to idu
+//if there are any exception inst
 //change its opcode to 32'hc4007e00(Nop)
 assign ifu_idu_ib_inst0_data[ID_OPCODE:ID_OPCODE-31]    = (inst0_expt_vld)
                                                           ? 32'h00000001 //nop
@@ -2785,49 +2917,67 @@ assign ifu_idu_ib_inst1_data[ID_OPCODE:ID_OPCODE-31]    = (inst1_expt_vld)
 assign ifu_idu_ib_inst2_data[ID_OPCODE:ID_OPCODE-31]    = (inst2_expt_vld)
                                                           ? 32'h00000001 //nop
                                                           : inst2[31:0];
+assign ifu_idu_ib_inst3_data[ID_OPCODE:ID_OPCODE-31]    = (inst3_expt_vld)//jeremy add  inst3
+                                                          ? 32'h00000001 //nop
+                                                          : inst3[31:0];
+                                                          
 assign ifu_idu_ib_inst0_data[ID_EXPT_VLD]               = inst0_expt_vld  && !inst0_ecc_err;
 assign ifu_idu_ib_inst1_data[ID_EXPT_VLD]               = inst1_expt_vld  && !inst1_ecc_err;
 assign ifu_idu_ib_inst2_data[ID_EXPT_VLD]               = inst2_expt_vld  && !inst2_ecc_err;
+assign ifu_idu_ib_inst3_data[ID_EXPT_VLD]               = inst3_expt_vld  && !inst3_ecc_err;
 assign ifu_idu_ib_inst0_data[ID_HIGH_HW_EXPT]           = inst0_high_expt && !inst0_ecc_err;
 assign ifu_idu_ib_inst1_data[ID_HIGH_HW_EXPT]           = inst1_high_expt && !inst1_ecc_err;
 assign ifu_idu_ib_inst2_data[ID_HIGH_HW_EXPT]           = inst2_high_expt && !inst2_ecc_err;
+assign ifu_idu_ib_inst3_data[ID_HIGH_HW_EXPT]           = inst3_high_expt && !inst3_ecc_err;
 assign ifu_idu_ib_inst0_data[ID_EXPT_VEC:ID_EXPT_VEC-3] = inst0_vec[3:0];
 assign ifu_idu_ib_inst1_data[ID_EXPT_VEC:ID_EXPT_VEC-3] = inst1_vec[3:0];
 assign ifu_idu_ib_inst2_data[ID_EXPT_VEC:ID_EXPT_VEC-3] = inst2_vec[3:0];
+assign ifu_idu_ib_inst3_data[ID_EXPT_VEC:ID_EXPT_VEC-3] = inst3_vec[3:0];
 //IFU Pre_decode infor for IDU use
 assign ifu_idu_ib_inst0_data[ID_SPLIT_LONG]             = inst0_split1 && !inst0_expt_vld;                                     
 assign ifu_idu_ib_inst1_data[ID_SPLIT_LONG]             = inst1_split1 && !inst1_expt_vld;                                     
 assign ifu_idu_ib_inst2_data[ID_SPLIT_LONG]             = inst2_split1 && !inst2_expt_vld;
+assign ifu_idu_ib_inst3_data[ID_SPLIT_LONG]             = inst3_split1 && !inst3_expt_vld;
 assign ifu_idu_ib_inst0_data[ID_SPLIT_SHORT]            = inst0_split0 && !inst0_expt_vld;                                     
 assign ifu_idu_ib_inst1_data[ID_SPLIT_SHORT]            = inst1_split0 && !inst1_expt_vld;                                     
 assign ifu_idu_ib_inst2_data[ID_SPLIT_SHORT]            = inst2_split0 && !inst2_expt_vld;
+assign ifu_idu_ib_inst3_data[ID_SPLIT_SHORT]            = inst3_split0 && !inst3_expt_vld;
 assign ifu_idu_ib_inst0_data[ID_FENCE]                  = inst0_fence  && !inst0_expt_vld;                                     
 assign ifu_idu_ib_inst1_data[ID_FENCE]                  = inst1_fence  && !inst1_expt_vld;                                     
 assign ifu_idu_ib_inst2_data[ID_FENCE]                  = inst2_fence  && !inst2_expt_vld;                                     
+assign ifu_idu_ib_inst3_data[ID_FENCE]                  = inst3_fence  && !inst3_expt_vld;                                     
 assign ifu_idu_ib_inst0_data[ID_BKPTA_INST]             = inst0_bkpta;                                     
 assign ifu_idu_ib_inst1_data[ID_BKPTA_INST]             = inst1_bkpta;                                     
 assign ifu_idu_ib_inst2_data[ID_BKPTA_INST]             = inst2_bkpta;                                     
+assign ifu_idu_ib_inst3_data[ID_BKPTA_INST]             = inst3_bkpta;                                     
 assign ifu_idu_ib_inst0_data[ID_BKPTB_INST]             = inst0_bkptb;                                     
 assign ifu_idu_ib_inst1_data[ID_BKPTB_INST]             = inst1_bkptb;                                     
 assign ifu_idu_ib_inst2_data[ID_BKPTB_INST]             = inst2_bkptb;                                     
+assign ifu_idu_ib_inst3_data[ID_BKPTB_INST]             = inst3_bkptb;                                     
 assign ifu_idu_ib_inst0_data[ID_NO_SPEC]                = inst0_no_spec;                                     
 assign ifu_idu_ib_inst1_data[ID_NO_SPEC]                = inst1_no_spec;                                     
 assign ifu_idu_ib_inst2_data[ID_NO_SPEC]                = inst2_no_spec;                                     
+assign ifu_idu_ib_inst3_data[ID_NO_SPEC]                = inst3_no_spec;                                     
 assign ifu_idu_ib_inst0_data[ID_VLMUL:ID_VLMUL-1]       = inst0_vlmul[1:0];
 assign ifu_idu_ib_inst1_data[ID_VLMUL:ID_VLMUL-1]       = inst1_vlmul[1:0];
 assign ifu_idu_ib_inst2_data[ID_VLMUL:ID_VLMUL-1]       = inst2_vlmul[1:0];
+assign ifu_idu_ib_inst3_data[ID_VLMUL:ID_VLMUL-1]       = inst3_vlmul[1:0];
 assign ifu_idu_ib_inst0_data[ID_VSEW:ID_VSEW-2]         = inst0_vsew[2:0];
 assign ifu_idu_ib_inst1_data[ID_VSEW:ID_VSEW-2]         = inst1_vsew[2:0];
 assign ifu_idu_ib_inst2_data[ID_VSEW:ID_VSEW-2]         = inst2_vsew[2:0];
+assign ifu_idu_ib_inst3_data[ID_VSEW:ID_VSEW-2]         = inst3_vsew[2:0];
 assign ifu_idu_ib_inst0_data[ID_PC:ID_PC-14]            = inst0_pc[14:0];
 assign ifu_idu_ib_inst1_data[ID_PC:ID_PC-14]            = inst1_pc[14:0];
 assign ifu_idu_ib_inst2_data[ID_PC:ID_PC-14]            = inst2_pc[14:0];
+assign ifu_idu_ib_inst3_data[ID_PC:ID_PC-14]            = inst3_pc[14:0];
 assign ifu_idu_ib_inst0_data[ID_VL:ID_VL-7]             = inst0_vl[7:0];
 assign ifu_idu_ib_inst1_data[ID_VL:ID_VL-7]             = inst1_vl[7:0];
 assign ifu_idu_ib_inst2_data[ID_VL:ID_VL-7]             = inst2_vl[7:0];
+assign ifu_idu_ib_inst3_data[ID_VL:ID_VL-7]             = inst3_vl[7:0];
 assign ifu_idu_ib_inst0_data[ID_VL_PRED]                = inst0_vl_pred;
 assign ifu_idu_ib_inst1_data[ID_VL_PRED]                = inst1_vl_pred;
 assign ifu_idu_ib_inst2_data[ID_VL_PRED]                = inst2_vl_pred;
+assign ifu_idu_ib_inst3_data[ID_VL_PRED]                = inst3_vl_pred;
 
 //==========================================================
 //               hn_pc_oper pcfifo mask
@@ -2924,7 +3074,7 @@ assign ibdp_debug_mmu_deny_vld = ipdp_ibdp_hn_mmu_acc_deny;
 assign ibdp_debug_inst0_vld    = inst0_vld;
 assign ibdp_debug_inst1_vld    = inst1_vld;
 assign ibdp_debug_inst2_vld    = inst2_vld;
-
+assign ibdp_debug_inst3_vld    = inst3_vld;//jeremy add inst3 debug
 // &ModuleEnd;                         @1001
 endmodule
 

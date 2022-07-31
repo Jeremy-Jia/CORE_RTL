@@ -2667,7 +2667,8 @@ assign h0_pcall         = (way0_hit) ? way0_h0_pcall   : way1_h0_pcall;
 assign h0_preturn       = (way0_hit) ? way0_h0_preturn : way1_h0_preturn;
 assign h0_vsetvli       = (way0_hit) ? way0_h0_vsetvli : way1_h0_vsetvli;
 
-//inst data                    
+//inst data
+//jeremy h1~h8 data select  cache way select                  
 assign h1_data[15:0] = (way0_hit) ? h1_data_way0[15:0] : h1_data_way1[15:0];
 assign h2_data[15:0] = (way0_hit) ? h2_data_way0[15:0] : h2_data_way1[15:0];
 assign h3_data[15:0] = (way0_hit) ? h3_data_way0[15:0] : h3_data_way1[15:0];
@@ -5728,7 +5729,7 @@ begin
   else if(h0_update_vld && !ipctrl_ipdp_pipe_stall)
   begin
     h0_cur_pc[35:0] <= ip_vpc[PC_WIDTH-2:3]; 
-    h0_data[15:0]   <= h8_data[15:0];
+    h0_data[15:0]   <= h8_data[15:0]; //jeremy add: h0 data is h8 data the next cycle
     h0_con_br       <= h0_con_br_pre;
     h0_ab_br        <= h0_ab_br_pre;
     h0_br           <= h0_br_pre;

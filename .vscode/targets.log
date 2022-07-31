@@ -1,0 +1,367 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+
+# GNU Make 4.2
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2016 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Sat Jul 30 19:52:22 2022
+
+# Variables
+
+# 'override' directive
+GNUMAKEFLAGS := 
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+DESKTOP_SESSION = gnome-classic
+# default
+.SHELLFLAGS := -c
+# environment
+QTDIR = /usr/lib/qt-3.3
+# environment
+VCS_HOME = /home/synopsys/vcs-mx/O-2018.09-1
+# environment
+XDG_SESSION_TYPE = x11
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# environment
+MGC_CALIBRE_SCHEMATIC_SERVER = IC_EDA:9199
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+XAUTHORITY = /run/gdm/auth-for-ICer-ZU750m/database
+# environment
+GDMSESSION = gnome-classic
+# environment
+XMODIFIERS = @im=ibus
+# makefile
+CURDIR := /home/ICer/CORE_RTL
+# makefile
+SHELL = /bin/sh
+# environment
+XDG_CURRENT_DESKTOP = GNOME-Classic:GNOME
+# environment
+GDM_LANG = zh_CN.UTF-8
+# environment
+VTE_VERSION = 5204
+# environment
+VSCODE_NLS_CONFIG = {"locale":"zh-cn","availableLanguages":{"*":"zh-cn"},"_languagePackId":"1d735750dbb1b9066c7513078396ba0f.zh-cn","_translationsConfigFile":"/home/ICer/.config/Code/clp/1d735750dbb1b9066c7513078396ba0f.zh-cn/tcf.json","_cacheRoot":"/home/ICer/.config/Code/clp/1d735750dbb1b9066c7513078396ba0f.zh-cn","_resolvedLanguagePackCoreLocation":"/home/ICer/.config/Code/clp/1d735750dbb1b9066c7513078396ba0f.zh-cn/3b889b090b5ad5793f524b5d1d39fda662b96a2a","_corruptedFile":"/home/ICer/.config/Code/clp/1d735750dbb1b9066c7513078396ba0f.zh-cn/corrupted.info","_languagePackSupport":true}
+# environment
+_ = /usr/local/bin/make
+# environment
+SPECMAN_DIR = /home/cadence/INCISIVE152/components/sn/
+# makefile
+MAKEFILE_LIST := 
+# automatic
+@F = $(notdir $@)
+# environment
+HISTCONTROL = ignoredups
+# environment
+SNPSLMD_LICENSE_FILE = 27000@IC_EDA
+# environment
+USERNAME = ICer
+# environment
+MAKELEVEL := 0
+# environment
+DVE_HOME = /home/synopsys/vcs-mx/O-2018.09-1
+# environment
+XDG_DATA_DIRS = /home/ICer/.local/share/flatpak/exports/share/:/var/lib/flatpak/exports/share/:/usr/local/share/:/usr/share/
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:abstract=/tmp/dbus-WYShpNJjA3,guid=d5a8dc3bd955976a790d39f762e0b359
+# environment
+QT_PLUGIN_PATH = /usr/lib64/kde4/plugins:/usr/lib/kde4/plugins
+# environment
+LESSOPEN = ||/usr/bin/lesspipe.sh %s
+# environment
+VSCODE_CWD = /home/ICer
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+PATH = /home/Xilinx/SDK/2019.1/bin:/home/Xilinx/SDK/2019.1/gnu/microblaze/lin/bin:/home/Xilinx/SDK/2019.1/gnu/arm/lin/bin:/home/Xilinx/SDK/2019.1/gnu/microblaze/linux_toolchain/lin64_le/bin:/home/Xilinx/SDK/2019.1/gnu/aarch32/lin/gcc-arm-linux-gnueabi/bin:/home/Xilinx/SDK/2019.1/gnu/aarch32/lin/gcc-arm-none-eabi/bin:/home/Xilinx/SDK/2019.1/gnu/aarch64/lin/aarch64-linux/bin:/home/Xilinx/SDK/2019.1/gnu/aarch64/lin/aarch64-none/bin:/home/Xilinx/SDK/2019.1/gnu/armr5/lin/gcc-arm-none-eabi/bin:/home/Xilinx/SDK/2019.1/tps/lnx64/cmake-3.3.2/bin:/home/Xilinx/Vivado/2019.1/bin:/home/Xilinx/DocNav:/usr/lib/qt-3.3/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/home/synopsys/syn_2016/syn/L-2016.03-SP1/amd64/syn//bin:/home/synopsys/fpga/N-2018.03-SP1/bin:/home/synopsys/pts/O-2018.06-SP1/bin:/home/synopsys/icc2/O-2018.06-SP1/bin:/home/synopsys/syn/O-2018.06-SP1/amd64/syn/bin:/home/synopsys/lc/O-2018.06-SP1/bin:/home/synopsys/SpyGlass-L2016.06/SPYGLASS_HOME//bin:/home/synopsys/vcs-mx/O-2018.09-1/gui/dve/bin:/home/synopsys/vcs-mx/O-2018.09-1/bin:/home/synopsys/verdi/Verdi_O-2018.09-SP2/bin:/home/synopsys/scl/2018.06/linux64/bin::/home/cadence/IC617/tools/dfII/bin:/home/cadence/IC617/tools/plot/bin:/home/cadence/INCISIVE152/tools/bin:/home/cadence/MMSIM151/bin:/home/cadence/MMSIM151/tools/relxpert/bin:/home/cadence/INCISIVE152/bin:/home/cadence/INCISIVE152/tools.lnx86/bin:/home/cadence/INCISIVE152/tools.lnx86/dfII/bin:/home/mentor/questasim/linux_x86_64:/home/Riscv_Tools/bin:/home/Riscv_Tools/riscv-gnu-toolchain/qemu-6.0.0/build/riscv32-linux-user
+# environment
+XILINX_VIVADO = /home/Xilinx/Vivado/2019.1
+# environment
+QT_GRAPHICSSYSTEM_CHECKED = 1
+# environment
+SESSION_MANAGER = local/unix:@/tmp/.ICE-unix/3317,unix/unix:/tmp/.ICE-unix/3317
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# environment
+XDG_MENU_PREFIX = gnome-
+# environment
+LC_NUMERIC = zh_CN.UTF-8
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+SYNPLIFY_HOME = /home/synopsys/fpga/N-2018.03-SP1
+# environment
+LS_COLORS = rs=0:di=38;5;27:ln=38;5;51:mh=44;38;5;15:pi=40;38;5;11:so=38;5;13:do=38;5;5:bd=48;5;232;38;5;11:cd=48;5;232;38;5;3:or=48;5;232;38;5;9:mi=05;48;5;232;38;5;15:su=48;5;196;38;5;15:sg=48;5;11;38;5;16:ca=48;5;196;38;5;226:tw=48;5;10;38;5;16:ow=48;5;10;38;5;21:st=48;5;21;38;5;15:ex=38;5;34:*.tar=38;5;9:*.tgz=38;5;9:*.arc=38;5;9:*.arj=38;5;9:*.taz=38;5;9:*.lha=38;5;9:*.lz4=38;5;9:*.lzh=38;5;9:*.lzma=38;5;9:*.tlz=38;5;9:*.txz=38;5;9:*.tzo=38;5;9:*.t7z=38;5;9:*.zip=38;5;9:*.z=38;5;9:*.Z=38;5;9:*.dz=38;5;9:*.gz=38;5;9:*.lrz=38;5;9:*.lz=38;5;9:*.lzo=38;5;9:*.xz=38;5;9:*.bz2=38;5;9:*.bz=38;5;9:*.tbz=38;5;9:*.tbz2=38;5;9:*.tz=38;5;9:*.deb=38;5;9:*.rpm=38;5;9:*.jar=38;5;9:*.war=38;5;9:*.ear=38;5;9:*.sar=38;5;9:*.rar=38;5;9:*.alz=38;5;9:*.ace=38;5;9:*.zoo=38;5;9:*.cpio=38;5;9:*.7z=38;5;9:*.rz=38;5;9:*.cab=38;5;9:*.jpg=38;5;13:*.jpeg=38;5;13:*.gif=38;5;13:*.bmp=38;5;13:*.pbm=38;5;13:*.pgm=38;5;13:*.ppm=38;5;13:*.tga=38;5;13:*.xbm=38;5;13:*.xpm=38;5;13:*.tif=38;5;13:*.tiff=38;5;13:*.png=38;5;13:*.svg=38;5;13:*.svgz=38;5;13:*.mng=38;5;13:*.pcx=38;5;13:*.mov=38;5;13:*.mpg=38;5;13:*.mpeg=38;5;13:*.m2v=38;5;13:*.mkv=38;5;13:*.webm=38;5;13:*.ogm=38;5;13:*.mp4=38;5;13:*.m4v=38;5;13:*.mp4v=38;5;13:*.vob=38;5;13:*.qt=38;5;13:*.nuv=38;5;13:*.wmv=38;5;13:*.asf=38;5;13:*.rm=38;5;13:*.rmvb=38;5;13:*.flc=38;5;13:*.avi=38;5;13:*.fli=38;5;13:*.flv=38;5;13:*.gl=38;5;13:*.dl=38;5;13:*.xcf=38;5;13:*.xwd=38;5;13:*.yuv=38;5;13:*.cgm=38;5;13:*.emf=38;5;13:*.axv=38;5;13:*.anx=38;5;13:*.ogv=38;5;13:*.ogx=38;5;13:*.aac=38;5;45:*.au=38;5;45:*.flac=38;5;45:*.mid=38;5;45:*.midi=38;5;45:*.mka=38;5;45:*.mp3=38;5;45:*.mpc=38;5;45:*.ogg=38;5;45:*.ra=38;5;45:*.wav=38;5;45:*.axa=38;5;45:*.oga=38;5;45:*.spx=38;5;45:*.xspf=38;5;45:
+# environment
+MGC_CALIBRE_LAYOUT_SERVER = IC_EDA:9189
+# environment
+XDG_SESSION_DESKTOP = gnome-classic
+# environment
+SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
+# automatic
+%F = $(notdir $%)
+# environment
+KDEDIRS = /usr
+# environment
+DISPLAY = :0
+# default
+MAKEFILES := 
+# environment
+MGC_HOME = /home/mentor/
+# environment
+IMSETTINGS_INTEGRATE_DESKTOP = yes
+# environment
+HOME = /home/ICer
+# environment
+QUESTASIM_HOME = /home/mentor/questasim
+# environment
+PWD = /home/ICer/CORE_RTL
+# environment
+MGC_LICENSE_FILE = /home/mentor//license/license.dat
+# default
+.LOADED := 
+# environment
+XDG_SEAT = seat0
+# environment
+SSH_AGENT_PID = 3457
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = GNOME-Classic:GNOME
+# environment
+CALIBRE_HOME = /home/mentor//Calibre2015/aoi_cal_2015.2_36.27
+# environment
+VERDI_HOME = /home/synopsys/verdi/Verdi_O-2018.09-SP2
+# environment
+MGLS_LICENSE_FILE = /home/mentor/questasim/mentor.dat
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+PT_HOME = /home/synopsys/pts/O-2018.06-SP1
+# environment
+SYNOPSYS = /home/synopsys/syn/O-2018.06-SP1
+# environment
+LD_LIBRARY_PATH = :/home/synopsys/verdi/Verdi_O-2018.09-SP2/share/PLI/lib/LINUX64:/home/synopsys/verdi/Verdi_O-2018.09-SP2/share/PLI/IUS/LINUX64/boot:/home/cadence/INCISIVE152/tools.lnx86/lib
+# environment
+RISCV = /home/Riscv_Tools
+# environment
+VSCODE_CLI = 1
+# environment
+SPECMAN_HOME = /home/cadence/INCISIVE152/components/sn
+# environment
+VSCODE_CODE_CACHE_PATH = /home/ICer/.config/Code/CachedData/3b889b090b5ad5793f524b5d1d39fda662b96a2a
+# environment
+LOGNAME = ICer
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# automatic
++F = $(notdir $+)
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# environment
+CDS_LIC_FILE = /home/cadence/license/cadence.dat
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+MAKE_VERSION := 4.2
+# environment
+GNOME_DESKTOP_SESSION_ID = this-is-deprecated
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+HOSTNAME = IC_EDA
+# environment
+XDG_VTNR = 1
+# environment
+LC_TIME = zh_CN.UTF-8
+# environment
+COLORTERM = truecolor
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+QT_IM_MODULE = ibus
+# environment
+VCS_ARCH_OVERRIDE = linux
+# environment
+SHLVL = 4
+# environment
+ICC2_HOME = /home/synopsys/icc2/O-2018.06-SP1
+# environment
+GNOME_SHELL_SESSION_MODE = classic
+# environment
+XDG_SESSION_ID = 1
+# environment
+USER = ICer
+# environment
+LC_MONETARY = zh_CN.UTF-8
+# environment
+QTLIB = /usr/lib/qt-3.3/lib
+# environment
+CADHOME = /home/cadence
+# environment
+TMAX_HOME = /home/synopsys/syn_2016/syn/L-2016.03-SP1/amd64/syn/
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+INCISIVE_HOME = /home/cadence/INCISIVE152
+# default
+MAKE_COMMAND := make
+# default
+.VARIABLES := 
+# environment
+IMSETTINGS_MODULE = none
+# automatic
+*F = $(notdir $*)
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-376fd77c-1.69.2-main.sock
+# makefile
+MAKEFLAGS = pqrR
+# environment
+MFLAGS = -pqrR
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+MAIL = /var/spool/mail/ICer
+# environment
+SPYGLASS_HOME = /home/synopsys/SpyGlass-L2016.06/SPYGLASS_HOME/
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+GDK_BACKEND = x11
+# environment
+DC_HOME = /home/synopsys/syn/O-2018.06-SP1/amd64/syn
+# environment
+LC_PAPER = zh_CN.UTF-8
+# environment
+NO_AT_BRIDGE = 1
+# environment
+CDSHOME = /home/cadence/IC617
+# environment
+LC_HOME = /home/synopsys/lc/O-2018.06-SP1
+# automatic
+<F = $(notdir $<)
+# environment
+MMSIMHOME = /home/cadence/MMSIM151
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+LC_MEASUREMENT = zh_CN.UTF-8
+# environment
+LC_ALL = C
+# environment
+SBX_CHROME_API_RQ = 1
+# environment
+SCL_HOME = /home/synopsys/scl/2018.06
+# environment
+SANDBOX_LD_LIBRARY_PATH = :/home/synopsys/verdi/Verdi_O-2018.09-SP2/share/PLI/lib/LINUX64:/home/synopsys/verdi/Verdi_O-2018.09-SP2/share/PLI/IUS/LINUX64/boot:/home/cadence/INCISIVE152/tools.lnx86/lib
+# environment
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/8699bcbd_7a9d_4214_af7a_103396aad076
+# automatic
+^F = $(notdir $^)
+# environment
+GNOME_TERMINAL_SERVICE = :1.108
+# default
+SUFFIXES := 
+# environment
+HISTSIZE = 1000
+ 
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# environment
+QEMU_HOME = /home/Riscv_Tools/riscv-gnu-toolchain/qemu-6.0.0
+# environment
+WINDOWPATH = 1
+# default
+.INCLUDE_DIRS = /usr/local/include /usr/local/include /usr/include
+# environment
+QTINC = /usr/lib/qt-3.3/include
+# default
+.RECIPEPREFIX := 
+# makefile
+.DEFAULT_GOAL := 
+# environment
+LANG = C
+# environment
+TERM = xterm-256color
+# environment
+VSCODE_PID = 5349
+# variable set hash-table stats:
+# Load=141/1024=14%, Rehash=0, Collisions=26/163=16%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 64770, inode 134346383): 10 files, no impossibilities.
+
+# 10 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+GNUmakefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# files hash-table stats:
+# Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 18 / storage = 159 B / avg = 8 B
+# current buf: size = 8162 B / used = 159 B / count = 18 / avg = 8 B
+
+# strcache performance: lookups = 21 / hit rate = 14%
+# hash-table stats:
+# Load=18/8192=0%, Rehash=0, Collisions=1/21=5%
+# Finished Make data base on Sat Jul 30 19:52:22 2022
+
+ 

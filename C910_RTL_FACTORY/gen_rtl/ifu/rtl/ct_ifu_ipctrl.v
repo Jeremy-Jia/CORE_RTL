@@ -1220,6 +1220,7 @@ end
 //                 IP Stage Valid Signal
 //==========================================================
 //-----------------------ip_vld-----------------------------
+//jeremy
 //IP Stage Valid:
 //  1.ip_data_vld
 //  2.!ip_cancel
@@ -1240,6 +1241,7 @@ assign ip_vld_for_gateclk = ifctrl_ipctrl_vld &&
                            !pcgen_ipctrl_cancel && 
                            !ip_self_stall && 
                            !rtu_ifu_xx_dbgon;
+// h0 <= h8 jeremy
 //when expt vld, h0 will not update                         
 assign ip_h0_pipe_vld     = ip_data_vld && 
                            !icache_chk_err_refill &&
