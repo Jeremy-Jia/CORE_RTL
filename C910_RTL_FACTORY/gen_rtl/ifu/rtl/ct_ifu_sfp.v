@@ -88,6 +88,14 @@ input           rtu_ifu_retire_inst2_no_spec_hit;
 input           rtu_ifu_retire_inst2_no_spec_mispred; 
 input           rtu_ifu_retire_inst2_no_spec_miss;   
 input           rtu_ifu_retire_inst2_store;          
+input           rtu_ifu_retire_inst2_vl_pred; 
+//jeremy add ifu-rtu retire signal for inst3
+input   [38:0]  rtu_ifu_retire_inst2_cur_pc;         
+input           rtu_ifu_retire_inst2_load;           
+input           rtu_ifu_retire_inst2_no_spec_hit;    
+input           rtu_ifu_retire_inst2_no_spec_mispred; 
+input           rtu_ifu_retire_inst2_no_spec_miss;   
+input           rtu_ifu_retire_inst2_store;          
 input           rtu_ifu_retire_inst2_vl_pred;        
 output  [2 :0]  sfp_ifdp_hit_pc_lo;                  
 output  [3 :0]  sfp_ifdp_hit_type;                   
