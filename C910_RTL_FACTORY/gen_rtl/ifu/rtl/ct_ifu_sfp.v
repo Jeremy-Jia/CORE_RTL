@@ -25,6 +25,7 @@ module ct_ifu_sfp(
   pad_yy_icg_scan_en,
   pcgen_sfp_pc,
   rtu_ifu_chgflw_vld,
+  //jeremy need to modify
   rtu_ifu_retire_inst0_cur_pc,
   rtu_ifu_retire_inst0_load,
   rtu_ifu_retire_inst0_no_spec_hit,

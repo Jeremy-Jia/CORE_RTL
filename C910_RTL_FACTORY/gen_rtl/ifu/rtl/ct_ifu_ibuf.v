@@ -10225,6 +10225,7 @@ end
 //-------------------bypass_way_signal----------------------
 //bypass_way_hn_vld 
 //ibctrl_ibuf_hn_bypass_create_en = ipctri_ibctrl_vld
+//jeremy add this logic
 assign bypass_way_h0_vld = (ibdp_ibuf_h0_vld)
                          ? ibdp_ibuf_h0_vld
                          : ibdp_ibuf_hn_vld[7];
@@ -10240,7 +10241,6 @@ assign bypass_way_h3_vld = (ibdp_ibuf_h0_vld)
 assign bypass_way_h4_vld = (ibdp_ibuf_h0_vld)
                          ? ibdp_ibuf_hn_vld[4]
                          : ibdp_ibuf_hn_vld[3];
-// jeremy add :  for 4 inst bypass
 assign bypass_way_h5_vld = (ibdp_ibuf_h0_vld)       // h5 bypass valid 
                          ? ibdp_ibuf_hn_vld[3]
                          : ibdp_ibuf_hn_vld[2];

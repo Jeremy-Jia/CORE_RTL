@@ -35,6 +35,7 @@ module ct_ifu_ind_btb(
   ipdp_ind_btb_jmp_detect,
   pad_yy_icg_scan_en,
   rtu_ifu_flush,
+  //jeremy need to modify
   rtu_ifu_retire0_chk_idx,
   rtu_ifu_retire0_jmp,
   rtu_ifu_retire0_jmp_mispred,

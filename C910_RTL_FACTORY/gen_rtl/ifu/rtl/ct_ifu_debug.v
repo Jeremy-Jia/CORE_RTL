@@ -31,9 +31,12 @@ module ct_ifu_debug(
   ibctrl_debug_ind_btb_stall,
   ibctrl_debug_lbuf_inst_vld,
   ibctrl_debug_mispred_stall,
+  //jeremy need to modify
   ibdp_debug_inst0_vld,
   ibdp_debug_inst1_vld,
   ibdp_debug_inst2_vld,
+
+  
   ibdp_debug_mmu_deny_vld,
   ifctrl_debug_if_pc_vld,
   ifctrl_debug_if_stall,

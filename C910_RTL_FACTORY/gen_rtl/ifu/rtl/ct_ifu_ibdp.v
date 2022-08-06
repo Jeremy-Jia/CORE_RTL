@@ -540,6 +540,7 @@ module ct_ifu_ibdp(
   lbuf_ibdp_inst2_vl,
   lbuf_ibdp_inst2_vlmul,
   lbuf_ibdp_inst2_vsew,
+  //jeremy need to modify
   pad_yy_icg_scan_en,
   pcfifo_if_ibdp_over_mask
 );
@@ -2606,8 +2607,7 @@ always @( ibuf_ibdp_inst1[31:0]
        or ibuf_ibdp_bypass_inst0_valid
        or lbuf_ibdp_inst1_fence
        or bypass_inst_vld
-       //jeremy todo : add sensitive port list
-       )
+       //jeremy todo : add sensitivw )
 begin
 //jeremy  add this logic:
 //3'b100: data from bypass

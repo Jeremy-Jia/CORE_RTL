@@ -101,6 +101,7 @@ module ct_ifu_top(
   ifu_hpcp_frontend_stall,
   ifu_hpcp_icache_access,
   ifu_hpcp_icache_miss,
+  //jeremy need to modify
   ifu_idu_ib_inst0_data,
   ifu_idu_ib_inst0_vld,
   ifu_idu_ib_inst1_data,

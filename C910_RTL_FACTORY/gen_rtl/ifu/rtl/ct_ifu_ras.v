@@ -34,6 +34,7 @@ module ct_ifu_ras(
   ras_l0_btb_push_pc,
   ras_l0_btb_ras_push,
   rtu_ifu_flush,
+  //jeremy need to identify
   rtu_ifu_retire0_inc_pc,
   rtu_ifu_retire0_mispred,
   rtu_ifu_retire0_pcall,

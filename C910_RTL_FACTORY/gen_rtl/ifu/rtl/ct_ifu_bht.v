@@ -58,6 +58,7 @@ module ct_ifu_bht(
   pcgen_bht_pcindex,
   pcgen_bht_seq_read,
   rtu_ifu_flush,
+  //jeremy need to modify
   rtu_ifu_retire0_condbr,
   rtu_ifu_retire0_condbr_taken,
   rtu_ifu_retire1_condbr,
