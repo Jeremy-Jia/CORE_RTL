@@ -756,7 +756,7 @@ assign sel_array_val_cur[1:0] = ({2{if_pc_onehot[ 0]}} & bht_sel_data[ 1: 0]) |
 assign memory_sel_array_result[1:0] = (ipctrl_bht_more_br || ipdp_bht_h0_con_br)
                                     ? sel_array_val_flop[1:0]
                                     : sel_array_val_cur[1:0];
-//wr_buf bypass select
+//Jeremy : wr_buf bypass select
 assign sel_array_val[1:0]           = (wr_buf_hit)
                                     ? wr_buf_sel_array_result[1:0]
                                     : memory_sel_array_result[1:0];
@@ -1841,7 +1841,9 @@ endcase
 // &CombEnd; @1312
 end
 
-// &CombBeg; @1314
+//Jeremy : entry_data[35] indicate current inst jmp : 1 or not jmp : 0
+//         branch saturate counter
+//         2022.8.8
 always @( entry1_data[35:33])
 begin
 case({entry1_data[34:33],entry1_data[35]})

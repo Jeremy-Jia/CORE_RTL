@@ -169,6 +169,17 @@ module ct_ifu_lbuf(
   lbuf_ibdp_inst2_vl,
   lbuf_ibdp_inst2_vlmul,
   lbuf_ibdp_inst2_vsew,
+  lbuf_ibdp_inst3,
+  lbuf_ibdp_inst3_bkpta,
+  lbuf_ibdp_inst3_bkptb,
+  lbuf_ibdp_inst3_fence,
+  lbuf_ibdp_inst3_pc,
+  lbuf_ibdp_inst3_split0,
+  lbuf_ibdp_inst3_split1,
+  lbuf_ibdp_inst3_valid,
+  lbuf_ibdp_inst3_vl,
+  lbuf_ibdp_inst3_vlmul,
+  lbuf_ibdp_inst3_vsew,
   lbuf_ipdp_lbuf_active,
   lbuf_ipdp_updt_vl,
   lbuf_ipdp_updt_vlmul,
@@ -408,7 +419,9 @@ reg     [15:0]  front_update_pre_pointer;
 reg     [8 :0]  front_vld_mask;                           
 reg             inst0_bht_result;                         
 reg             inst1_bht_result;                         
-reg             inst2_bht_result;                         
+reg             inst2_bht_result; 
+//Jeremy add inst3 bht result                        
+reg             inst3_bht_result;                         
 reg     [15:0]  lbuf_create_pointer;                      
 reg     [3 :0]  lbuf_cur_entry_num;                       
 reg     [38:0]  lbuf_cur_pc;                              
@@ -424,9 +437,11 @@ reg     [5 :0]  lbuf_next_state;
 reg     [38:0]  lbuf_pc_pop1_pre;                         
 reg     [38:0]  lbuf_pc_pop2_pre;                         
 reg     [38:0]  lbuf_pc_pop3_pre;                         
-reg     [2 :0]  lbuf_pop1_half_num;                       
-reg     [2 :0]  lbuf_pop2_half_num;                       
-reg     [2 :0]  lbuf_pop3_half_num;                       
+reg     [38:0]  lbuf_pc_pop4_pre;                         
+reg     [3 :0]  lbuf_pop1_half_num;                       
+reg     [3 :0]  lbuf_pop2_half_num;                       
+reg     [3 :0]  lbuf_pop3_half_num;
+reg     [3 :0]  lbuf_pop4_half_num;                        
 reg             lbuf_pop_inst0_back_br;                   
 reg             lbuf_pop_inst0_bkpta;                     
 reg             lbuf_pop_inst0_bkptb;                     
@@ -501,7 +516,9 @@ reg     [15:0]  lbuf_retire_pointer;
 reg     [15:0]  lbuf_retire_pointer_branch_pre;           
 reg     [15:0]  lbuf_retire_pointer_pop1_pre;             
 reg     [15:0]  lbuf_retire_pointer_pop2_pre;             
-reg     [15:0]  lbuf_retire_pointer_pop3_pre;             
+reg     [15:0]  lbuf_retire_pointer_pop3_pre;
+// Jeremy add pop4_pre             
+reg     [15:0]  lbuf_retire_pointer_pop4_pre;             
 reg     [15:0]  lbuf_retire_pointer_pre;                  
 reg             lbuf_stop_fetch_chgflw_vld;               
 reg     [38:0]  new_record_cur_pc;                        
@@ -1099,6 +1116,8 @@ wire    [38:0]  lbuf_pc_add_3;
 wire    [38:0]  lbuf_pc_add_4;                            
 wire    [38:0]  lbuf_pc_add_5;                            
 wire    [38:0]  lbuf_pc_add_6;                            
+wire    [38:0]  lbuf_pc_add_7;                            
+wire    [38:0]  lbuf_pc_add_8;                            
 wire            lbuf_pcfifo_if_create_select;             
 wire    [1 :0]  lbuf_pcfifo_if_inst_bht_pre_result;       
 wire    [1 :0]  lbuf_pcfifo_if_inst_bht_sel_result;       
@@ -1127,7 +1146,14 @@ wire            lbuf_pop_inst2_br_mask_vld;
 wire            lbuf_pop_inst2_con_br;                    
 wire    [7 :0]  lbuf_pop_inst2_vl;                        
 wire    [1 :0]  lbuf_pop_inst2_vlmul;                     
-wire    [2 :0]  lbuf_pop_inst2_vsew;                      
+wire    [2 :0]  lbuf_pop_inst2_vsew;
+// Jeremy add inst3 signal
+wire            lbuf_pop_inst3_br_mask_vld;               
+wire            lbuf_pop_inst3_con_br;                    
+wire    [7 :0]  lbuf_pop_inst3_vl;                        
+wire    [1 :0]  lbuf_pop_inst3_vlmul;                     
+wire    [2 :0]  lbuf_pop_inst3_vsew;
+
 wire            lbuf_pop_not_taken_back_br;               
 wire            lbuf_pop_not_taken_front_br;              
 wire    [1 :0]  lbuf_pop_pre_result;                      
@@ -1357,8 +1383,7 @@ end
 assign lbuf_flush  = ibctrl_lbuf_flush;
 assign bju_mispred = ibctrl_lbuf_bju_mispred;
 
-//--------------------State Transfer-----------------------
-// &CombBeg; @84
+//Jeremy: Loop Buffer State trans
 always @( lbuf_cur_state[5:0]
        or front_br_under_rule
        or ibuf_empty
@@ -1373,6 +1398,7 @@ always @( lbuf_cur_state[5:0]
 begin
 case(lbuf_cur_state[5:0])
   IDLE         : begin
+                 //Jeremy: ins_inv_on means flush
                  if(back_br_hit_record_fifo_fill && !ins_inv_on)
                    lbuf_next_state[5:0] = CACHE;
                  else if(back_br_hit_record_fifo_unfill && !ins_inv_on)
@@ -1402,7 +1428,7 @@ case(lbuf_cur_state[5:0])
   ACTIVE       : begin
                  if(front_br_body_not_filled)
                    lbuf_next_state[5:0] = FRONT_FILL;
-                 else if(lbuf_pop_not_taken_back_br)
+                 else if(lbuf_pop_not_taken_back_br)//inst0/1/2/3 is not a back branch, exit
                    lbuf_next_state[5:0] = IDLE;
                  else
                    lbuf_next_state[5:0] = ACTIVE;
@@ -1426,10 +1452,7 @@ endcase
 // &CombEnd; @137
 end
 
-//--------------------Control Signal------------------------
-//back_br_hit_record_fifo_fill
-//IDLE state, if cur back br hit filled entry
-//turn to ACTIVE state
+//Jeremy： case 1, if current back branch hit old entry or new entry
 assign back_br_hit_record_fifo_fill = ibctrl_lbuf_create_vld && 
                                       (
                                         back_br_hit_filled_old_entry || 
@@ -1447,9 +1470,7 @@ assign back_br_hit_filled_new_entry = back_br_taken &&
                                       new_entry_filled && 
                                      !new_entry_ban && 
                                       new_entry_valid;
-//back_br_hit_record_fifo_unfill
-//IDLE state, if cur back br hit unfill entry
-//turn to FILL state
+//Jeremy： case 2, if current back branch not hit  old entry or new entry
 assign back_br_hit_record_fifo_unfill = ibctrl_lbuf_create_vld && 
                                         (
                                           back_br_hit_unfill_old_entry || 
@@ -1475,9 +1496,9 @@ assign back_br_hit_not_jump_lbuf_end = !back_br_taken &&
                                        (back_br_pc[PC_WIDTH-2:0] == new_entry_pc[PC_WIDTH-2:0]) && 
                                        lbuf_create_vld;
 //lbuf_pop_not_taken_back_br
-//On Active state, back br hit loop end while not jump
+// Jeremy: on active state, back branch hit but not jmp
 assign lbuf_pop_not_taken_back_br = lbuf_retire_vld && 
-                                    !back_br_bht_result && 
+                                    !back_br_bht_result && // Jeremy: didn't have branch history results;
                                     (
                                       (
                                         lbuf_pop_inst0_valid && 
@@ -1493,6 +1514,13 @@ assign lbuf_pop_not_taken_back_br = lbuf_retire_vld &&
                                         lbuf_pop_inst2_back_br && 
                                         !lbuf_pop_inst0_br && 
                                         !lbuf_pop_inst1_br
+                                      ) ||
+                                      (
+                                        lbuf_pop_inst3_valid && 
+                                        lbuf_pop_inst3_back_br && 
+                                        !lbuf_pop_inst0_br && 
+                                        !lbuf_pop_inst1_br &&
+                                        !lbuf_pop_inst2_br
                                       )
                                     );
 //front_br_under_rule
@@ -1522,6 +1550,13 @@ assign lbuf_pop_not_taken_front_br = lbuf_retire_vld &&
                                          lbuf_pop_inst2_front_br && 
                                          !lbuf_pop_inst0_br && 
                                          !lbuf_pop_inst1_br
+                                       ) || 
+                                       (
+                                         lbuf_pop_inst3_valid && 
+                                         lbuf_pop_inst3_front_br && 
+                                         !lbuf_pop_inst0_br && 
+                                         !lbuf_pop_inst1_br && 
+                                         !lbuf_pop_inst2_br
                                        )
                                      );
 //front_br_body_fill_finish
@@ -1594,7 +1629,7 @@ assign back_br_taken          = (|hn_con_br[7:0]) &&
                                 con_br_offset[37] && //negetive offset
                                 con_br_taken;
 
-
+//Jeremy : back br check 2022.8.8
 assign back_br_check          = (|hn_con_br[7:0]) && 
                                 con_br_offset[37];
 assign back_br_inst_32        = ibdp_lbuf_con_br_inst_32;
@@ -1612,6 +1647,8 @@ assign back_br_offset_less_16 = (&con_br_offset[PC_WIDTH-2:4]) && //<-16
 assign front_br_taken    = (|hn_con_br[7:0]) && 
                            !con_br_offset[37] && //posetive offset
                            con_br_taken;
+
+//Jeremy : front br check 2022.8.8
 assign front_br_check    = (|hn_con_br[7:0]) && 
                            !con_br_offset[37]; 
 assign front_br_inst_32 = ibdp_lbuf_con_br_inst_32;
@@ -1707,12 +1744,14 @@ assign lbuf_cur_entry_num_clk_en = lbuf_flush ||
 assign old_entry_filled   = (record_fifo_bit)
                           ? record_fifo_entry1_filled 
                           : record_fifo_entry0_filled;
+// Jeremy: substitute between entry0/1
 assign old_entry_ban      = (record_fifo_bit)
                           ? record_fifo_entry1_ban 
                           : record_fifo_entry0_ban;
 assign old_entry_valid    = (record_fifo_bit)
                           ? record_fifo_entry1_valid 
                           : record_fifo_entry0_valid;
+// Jeremy: old/new entry change between entry0/1;                          
 assign old_entry_pc[PC_WIDTH-2:0] = (record_fifo_bit)
                                   ? record_fifo_entry1_pc[PC_WIDTH-2:0] 
                                   : record_fifo_entry0_pc[PC_WIDTH-2:0];  
@@ -1932,7 +1971,10 @@ gated_clk_cell  x_record_fifo_bit_clk (
 //         ); @610
 assign record_fifo_bit_clk_en = record_fifo_bit_update || 
                                 lbuf_flush; 
-                                 
+
+
+//Jeremy: record_fifo_bit initiate to 0 as new entry, the next 
+//        cycle, this become 1 and represent old entry, 2022.8.8
 always @(posedge record_fifo_bit_clk or negedge cpurst_b)
 begin
   if(!cpurst_b)
@@ -2074,6 +2116,7 @@ end
 //record_fifo_entry_filled_update will be valid when
 //1.cur_state = FILL
 //2.back_br_hit_lbuf_end(finish fill)
+//Jeremy: old and new entry choose this signal when 1&&2
 assign record_fifo_entry_filled_update = (lbuf_cur_state[5:0] == FILL) && 
                                          back_br_hit_lbuf_end;
                                           
@@ -2434,7 +2477,7 @@ assign front_br_body_num_update_clk_en = front_branch_state ||
                                          front_fill_enter || 
                                          lbuf_flush;
 
-// &CombBeg; @1065
+//Jeremy: front branch mask
 always @( front_br_body_num[3:0])
 begin
 case(front_br_body_num[3:0])
@@ -4585,7 +4628,7 @@ assign entry_create_split1_type_15[2:0]= ({3{lbuf_create_pointer0[15]}} & h0_spl
                                          ({3{lbuf_create_pointer6[15]}} & h6_split1_type[2:0]) | 
                                          ({3{lbuf_create_pointer7[15]}} & h7_split1_type[2:0]) | 
                                          ({3{lbuf_create_pointer8[15]}} & h8_split1_type[2:0]);
-//jeremy modify pop
+//Jeremy add this logic : for hn data pop 2022.8.8
 //-------------------Entry Pop Logic------------------------
 //including lbuf pop data:
 //entry_vld[n]
@@ -5409,7 +5452,7 @@ assign pop_h6_split1_type[2:0]  = ({3{lbuf_retire_pointer6[ 0]}} & entry_split1_
 //==========================================================
 //                Create Pointer Logic
 //==========================================================
-
+//Jeremy : add this logic
 //According to the number of Half Word Pipedown, 
 //Pre generate create pointer
 // &CombBeg; @3176
@@ -5524,7 +5567,7 @@ assign lbuf_create_pointer8[ENTRY_NUM-1:0] = {lbuf_create_pointer[ENTRY_NUM-9:0]
 //Branch retire pointer prepare
 
 //Branch Way LBUF Retire Pointer Prepare
-//jeremy add inst3 retire
+//Jeremy add inst3 retire
 assign back_entry_update_pointer[ENTRY_NUM-1:0] = 16'b1;
 // &CombBeg; @3275
 always @( front_entry_update_pointer[15:0]
@@ -5562,7 +5605,7 @@ else
 // &CombEnd; @3294
 end
 
-// &CombBeg; @3289
+//Jeremy add inst3 retire 2022.8.8
 always @( lbuf_pop_inst3_front_br
        or front_entry_update_pointer[15:0]
        or back_entry_update_pointer[15:0])
@@ -5598,7 +5641,7 @@ else
 // &CombEnd; @3303
 end
 
-//jeremy add this logic
+//Jeremy add this logic: indicate ins0/1/2/3 is a valid back branch
 assign lbuf_pop_branch_vld = (
                                lbuf_pop_inst0_br && 
                                inst0_bht_result && 
@@ -5626,56 +5669,77 @@ assign lbuf_pop_branch_vld = (
                                !lbuf_pop_inst2_br //deal with inst0 br not jmp, inst1 br not jmp, ints2 not jmp
                              );
 
+
+//Jeremy add this logic for pop4 and retire 2022.8.8
 //NO Branch Way LBUF Retire Pointer Prepare
 //Contain no branch and branch not jump
-// &CombBeg; @3326
-always @( lbuf_pop3_half_num[2:0]
+always @( lbuf_pop4_half_num[3:0]
        or lbuf_retire_pointer[15:0])
 begin
-case(lbuf_pop3_half_num[2:0])
-  3'b011  : lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-4:0], 
-                                                           lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-3]};
-  3'b100  : lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-5:0], 
+case(lbuf_pop4_half_num[3:0])
+  4'b0100  : lbuf_retire_pointer_pop4_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-5:0], 
                                                            lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-4]};
-  3'b101  : lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-6:0], 
+  4'b0101  : lbuf_retire_pointer_pop4_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-6:0], 
                                                            lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-5]};
-  3'b110  : lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-7:0], 
+  4'b0110  : lbuf_retire_pointer_pop4_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-7:0], 
+                                                           lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-6]};
+  4'b0111  : lbuf_retire_pointer_pop4_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-8:0], 
+                                                           lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-7]};
+  4'b1000  : lbuf_retire_pointer_pop4_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-9:0], 
+                                                           lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-8]};
+  default  : lbuf_retire_pointer_pop4_pre[ENTRY_NUM-1:0] =  lbuf_retire_pointer[ENTRY_NUM-1:0];
+endcase
+end
+always @( lbuf_pop3_half_num[3:0]
+       or lbuf_retire_pointer[15:0])
+begin
+case(lbuf_pop3_half_num[3:0])
+  4'b0011  : lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-4:0], 
+                                                           lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-3]};
+  4'b0100  : lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-5:0], 
+                                                           lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-4]};
+  4'b0101  : lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-6:0], 
+                                                           lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-5]};
+  4'b0110  : lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-7:0], 
                                                            lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-6]};
   default : lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0] =  lbuf_retire_pointer[ENTRY_NUM-1:0];
 endcase
-// &CombEnd; @3338
 end
 
-// &CombBeg; @3340
-always @( lbuf_pop2_half_num[2:0]
+
+always @( lbuf_pop2_half_num[3:0]
        or lbuf_retire_pointer[15:0])
 begin
-case(lbuf_pop2_half_num[2:0])
-  3'b010  : lbuf_retire_pointer_pop2_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-3:0], 
+case(lbuf_pop2_half_num[3:0])
+  4'b0010  : lbuf_retire_pointer_pop2_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-3:0], 
                                                            lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-2]};
-  3'b011  : lbuf_retire_pointer_pop2_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-4:0], 
+  4'b0011  : lbuf_retire_pointer_pop2_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-4:0], 
                                                            lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-3]};
-  3'b100  : lbuf_retire_pointer_pop2_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-5:0], 
+  4'b0100  : lbuf_retire_pointer_pop2_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-5:0], 
                                                            lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-4]};
   default : lbuf_retire_pointer_pop2_pre[ENTRY_NUM-1:0] =  lbuf_retire_pointer[ENTRY_NUM-1:0];
 endcase
-// &CombEnd; @3350
 end
 
 // &CombBeg; @3352
 always @( lbuf_retire_pointer[15:0]
-       or lbuf_pop1_half_num[2:0])
+       or lbuf_pop1_half_num[3:0])
 begin
-case(lbuf_pop1_half_num[2:0])
-  3'b001  : lbuf_retire_pointer_pop1_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-2:0], 
+case(lbuf_pop1_half_num[3:0])
+  4'b0001  : lbuf_retire_pointer_pop1_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-2:0], 
                                                            lbuf_retire_pointer[ENTRY_NUM-1]};
-  3'b010  : lbuf_retire_pointer_pop1_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-3:0], 
+  4'b0010  : lbuf_retire_pointer_pop1_pre[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-3:0], 
                                                            lbuf_retire_pointer[ENTRY_NUM-1:ENTRY_NUM-2]};
   default : lbuf_retire_pointer_pop1_pre[ENTRY_NUM-1:0] =  lbuf_retire_pointer[ENTRY_NUM-1:0];
 endcase
 // &CombEnd; @3360
 end
 
+//Jeremy add inst3 br mask valid 2022.8.8
+assign lbuf_pop_inst3_br_mask_vld = lbuf_pop_inst3_valid && 
+                                    !lbuf_pop_inst2_br   && 
+                                    !lbuf_pop_inst1_br   &&
+                                    !lbuf_pop_inst0_br;
 assign lbuf_pop_inst2_br_mask_vld = lbuf_pop_inst2_valid && 
                                     !lbuf_pop_inst1_br   && 
                                     !lbuf_pop_inst0_br;
@@ -5683,16 +5747,21 @@ assign lbuf_pop_inst1_br_mask_vld = lbuf_pop_inst1_valid &&
                                     !lbuf_pop_inst0_br; 
 assign lbuf_pop_inst0_br_mask_vld = lbuf_pop_inst0_valid;
 
-// &CombBeg; @3369
+//Jeremy add this logic for pointer_pre
 always @( lbuf_retire_pointer_pop2_pre[15:0]
        or lbuf_pop_inst0_br_mask_vld
        or lbuf_retire_pointer[15:0]
        or lbuf_retire_pointer_pop1_pre[15:0]
        or lbuf_retire_pointer_pop3_pre[15:0]
+       or lbuf_retire_pointer_pop4_pre[15:0]
        or lbuf_pop_inst2_br_mask_vld
-       or lbuf_pop_inst1_br_mask_vld)
+       or lbuf_pop_inst1_br_mask_vld
+       or lbuf_pop_inst3_br_mask_vld)
 begin
-if(lbuf_pop_inst2_br_mask_vld)
+  //Jeremy : inst3 mask valid
+if(lbuf_pop_inst3_br_mask_vld)
+  lbuf_retire_pointer_pre[ENTRY_NUM-1:0] = lbuf_retire_pointer_pop4_pre[ENTRY_NUM-1:0];
+else if(lbuf_pop_inst2_br_mask_vld)
   lbuf_retire_pointer_pre[ENTRY_NUM-1:0] = lbuf_retire_pointer_pop3_pre[ENTRY_NUM-1:0];
 else if(lbuf_pop_inst1_br_mask_vld)
   lbuf_retire_pointer_pre[ENTRY_NUM-1:0] = lbuf_retire_pointer_pop2_pre[ENTRY_NUM-1:0];
@@ -5700,7 +5769,6 @@ else if(lbuf_pop_inst0_br_mask_vld)
   lbuf_retire_pointer_pre[ENTRY_NUM-1:0] = lbuf_retire_pointer_pop1_pre[ENTRY_NUM-1:0];
 else
   lbuf_retire_pointer_pre[ENTRY_NUM-1:0] = lbuf_retire_pointer[ENTRY_NUM-1:0];
-// &CombEnd; @3378
 end
 
 //Branch and NO_Branch Way select
@@ -5747,7 +5815,7 @@ end
 //lbuf_retire_vld
 //when ACTIVE state, loop buffer pop inst valid
 assign lbuf_retire_vld = ibctrl_lbuf_retire_vld;
-//Jeremy add
+//Jeremy add 2022.8.8
 //There are most 7 Half will be wrote out from lbuf
 //Thus need 7 retire pointer to point different entry 
 assign lbuf_retire_pointer0[ENTRY_NUM-1:0] =  lbuf_retire_pointer[ENTRY_NUM-1:0];
@@ -5770,6 +5838,7 @@ assign lbuf_retire_pointer7[ENTRY_NUM-1:0] = {lbuf_retire_pointer[ENTRY_NUM-8:0]
 //            LBUF POP Data trans into inst
 //==========================================================
 //Prepare Inst Start and Inst 32 Information
+//Jeremy add h5/6 2022.8.8
 assign pop_h0_br       = pop_h0_front_br || 
                          pop_h0_back_br; 
 assign pop_h1_br       = pop_h1_front_br || 
@@ -5780,6 +5849,10 @@ assign pop_h3_br       = pop_h3_front_br ||
                          pop_h3_back_br; 
 assign pop_h4_br       = pop_h4_front_br || 
                          pop_h4_back_br; 
+assign pop_h5_br       = pop_h5_front_br || 
+                         pop_h5_back_br; 
+assign pop_h6_br       = pop_h6_front_br || 
+                         pop_h6_back_br; 
 
 //6 Half Word into 3 Inst
 //jeremy change 8 half word into 4 inst
@@ -5848,7 +5921,37 @@ always @( lbuf_pc_add_1[14:0]
        or pop_h3_vsew[2:0]
        or pop_h4_br
        or pop_h0_vld
-       or pop_h5_data[15:0]
+       or pop_h5_32_start                          
+       or pop_h5_back_br                           
+       or pop_h5_bkpta                             
+       or pop_h5_bkptb                             
+       or pop_h5_br                                
+       or pop_h5_data[15:0]                              
+       or pop_h5_fence                             
+       or pop_h5_front_br                          
+       or pop_h5_split0_type[2:0]                       
+       or pop_h5_split1_type[2:0]                       
+       or pop_h5_vl[7:0]                                
+       or pop_h5_vld                               
+       or pop_h5_vlmul[1:0]                             
+       or pop_h5_vsetvli                           
+       or pop_h5_vsew[2:0]
+       or pop_h6_32_start                          
+       or pop_h6_back_br                           
+       or pop_h6_bkpta                             
+       or pop_h6_bkptb                             
+       or pop_h6_br                                
+       or pop_h7_data[15:0]                              
+       or pop_h6_data[15:0]                              
+       or pop_h6_fence                             
+       or pop_h6_front_br                          
+       or pop_h6_split0_type[2:0]                       
+       or pop_h6_split1_type[2:0]                       
+       or pop_h6_vl[7:0]                                
+       or pop_h6_vld                               
+       or pop_h6_vlmul[1:0]                             
+       or pop_h6_vsetvli                           
+       or pop_h6_vsew[2:0]
        or lbuf_cur_pc[14:0]
        or pop_h3_data[15:0]
        or pop_h3_fence
@@ -5866,6 +5969,479 @@ always @( lbuf_pc_add_1[14:0]
        or pop_h3_vlmul[1:0]
        or pop_h0_split1_type[2:0])
 begin
+// casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
+//        pop_h3_32_start,pop_h4_32_start,pop_h5_32_start,pop_h6_32_start})
+//        7'b0000??? : begin
+//                   lbuf_pop_inst0_valid            = pop_h0_vld;
+//                   lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
+//                   lbuf_pop_inst0_br               = pop_h0_br;
+//                   lbuf_pop_inst1_valid            = pop_h1_vld;
+//                   lbuf_pop_inst1_data[31:0]       = {16'b0,pop_h1_data[15:0]};
+//                   lbuf_pop_inst1_br               = pop_h1_br;
+//                   lbuf_pop_inst2_valid            = pop_h2_vld;
+//                   lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h2_data[15:0]};
+//                   lbuf_pop_inst2_br               = pop_h2_br;
+//                   lbuf_pop_inst3_valid            = pop_h3_vld;
+//                   lbuf_pop_inst3_data[31:0]       = {16'b0,pop_h3_data[15:0]};
+//                   lbuf_pop_inst3_br               = pop_h3_br;
+//                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
+//                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
+//                   lbuf_pop_inst1_front_br         = pop_h1_front_br;
+//                   lbuf_pop_inst1_back_br          = pop_h1_back_br;
+//                   lbuf_pop_inst2_front_br         = pop_h2_front_br;
+//                   lbuf_pop_inst2_back_br          = pop_h2_back_br;
+//                   lbuf_pop_inst3_front_br         = pop_h3_front_br;
+//                   lbuf_pop_inst3_back_br          = pop_h3_back_br;
+//                   lbuf_pop4_half_num[3:0]         = 4'b0100; // Jeremy add this logic to indicate current pop half number
+//                   lbuf_pop3_half_num[3:0]         = 4'b0011;
+//                   lbuf_pop2_half_num[3:0]         = 4'b0010;
+//                   lbuf_pop1_half_num[3:0]         = 4'b0001;
+//                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+//                   lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
+//                   lbuf_pop_inst2_vsetvli          = pop_h2_vsetvli;
+//                   lbuf_pop_inst3_vsetvli          = pop_h3_vsetvli;
+//                   lbuf_pop_inst0_fence            = pop_h0_fence;
+//                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+//                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+//                   lbuf_pop_inst1_fence            = pop_h1_fence;
+//                   lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
+//                   lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
+//                   lbuf_pop_inst2_fence            = pop_h2_fence;
+//                   lbuf_pop_inst2_bkpta            = pop_h2_bkpta;
+//                   lbuf_pop_inst2_bkptb            = pop_h2_bkptb;
+//                   lbuf_pop_inst3_fence            = pop_h3_fence;
+//                   lbuf_pop_inst3_bkpta            = pop_h3_bkpta;
+//                   lbuf_pop_inst3_bkptb            = pop_h3_bkptb;
+//                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+//                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+//                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+//                   lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
+//                   lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
+//                   lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
+//                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+//                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+//                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h2_vl[7:0];
+//                   lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+//                   lbuf_pop_inst3_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+//                   lbuf_pop_inst3_vl_pre[7:0]      = pop_h3_vl[7:0];
+//                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+//                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+//                   lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
+//                   lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
+//                   lbuf_pop_inst2_split0_type[2:0] = pop_h2_split0_type[2:0];
+//                   lbuf_pop_inst2_split1_type[2:0] = pop_h2_split1_type[2:0];
+//                   lbuf_pop_inst3_split0_type[2:0] = pop_h3_split0_type[2:0];
+//                   lbuf_pop_inst3_split1_type[2:0] = pop_h3_split1_type[2:0];
+//                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+//                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
+//                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_2[14:0];
+//                   lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_3[14:0];
+//                   end
+//        7'b0001??? : begin
+//                   lbuf_pop_inst0_valid            = pop_h0_vld;
+//                   lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
+//                   lbuf_pop_inst0_br               = pop_h0_br;
+//                   lbuf_pop_inst1_valid            = pop_h1_vld;
+//                   lbuf_pop_inst1_data[31:0]       = {16'b0,pop_h1_data[15:0]};
+//                   lbuf_pop_inst1_br               = pop_h1_br;
+//                   lbuf_pop_inst2_valid            = pop_h2_vld;
+//                   lbuf_pop_inst2_data[31:0]       = {pop_h3_data[15:0],pop_h2_data[15:0]};
+//                   lbuf_pop_inst2_br               = pop_h2_br;
+//                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
+//                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
+//                   lbuf_pop_inst1_front_br         = pop_h1_front_br;
+//                   lbuf_pop_inst1_back_br          = pop_h1_back_br;
+//                   lbuf_pop_inst2_front_br         = pop_h2_front_br;
+//                   lbuf_pop_inst2_back_br          = pop_h2_back_br;
+//                   lbuf_pop4_half_num[3:0]         = 4'b0101;
+//                   lbuf_pop3_half_num[3:0]         = 4'b0011;
+//                   lbuf_pop2_half_num[3:0]         = 4'b0010;
+//                   lbuf_pop1_half_num[3:0]         = 4'b0001;
+//                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+//                   lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
+//                   lbuf_pop_inst2_vsetvli          = pop_h2_vsetvli;
+//                   lbuf_pop_inst0_fence            = pop_h0_fence;
+//                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+//                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+//                   lbuf_pop_inst1_fence            = pop_h1_fence;
+//                   lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
+//                   lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
+//                   lbuf_pop_inst2_fence            = pop_h2_fence;
+//                   lbuf_pop_inst2_bkpta            = pop_h2_bkpta;
+//                   lbuf_pop_inst2_bkptb            = pop_h2_bkptb;
+//                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+//                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+//                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+//                   lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
+//                   lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
+//                   lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
+//                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+//                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+//                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h2_vl[7:0];
+//                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+//                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+//                   lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
+//                   lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
+//                   lbuf_pop_inst2_split0_type[2:0] = pop_h2_split0_type[2:0];
+//                   lbuf_pop_inst2_split1_type[2:0] = pop_h2_split1_type[2:0];
+//                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+//                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
+//                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_2[14:0];
+//                   end
+//        7'b001?0?? : begin
+//                   lbuf_pop_inst0_valid            = pop_h0_vld;
+//                   lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
+//                   lbuf_pop_inst0_br               = pop_h0_br;
+//                   lbuf_pop_inst1_valid            = pop_h1_vld;
+//                   lbuf_pop_inst1_data[31:0]       = {pop_h2_data[15:0],pop_h1_data[15:0]};
+//                   lbuf_pop_inst1_br               = pop_h1_br;
+//                   lbuf_pop_inst2_valid            = pop_h3_vld;
+//                   lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h3_data[15:0]};
+//                   lbuf_pop_inst2_br               = pop_h3_br;
+//                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
+//                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
+//                   lbuf_pop_inst1_front_br         = pop_h1_front_br;
+//                   lbuf_pop_inst1_back_br          = pop_h1_back_br;
+//                   lbuf_pop_inst2_front_br         = pop_h3_front_br;
+//                   lbuf_pop_inst2_back_br          = pop_h3_back_br;
+//                   lbuf_pop4_half_num[3:0]         = 4'b0101;
+//                   lbuf_pop3_half_num[3:0]         = 4'b0100;
+//                   lbuf_pop2_half_num[3:0]         = 4'b0010;
+//                   lbuf_pop1_half_num[3:0]         = 4'b0001;
+//                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+//                   lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
+//                   lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+//                   lbuf_pop_inst0_fence            = pop_h0_fence;
+//                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+//                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+//                   lbuf_pop_inst1_fence            = pop_h1_fence;
+//                   lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
+//                   lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
+//                   lbuf_pop_inst2_fence            = pop_h3_fence;
+//                   lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
+//                   lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+//                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+//                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+//                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+//                   lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
+//                   lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
+//                   lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
+//                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+//                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+//                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+//                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+//                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+//                   lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
+//                   lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
+//                   lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
+//                   lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+//                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+//                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
+//                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+//                   end
+//        7'b001?1?? : begin
+//                   lbuf_pop_inst0_valid            = pop_h0_vld;
+//                   lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
+//                   lbuf_pop_inst0_br               = pop_h0_br;
+//                   lbuf_pop_inst1_valid            = pop_h1_vld;
+//                   lbuf_pop_inst1_data[31:0]       = {pop_h2_data[15:0],pop_h1_data[15:0]};
+//                   lbuf_pop_inst1_br               = pop_h1_br;
+//                   lbuf_pop_inst2_valid            = pop_h3_vld;
+//                   lbuf_pop_inst2_data[31:0]       = {pop_h4_data[15:0],pop_h3_data[15:0]};
+//                   lbuf_pop_inst2_br               = pop_h3_br;
+//                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
+//                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
+//                   lbuf_pop_inst1_front_br         = pop_h1_front_br;
+//                   lbuf_pop_inst1_back_br          = pop_h1_back_br;
+//                   lbuf_pop_inst2_front_br         = pop_h3_front_br;
+//                   lbuf_pop_inst2_back_br          = pop_h3_back_br;
+//                   lbuf_pop4_half_num[3:0]         = 4'b0110;
+//                   lbuf_pop3_half_num[3:0]         = 4'b0100;
+//                   lbuf_pop2_half_num[3:0]         = 4'b0010;
+//                   lbuf_pop1_half_num[3:0]         = 4'b0001;
+//                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+//                   lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
+//                   lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+//                   lbuf_pop_inst0_fence            = pop_h0_fence;
+//                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+//                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+//                   lbuf_pop_inst1_fence            = pop_h1_fence;
+//                   lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
+//                   lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
+//                   lbuf_pop_inst2_fence            = pop_h3_fence;
+//                   lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
+//                   lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+//                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+//                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+//                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+//                   lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
+//                   lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
+//                   lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
+//                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+//                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+//                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+//                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+//                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+//                   lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
+//                   lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
+//                   lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
+//                   lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+//                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+//                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
+//                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+//                   end
+//        7'b01?00?? : begin
+//                   lbuf_pop_inst0_valid            = pop_h0_vld;
+//                   lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
+//                   lbuf_pop_inst0_br               = pop_h0_br;
+//                   lbuf_pop_inst1_valid            = pop_h2_vld;
+//                   lbuf_pop_inst1_data[31:0]       = {16'b0,pop_h2_data[15:0]};
+//                   lbuf_pop_inst1_br               = pop_h2_br;
+//                   lbuf_pop_inst2_valid            = pop_h3_vld;
+//                   lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h3_data[15:0]};
+//                   lbuf_pop_inst2_br               = pop_h3_br;
+//                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
+//                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
+//                   lbuf_pop_inst1_front_br         = pop_h2_front_br;
+//                   lbuf_pop_inst1_back_br          = pop_h2_back_br;
+//                   lbuf_pop_inst2_front_br         = pop_h3_front_br;
+//                   lbuf_pop_inst2_back_br          = pop_h3_back_br;
+//                   lbuf_pop4_half_num[3:0]         = 4'b0110;
+//                   lbuf_pop3_half_num[3:0]         = 4'b0100;
+//                   lbuf_pop2_half_num[3:0]         = 4'b0011;
+//                   lbuf_pop1_half_num[3:0]         = 4'b0001;
+//                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+//                   lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
+//                   lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+//                   lbuf_pop_inst0_fence            = pop_h0_fence;
+//                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+//                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+//                   lbuf_pop_inst1_fence            = pop_h2_fence;
+//                   lbuf_pop_inst1_bkpta            = pop_h2_bkpta;
+//                   lbuf_pop_inst1_bkptb            = pop_h2_bkptb;
+//                   lbuf_pop_inst2_fence            = pop_h3_fence;
+//                   lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
+//                   lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+//                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+//                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+//                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+//                   lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+//                   lbuf_pop_inst1_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+//                   lbuf_pop_inst1_vl_pre[7:0]      = pop_h2_vl[7:0];
+//                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+//                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+//                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+//                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+//                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+//                   lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
+//                   lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
+//                   lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
+//                   lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+//                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+//                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
+//                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+//                   end
+//        5'b1?01? : begin
+//                   lbuf_pop_inst0_valid            = pop_h0_vld;
+//                   lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
+//                   lbuf_pop_inst0_br               = pop_h0_br;
+//                   lbuf_pop_inst1_valid            = pop_h2_vld;
+//                   lbuf_pop_inst1_data[31:0]       = {16'b0,pop_h2_data[15:0]};
+//                   lbuf_pop_inst1_br               = pop_h2_br;
+//                   lbuf_pop_inst2_valid            = pop_h3_vld;
+//                   lbuf_pop_inst2_data[31:0]       = {pop_h4_data[15:0],pop_h3_data[15:0]};
+//                   lbuf_pop_inst2_br               = pop_h3_br;
+//                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
+//                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
+//                   lbuf_pop_inst1_front_br         = pop_h2_front_br;
+//                   lbuf_pop_inst1_back_br          = pop_h2_back_br;
+//                   lbuf_pop_inst2_front_br         = pop_h3_front_br;
+//                   lbuf_pop_inst2_back_br          = pop_h3_back_br;
+//                   lbuf_pop3_half_num[3:0]         = 3'b101;
+//                   lbuf_pop2_half_num[3:0]         = 3'b011;
+//                   lbuf_pop1_half_num[3:0]         = 3'b010;
+//                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+//                   lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
+//                   lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+//                   lbuf_pop_inst0_fence            = pop_h0_fence;
+//                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+//                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+//                   lbuf_pop_inst1_fence            = pop_h2_fence;
+//                   lbuf_pop_inst1_bkpta            = pop_h2_bkpta;
+//                   lbuf_pop_inst1_bkptb            = pop_h2_bkptb;
+//                   lbuf_pop_inst2_fence            = pop_h3_fence;
+//                   lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
+//                   lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+//                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+//                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+//                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+//                   lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+//                   lbuf_pop_inst1_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+//                   lbuf_pop_inst1_vl_pre[7:0]      = pop_h2_vl[7:0];
+//                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+//                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+//                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+//                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+//                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+//                   lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
+//                   lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
+//                   lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
+//                   lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+//                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+//                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
+//                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+//                   end
+//        5'b1?1?0 : begin
+//                   lbuf_pop_inst0_valid            = pop_h0_vld;
+//                   lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
+//                   lbuf_pop_inst0_br               = pop_h0_br;
+//                   lbuf_pop_inst1_valid            = pop_h2_vld;
+//                   lbuf_pop_inst1_data[31:0]       = {pop_h3_data[15:0],pop_h2_data[15:0]};
+//                   lbuf_pop_inst1_br               = pop_h2_br;
+//                   lbuf_pop_inst2_valid            = pop_h4_vld;
+//                   lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h4_data[15:0]};
+//                   lbuf_pop_inst2_br               = pop_h4_br;
+//                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
+//                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
+//                   lbuf_pop_inst1_front_br         = pop_h2_front_br;
+//                   lbuf_pop_inst1_back_br          = pop_h2_back_br;
+//                   lbuf_pop_inst2_front_br         = pop_h4_front_br;
+//                   lbuf_pop_inst2_back_br          = pop_h4_back_br;
+//                   lbuf_pop3_half_num[3:0]         = 3'b101;
+//                   lbuf_pop2_half_num[3:0]         = 3'b100;
+//                   lbuf_pop1_half_num[3:0]         = 3'b010;
+//                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+//                   lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
+//                   lbuf_pop_inst2_vsetvli          = pop_h4_vsetvli;
+//                   lbuf_pop_inst0_fence            = pop_h0_fence;
+//                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+//                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+//                   lbuf_pop_inst1_fence            = pop_h2_fence;
+//                   lbuf_pop_inst1_bkpta            = pop_h2_bkpta;
+//                   lbuf_pop_inst1_bkptb            = pop_h2_bkptb;
+//                   lbuf_pop_inst2_fence            = pop_h4_fence;
+//                   lbuf_pop_inst2_bkpta            = pop_h4_bkpta;
+//                   lbuf_pop_inst2_bkptb            = pop_h4_bkptb;
+//                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+//                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+//                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+//                   lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+//                   lbuf_pop_inst1_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+//                   lbuf_pop_inst1_vl_pre[7:0]      = pop_h2_vl[7:0];
+//                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+//                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+//                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h4_vl[7:0];
+//                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+//                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+//                   lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
+//                   lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
+//                   lbuf_pop_inst2_split0_type[2:0] = pop_h4_split0_type[2:0];
+//                   lbuf_pop_inst2_split1_type[2:0] = pop_h4_split1_type[2:0];
+//                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+//                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
+//                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_4[14:0];
+//                   end
+//        5'b1?1?1 : begin
+//                   lbuf_pop_inst0_valid            = pop_h0_vld;
+//                   lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
+//                   lbuf_pop_inst0_br               = pop_h0_br;
+//                   lbuf_pop_inst1_valid            = pop_h2_vld;
+//                   lbuf_pop_inst1_data[31:0]       = {pop_h3_data[15:0],pop_h2_data[15:0]};
+//                   lbuf_pop_inst1_br               = pop_h2_br;
+//                   lbuf_pop_inst2_valid            = pop_h4_vld;
+//                   lbuf_pop_inst2_data[31:0]       = {pop_h5_data[15:0],pop_h4_data[15:0]};
+//                   lbuf_pop_inst2_br               = pop_h4_br;
+//                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
+//                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
+//                   lbuf_pop_inst1_front_br         = pop_h2_front_br;
+//                   lbuf_pop_inst1_back_br          = pop_h2_back_br;
+//                   lbuf_pop_inst2_front_br         = pop_h4_front_br;
+//                   lbuf_pop_inst2_back_br          = pop_h4_back_br;
+//                   lbuf_pop3_half_num[3:0]         = 3'b110;
+//                   lbuf_pop2_half_num[3:0]         = 3'b100;
+//                   lbuf_pop1_half_num[3:0]         = 3'b010;
+//                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+//                   lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
+//                   lbuf_pop_inst2_vsetvli          = pop_h4_vsetvli;
+//                   lbuf_pop_inst0_fence            = pop_h0_fence;
+//                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+//                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+//                   lbuf_pop_inst1_fence            = pop_h2_fence;
+//                   lbuf_pop_inst1_bkpta            = pop_h2_bkpta;
+//                   lbuf_pop_inst1_bkptb            = pop_h2_bkptb;
+//                   lbuf_pop_inst2_fence            = pop_h4_fence;
+//                   lbuf_pop_inst2_bkpta            = pop_h4_bkpta;
+//                   lbuf_pop_inst2_bkptb            = pop_h4_bkptb;
+//                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+//                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+//                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+//                   lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+//                   lbuf_pop_inst1_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+//                   lbuf_pop_inst1_vl_pre[7:0]      = pop_h2_vl[7:0];
+//                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+//                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+//                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h4_vl[7:0];
+//                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+//                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+//                   lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
+//                   lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
+//                   lbuf_pop_inst2_split0_type[2:0] = pop_h4_split0_type[2:0];
+//                   lbuf_pop_inst2_split1_type[2:0] = pop_h4_split1_type[2:0];
+//                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+//                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
+//                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_4[14:0];
+//                   end
+//        default  : begin
+//                   lbuf_pop_inst0_valid            =  1'b0;
+//                   lbuf_pop_inst0_data[31:0]       = 32'b0;
+//                   lbuf_pop_inst0_br               =  1'b0;
+//                   lbuf_pop_inst1_valid            =  1'b0; 
+//                   lbuf_pop_inst1_data[31:0]       = 32'b0; 
+//                   lbuf_pop_inst1_br               =  1'b0;
+//                   lbuf_pop_inst2_valid            =  1'b0; 
+//                   lbuf_pop_inst2_data[31:0]       = 32'b0; 
+//                   lbuf_pop_inst2_br               =  1'b0;
+//                   lbuf_pop3_half_num[3:0]         =  3'b0; 
+//                   lbuf_pop2_half_num[3:0]         =  3'b0; 
+//                   lbuf_pop1_half_num[3:0]         =  3'b0; 
+//                   lbuf_pop_inst0_front_br         =  1'b0; 
+//                   lbuf_pop_inst0_back_br          =  1'b0; 
+//                   lbuf_pop_inst1_front_br         =  1'b0; 
+//                   lbuf_pop_inst1_back_br          =  1'b0; 
+//                   lbuf_pop_inst2_front_br         =  1'b0; 
+//                   lbuf_pop_inst2_back_br          =  1'b0; 
+//                   lbuf_pop_inst0_vsetvli          =  1'b0;
+//                   lbuf_pop_inst1_vsetvli          =  1'b0;
+//                   lbuf_pop_inst2_vsetvli          =  1'b0;
+//                   lbuf_pop_inst0_fence            =  1'b0;
+//                   lbuf_pop_inst0_bkpta            =  1'b0;
+//                   lbuf_pop_inst0_bkptb            =  1'b0;
+//                   lbuf_pop_inst1_fence            =  1'b0;
+//                   lbuf_pop_inst1_bkpta            =  1'b0;
+//                   lbuf_pop_inst1_bkptb            =  1'b0;
+//                   lbuf_pop_inst2_fence            =  1'b0;
+//                   lbuf_pop_inst2_bkpta            =  1'b0;
+//                   lbuf_pop_inst2_bkptb            =  1'b0;
+//                   lbuf_pop_inst0_vlmul_pre[1:0]   =  2'b0; 
+//                   lbuf_pop_inst0_vsew_pre[2:0]    =  3'b0;
+//                   lbuf_pop_inst0_vl_pre[7:0]      =  8'b0;
+//                   lbuf_pop_inst1_vlmul_pre[1:0]   =  2'b0;
+//                   lbuf_pop_inst1_vsew_pre[2:0]    =  3'b0;
+//                   lbuf_pop_inst2_vlmul_pre[1:0]   =  2'b0;
+//                   lbuf_pop_inst1_vl_pre[7:0]      =  8'b0;
+//                   lbuf_pop_inst2_vsew_pre[2:0]    =  3'b0;
+//                   lbuf_pop_inst2_vl_pre[7:0]      =  8'b0;
+//                   lbuf_pop_inst0_split0_type[2:0] =  3'b0;
+//                   lbuf_pop_inst0_split1_type[2:0] =  3'b0;
+//                   lbuf_pop_inst1_split0_type[2:0] =  3'b0;
+//                   lbuf_pop_inst1_split1_type[2:0] =  3'b0;
+//                   lbuf_pop_inst2_split0_type[2:0] =  3'b0;
+//                   lbuf_pop_inst2_split1_type[2:0] =  3'b0;
+//                   lbuf_pop_inst0_pc[14:0]         =  15'b0;
+//                   lbuf_pop_inst1_pc[14:0]         =  15'b0;
+//                   lbuf_pop_inst2_pc[14:0]         =  15'b0;
+//                   end
+// endcase
 casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
        pop_h3_32_start,pop_h4_32_start,pop_h5_32_start,pop_h6_32_start})
        7'b0000??? : begin
@@ -5878,18 +6454,25 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_valid            = pop_h2_vld;
                   lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h2_data[15:0]};
                   lbuf_pop_inst2_br               = pop_h2_br;
+                  lbuf_pop_inst3_valid            = pop_h3_vld;
+                  lbuf_pop_inst3_data[31:0]       = {16'b0,pop_h3_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h3_br;
                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
                   lbuf_pop_inst1_front_br         = pop_h1_front_br;
                   lbuf_pop_inst1_back_br          = pop_h1_back_br;
                   lbuf_pop_inst2_front_br         = pop_h2_front_br;
                   lbuf_pop_inst2_back_br          = pop_h2_back_br;
-                  lbuf_pop3_half_num[2:0]         = 3'b011;
-                  lbuf_pop2_half_num[2:0]         = 3'b010;
-                  lbuf_pop1_half_num[2:0]         = 3'b001;
+                  lbuf_pop_inst3_front_br         = pop_h3_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h3_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0100; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0011;
+                  lbuf_pop2_half_num[3:0]         = 4'b0010;
+                  lbuf_pop1_half_num[3:0]         = 4'b0001;
                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
                   lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
                   lbuf_pop_inst2_vsetvli          = pop_h2_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h3_vsetvli;
                   lbuf_pop_inst0_fence            = pop_h0_fence;
                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
@@ -5899,6 +6482,9 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_fence            = pop_h2_fence;
                   lbuf_pop_inst2_bkpta            = pop_h2_bkpta;
                   lbuf_pop_inst2_bkptb            = pop_h2_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h3_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h3_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h3_bkptb;
                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
@@ -5908,17 +6494,90 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h2_vsew[2:0];
                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h2_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h3_vl[7:0];
                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
                   lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
                   lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
                   lbuf_pop_inst2_split0_type[2:0] = pop_h2_split0_type[2:0];
                   lbuf_pop_inst2_split1_type[2:0] = pop_h2_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h3_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h3_split1_type[2:0];
                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_2[14:0];
-                  end
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_3[14:0];
+       end
        7'b0001??? : begin
+                  lbuf_pop_inst0_valid            = pop_h0_vld;
+                  lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
+                  lbuf_pop_inst0_br               = pop_h0_br;
+                  lbuf_pop_inst1_valid            = pop_h1_vld;
+                  lbuf_pop_inst1_data[31:0]       = {16'b0,pop_h1_data[15:0]};
+                  lbuf_pop_inst1_br               = pop_h1_br;
+                  lbuf_pop_inst2_valid            = pop_h2_vld;
+                  lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h2_data[15:0]};
+                  lbuf_pop_inst2_br               = pop_h2_br;
+                  lbuf_pop_inst3_valid            = pop_h3_vld;
+                  lbuf_pop_inst3_data[31:0]       = {pop_h4_data[15:0],pop_h3_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h3_br;
+                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
+                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
+                  lbuf_pop_inst1_front_br         = pop_h1_front_br;
+                  lbuf_pop_inst1_back_br          = pop_h1_back_br;
+                  lbuf_pop_inst2_front_br         = pop_h2_front_br;
+                  lbuf_pop_inst2_back_br          = pop_h2_back_br;
+                  lbuf_pop_inst3_front_br         = pop_h3_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h3_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0101; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0011;
+                  lbuf_pop2_half_num[3:0]         = 4'b0010;
+                  lbuf_pop1_half_num[3:0]         = 4'b0001;
+                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+                  lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
+                  lbuf_pop_inst2_vsetvli          = pop_h2_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h3_vsetvli;
+                  lbuf_pop_inst0_fence            = pop_h0_fence;
+                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+                  lbuf_pop_inst1_fence            = pop_h1_fence;
+                  lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
+                  lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
+                  lbuf_pop_inst2_fence            = pop_h2_fence;
+                  lbuf_pop_inst2_bkpta            = pop_h2_bkpta;
+                  lbuf_pop_inst2_bkptb            = pop_h2_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h3_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h3_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h3_bkptb;
+                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
+                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
+                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
+                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h2_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h3_vl[7:0];
+                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+                  lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
+                  lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
+                  lbuf_pop_inst2_split0_type[2:0] = pop_h2_split0_type[2:0];
+                  lbuf_pop_inst2_split1_type[2:0] = pop_h2_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h3_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h3_split1_type[2:0];
+                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
+                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_2[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  end
+       
+       7'b001?0?? : begin
                   lbuf_pop_inst0_valid            = pop_h0_vld;
                   lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
                   lbuf_pop_inst0_br               = pop_h0_br;
@@ -5928,18 +6587,25 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_valid            = pop_h2_vld;
                   lbuf_pop_inst2_data[31:0]       = {pop_h3_data[15:0],pop_h2_data[15:0]};
                   lbuf_pop_inst2_br               = pop_h2_br;
+                  lbuf_pop_inst3_valid            = pop_h4_vld;
+                  lbuf_pop_inst3_data[31:0]       = {16'b0,pop_h4_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h4_br;
                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
                   lbuf_pop_inst1_front_br         = pop_h1_front_br;
                   lbuf_pop_inst1_back_br          = pop_h1_back_br;
                   lbuf_pop_inst2_front_br         = pop_h2_front_br;
                   lbuf_pop_inst2_back_br          = pop_h2_back_br;
-                  lbuf_pop3_half_num[2:0]         = 3'b100;
-                  lbuf_pop2_half_num[2:0]         = 3'b010;
-                  lbuf_pop1_half_num[2:0]         = 3'b001;
+                  lbuf_pop_inst3_front_br         = pop_h4_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h4_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0101; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0100;
+                  lbuf_pop2_half_num[3:0]         = 4'b0010;
+                  lbuf_pop1_half_num[3:0]         = 4'b0001;
                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
                   lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
                   lbuf_pop_inst2_vsetvli          = pop_h2_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h4_vsetvli;
                   lbuf_pop_inst0_fence            = pop_h0_fence;
                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
@@ -5949,6 +6615,9 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_fence            = pop_h2_fence;
                   lbuf_pop_inst2_bkpta            = pop_h2_bkpta;
                   lbuf_pop_inst2_bkptb            = pop_h2_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h4_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h4_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h4_bkptb;
                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
@@ -5958,88 +6627,118 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h2_vsew[2:0];
                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h2_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h4_vl[7:0];
                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
                   lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
                   lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
                   lbuf_pop_inst2_split0_type[2:0] = pop_h2_split0_type[2:0];
                   lbuf_pop_inst2_split1_type[2:0] = pop_h2_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h4_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h4_split1_type[2:0];
                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_2[14:0];
-                  end
-       7'b001?0?? : begin
-                  lbuf_pop_inst0_valid            = pop_h0_vld;
-                  lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
-                  lbuf_pop_inst0_br               = pop_h0_br;
-                  lbuf_pop_inst1_valid            = pop_h1_vld;
-                  lbuf_pop_inst1_data[31:0]       = {pop_h2_data[15:0],pop_h1_data[15:0]};
-                  lbuf_pop_inst1_br               = pop_h1_br;
-                  lbuf_pop_inst2_valid            = pop_h3_vld;
-                  lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h3_data[15:0]};
-                  lbuf_pop_inst2_br               = pop_h3_br;
-                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
-                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
-                  lbuf_pop_inst1_front_br         = pop_h1_front_br;
-                  lbuf_pop_inst1_back_br          = pop_h1_back_br;
-                  lbuf_pop_inst2_front_br         = pop_h3_front_br;
-                  lbuf_pop_inst2_back_br          = pop_h3_back_br;
-                  lbuf_pop3_half_num[2:0]         = 3'b100;
-                  lbuf_pop2_half_num[2:0]         = 3'b011;
-                  lbuf_pop1_half_num[2:0]         = 3'b001;
-                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
-                  lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
-                  lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
-                  lbuf_pop_inst0_fence            = pop_h0_fence;
-                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
-                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
-                  lbuf_pop_inst1_fence            = pop_h1_fence;
-                  lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
-                  lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
-                  lbuf_pop_inst2_fence            = pop_h3_fence;
-                  lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
-                  lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
-                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
-                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
-                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
-                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
-                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
-                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
-                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
-                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
-                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
-                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
-                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
-                  lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
-                  lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
-                  lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
-                  lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
-                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
-                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
-                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_4[14:0];
                   end
        7'b001?1?? : begin
                   lbuf_pop_inst0_valid            = pop_h0_vld;
                   lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
                   lbuf_pop_inst0_br               = pop_h0_br;
                   lbuf_pop_inst1_valid            = pop_h1_vld;
+                  lbuf_pop_inst1_data[31:0]       = {16'b0,pop_h1_data[15:0]};
+                  lbuf_pop_inst1_br               = pop_h1_br;
+                  lbuf_pop_inst2_valid            = pop_h2_vld;
+                  lbuf_pop_inst2_data[31:0]       = {pop_h3_data[15:0],pop_h2_data[15:0]};
+                  lbuf_pop_inst2_br               = pop_h2_br;
+                  lbuf_pop_inst3_valid            = pop_h4_vld;
+                  lbuf_pop_inst3_data[31:0]       = {pop_h5_data[15:0],pop_h4_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h4_br;
+                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
+                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
+                  lbuf_pop_inst1_front_br         = pop_h1_front_br;
+                  lbuf_pop_inst1_back_br          = pop_h1_back_br;
+                  lbuf_pop_inst2_front_br         = pop_h2_front_br;
+                  lbuf_pop_inst2_back_br          = pop_h2_back_br;
+                  lbuf_pop_inst3_front_br         = pop_h4_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h4_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0110; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0100;
+                  lbuf_pop2_half_num[3:0]         = 4'b0010;
+                  lbuf_pop1_half_num[3:0]         = 4'b0001;
+                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+                  lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
+                  lbuf_pop_inst2_vsetvli          = pop_h2_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h4_vsetvli;
+                  lbuf_pop_inst0_fence            = pop_h0_fence;
+                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+                  lbuf_pop_inst1_fence            = pop_h1_fence;
+                  lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
+                  lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
+                  lbuf_pop_inst2_fence            = pop_h2_fence;
+                  lbuf_pop_inst2_bkpta            = pop_h2_bkpta;
+                  lbuf_pop_inst2_bkptb            = pop_h2_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h4_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h4_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h4_bkptb;
+                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
+                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
+                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
+                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h2_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h4_vl[7:0];
+                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+                  lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
+                  lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
+                  lbuf_pop_inst2_split0_type[2:0] = pop_h2_split0_type[2:0];
+                  lbuf_pop_inst2_split1_type[2:0] = pop_h2_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h4_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h4_split1_type[2:0];
+                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
+                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_2[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_4[14:0];
+                  end
+       
+       7'b01?00?? : begin
+                  lbuf_pop_inst0_valid            = pop_h0_vld;
+                  lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
+                  lbuf_pop_inst0_br               = pop_h0_br;
+                  lbuf_pop_inst1_valid            = pop_h1_vld;
                   lbuf_pop_inst1_data[31:0]       = {pop_h2_data[15:0],pop_h1_data[15:0]};
                   lbuf_pop_inst1_br               = pop_h1_br;
                   lbuf_pop_inst2_valid            = pop_h3_vld;
-                  lbuf_pop_inst2_data[31:0]       = {pop_h4_data[15:0],pop_h3_data[15:0]};
+                  lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h3_data[15:0]};
                   lbuf_pop_inst2_br               = pop_h3_br;
+                  lbuf_pop_inst3_valid            = pop_h4_vld;
+                  lbuf_pop_inst3_data[31:0]       = {16'b0,pop_h4_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h4_br;
                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
                   lbuf_pop_inst1_front_br         = pop_h1_front_br;
                   lbuf_pop_inst1_back_br          = pop_h1_back_br;
                   lbuf_pop_inst2_front_br         = pop_h3_front_br;
                   lbuf_pop_inst2_back_br          = pop_h3_back_br;
-                  lbuf_pop3_half_num[2:0]         = 3'b101;
-                  lbuf_pop2_half_num[2:0]         = 3'b011;
-                  lbuf_pop1_half_num[2:0]         = 3'b001;
+                  lbuf_pop_inst3_front_br         = pop_h4_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h4_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0101; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0100;
+                  lbuf_pop2_half_num[3:0]         = 4'b0011;
+                  lbuf_pop1_half_num[3:0]         = 4'b0001;
                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
                   lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
                   lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h4_vsetvli;
                   lbuf_pop_inst0_fence            = pop_h0_fence;
                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
@@ -6049,6 +6748,9 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_fence            = pop_h3_fence;
                   lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
                   lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h4_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h4_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h4_bkptb;
                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
@@ -6058,17 +6760,221 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h4_vl[7:0];
                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
                   lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
                   lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
                   lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
                   lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h4_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h4_split1_type[2:0];
                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_4[14:0];
                   end
-       7'b01?00?? : begin
+       7'b01?01?? : begin
+                  lbuf_pop_inst0_valid            = pop_h0_vld;
+                  lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
+                  lbuf_pop_inst0_br               = pop_h0_br;
+                  lbuf_pop_inst1_valid            = pop_h1_vld;
+                  lbuf_pop_inst1_data[31:0]       = {pop_h2_data[15:0],pop_h1_data[15:0]};
+                  lbuf_pop_inst1_br               = pop_h1_br;
+                  lbuf_pop_inst2_valid            = pop_h3_vld;
+                  lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h3_data[15:0]};
+                  lbuf_pop_inst2_br               = pop_h3_br;
+                  lbuf_pop_inst3_valid            = pop_h4_vld;
+                  lbuf_pop_inst3_data[31:0]       = {pop_h4_data[15:0],pop_h4_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h4_br;
+                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
+                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
+                  lbuf_pop_inst1_front_br         = pop_h1_front_br;
+                  lbuf_pop_inst1_back_br          = pop_h1_back_br;
+                  lbuf_pop_inst2_front_br         = pop_h3_front_br;
+                  lbuf_pop_inst2_back_br          = pop_h3_back_br;
+                  lbuf_pop_inst3_front_br         = pop_h4_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h4_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0110; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0100;
+                  lbuf_pop2_half_num[3:0]         = 4'b0011;
+                  lbuf_pop1_half_num[3:0]         = 4'b0001;
+                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+                  lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
+                  lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h4_vsetvli;
+                  lbuf_pop_inst0_fence            = pop_h0_fence;
+                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+                  lbuf_pop_inst1_fence            = pop_h1_fence;
+                  lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
+                  lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
+                  lbuf_pop_inst2_fence            = pop_h3_fence;
+                  lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
+                  lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h4_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h4_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h4_bkptb;
+                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
+                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
+                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
+                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h4_vl[7:0];
+                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+                  lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
+                  lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
+                  lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
+                  lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h4_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h4_split1_type[2:0];
+                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
+                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_4[14:0];
+                  end
+       7'b01?1?0? : begin
+                  lbuf_pop_inst0_valid            = pop_h0_vld;
+                  lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
+                  lbuf_pop_inst0_br               = pop_h0_br;
+                  lbuf_pop_inst1_valid            = pop_h1_vld;
+                  lbuf_pop_inst1_data[31:0]       = {pop_h2_data[15:0],pop_h1_data[15:0]};
+                  lbuf_pop_inst1_br               = pop_h1_br;
+                  lbuf_pop_inst2_valid            = pop_h3_vld;
+                  lbuf_pop_inst2_data[31:0]       = {pop_h4_data[15:0],pop_h3_data[15:0]};
+                  lbuf_pop_inst2_br               = pop_h3_br;
+                  lbuf_pop_inst3_valid            = pop_h5_vld;
+                  lbuf_pop_inst3_data[31:0]       = {16'b0,pop_h5_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h5_br;
+                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
+                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
+                  lbuf_pop_inst1_front_br         = pop_h1_front_br;
+                  lbuf_pop_inst1_back_br          = pop_h1_back_br;
+                  lbuf_pop_inst2_front_br         = pop_h3_front_br;
+                  lbuf_pop_inst2_back_br          = pop_h3_back_br;
+                  lbuf_pop_inst3_front_br         = pop_h5_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h5_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0110; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0101;
+                  lbuf_pop2_half_num[3:0]         = 4'b0011;
+                  lbuf_pop1_half_num[3:0]         = 4'b0001;
+                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+                  lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
+                  lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h5_vsetvli;
+                  lbuf_pop_inst0_fence            = pop_h0_fence;
+                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+                  lbuf_pop_inst1_fence            = pop_h1_fence;
+                  lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
+                  lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
+                  lbuf_pop_inst2_fence            = pop_h3_fence;
+                  lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
+                  lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h5_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h5_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h5_bkptb;
+                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
+                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
+                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
+                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h5_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h5_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h5_vl[7:0];
+                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+                  lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
+                  lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
+                  lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
+                  lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h5_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h5_split1_type[2:0];
+                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
+                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_5[14:0];
+                  end
+       7'b01?1?1? : begin
+                  lbuf_pop_inst0_valid            = pop_h0_vld;
+                  lbuf_pop_inst0_data[31:0]       = {16'b0,pop_h0_data[15:0]};
+                  lbuf_pop_inst0_br               = pop_h0_br;
+                  lbuf_pop_inst1_valid            = pop_h1_vld;
+                  lbuf_pop_inst1_data[31:0]       = {pop_h2_data[15:0],pop_h1_data[15:0]};
+                  lbuf_pop_inst1_br               = pop_h1_br;
+                  lbuf_pop_inst2_valid            = pop_h3_vld;
+                  lbuf_pop_inst2_data[31:0]       = {pop_h4_data[15:0],pop_h3_data[15:0]};
+                  lbuf_pop_inst2_br               = pop_h3_br;
+                  lbuf_pop_inst3_valid            = pop_h5_vld;
+                  lbuf_pop_inst3_data[31:0]       = {pop_h6_data[15:0],pop_h5_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h5_br;
+                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
+                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
+                  lbuf_pop_inst1_front_br         = pop_h1_front_br;
+                  lbuf_pop_inst1_back_br          = pop_h1_back_br;
+                  lbuf_pop_inst2_front_br         = pop_h3_front_br;
+                  lbuf_pop_inst2_back_br          = pop_h3_back_br;
+                  lbuf_pop_inst3_front_br         = pop_h5_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h5_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0111; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0101;
+                  lbuf_pop2_half_num[3:0]         = 4'b0011;
+                  lbuf_pop1_half_num[3:0]         = 4'b0001;
+                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+                  lbuf_pop_inst1_vsetvli          = pop_h1_vsetvli;
+                  lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h5_vsetvli;
+                  lbuf_pop_inst0_fence            = pop_h0_fence;
+                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+                  lbuf_pop_inst1_fence            = pop_h1_fence;
+                  lbuf_pop_inst1_bkpta            = pop_h1_bkpta;
+                  lbuf_pop_inst1_bkptb            = pop_h1_bkptb;
+                  lbuf_pop_inst2_fence            = pop_h3_fence;
+                  lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
+                  lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h5_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h5_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h5_bkptb;
+                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h1_vlmul[1:0];
+                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h1_vsew[2:0];
+                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h1_vl[7:0];
+                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h5_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h5_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h5_vl[7:0];
+                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+                  lbuf_pop_inst1_split0_type[2:0] = pop_h1_split0_type[2:0];
+                  lbuf_pop_inst1_split1_type[2:0] = pop_h1_split1_type[2:0];
+                  lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
+                  lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h5_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h5_split1_type[2:0];
+                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_1[14:0];
+                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_5[14:0];
+                  end
+       7'b1?000?? : begin
                   lbuf_pop_inst0_valid            = pop_h0_vld;
                   lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
                   lbuf_pop_inst0_br               = pop_h0_br;
@@ -6078,18 +6984,25 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_valid            = pop_h3_vld;
                   lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h3_data[15:0]};
                   lbuf_pop_inst2_br               = pop_h3_br;
+                  lbuf_pop_inst3_valid            = pop_h4_vld;
+                  lbuf_pop_inst3_data[31:0]       = {16'b0,pop_h4_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h4_br;
                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
                   lbuf_pop_inst1_front_br         = pop_h2_front_br;
                   lbuf_pop_inst1_back_br          = pop_h2_back_br;
                   lbuf_pop_inst2_front_br         = pop_h3_front_br;
                   lbuf_pop_inst2_back_br          = pop_h3_back_br;
-                  lbuf_pop3_half_num[2:0]         = 3'b100;
-                  lbuf_pop2_half_num[2:0]         = 3'b011;
-                  lbuf_pop1_half_num[2:0]         = 3'b010;
+                  lbuf_pop_inst3_front_br         = pop_h4_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h4_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0101; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0100;
+                  lbuf_pop2_half_num[3:0]         = 4'b0011;
+                  lbuf_pop1_half_num[3:0]         = 4'b0010;
                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
                   lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
                   lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h4_vsetvli;
                   lbuf_pop_inst0_fence            = pop_h0_fence;
                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
@@ -6099,6 +7012,9 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_fence            = pop_h3_fence;
                   lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
                   lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h4_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h4_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h4_bkptb;
                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
@@ -6108,17 +7024,89 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h4_vl[7:0];
                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
                   lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
                   lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
                   lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
                   lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h4_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h4_split1_type[2:0];
                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_4[14:0];
                   end
-       5'b1?01? : begin
+       7'b1?001?? : begin
+                  lbuf_pop_inst0_valid            = pop_h0_vld;
+                  lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
+                  lbuf_pop_inst0_br               = pop_h0_br;
+                  lbuf_pop_inst1_valid            = pop_h2_vld;
+                  lbuf_pop_inst1_data[31:0]       = {16'b0,pop_h2_data[15:0]};
+                  lbuf_pop_inst1_br               = pop_h2_br;
+                  lbuf_pop_inst2_valid            = pop_h3_vld;
+                  lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h3_data[15:0]};
+                  lbuf_pop_inst2_br               = pop_h3_br;
+                  lbuf_pop_inst3_valid            = pop_h4_vld;
+                  lbuf_pop_inst3_data[31:0]       = {pop_h5_data[15:0],pop_h4_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h4_br;
+                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
+                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
+                  lbuf_pop_inst1_front_br         = pop_h2_front_br;
+                  lbuf_pop_inst1_back_br          = pop_h2_back_br;
+                  lbuf_pop_inst2_front_br         = pop_h3_front_br;
+                  lbuf_pop_inst2_back_br          = pop_h3_back_br;
+                  lbuf_pop_inst3_front_br         = pop_h4_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h4_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0110; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0100;
+                  lbuf_pop2_half_num[3:0]         = 4'b0011;
+                  lbuf_pop1_half_num[3:0]         = 4'b0010;
+                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+                  lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
+                  lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h4_vsetvli;
+                  lbuf_pop_inst0_fence            = pop_h0_fence;
+                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+                  lbuf_pop_inst1_fence            = pop_h2_fence;
+                  lbuf_pop_inst1_bkpta            = pop_h2_bkpta;
+                  lbuf_pop_inst1_bkptb            = pop_h2_bkptb;
+                  lbuf_pop_inst2_fence            = pop_h3_fence;
+                  lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
+                  lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h4_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h4_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h4_bkptb;
+                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h2_vl[7:0];
+                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h4_vl[7:0];
+                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+                  lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
+                  lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
+                  lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
+                  lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h4_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h4_split1_type[2:0];
+                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
+                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_4[14:0];
+                  end
+       7'b1?01?0? : begin
                   lbuf_pop_inst0_valid            = pop_h0_vld;
                   lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
                   lbuf_pop_inst0_br               = pop_h0_br;
@@ -6128,18 +7116,25 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_valid            = pop_h3_vld;
                   lbuf_pop_inst2_data[31:0]       = {pop_h4_data[15:0],pop_h3_data[15:0]};
                   lbuf_pop_inst2_br               = pop_h3_br;
+                  lbuf_pop_inst3_valid            = pop_h5_vld;
+                  lbuf_pop_inst3_data[31:0]       = {16'b0,pop_h5_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h5_br;
                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
                   lbuf_pop_inst1_front_br         = pop_h2_front_br;
                   lbuf_pop_inst1_back_br          = pop_h2_back_br;
                   lbuf_pop_inst2_front_br         = pop_h3_front_br;
                   lbuf_pop_inst2_back_br          = pop_h3_back_br;
-                  lbuf_pop3_half_num[2:0]         = 3'b101;
-                  lbuf_pop2_half_num[2:0]         = 3'b011;
-                  lbuf_pop1_half_num[2:0]         = 3'b010;
+                  lbuf_pop_inst3_front_br         = pop_h5_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h5_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0110; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0101;
+                  lbuf_pop2_half_num[3:0]         = 4'b0011;
+                  lbuf_pop1_half_num[3:0]         = 4'b0010;
                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
                   lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
                   lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h5_vsetvli;
                   lbuf_pop_inst0_fence            = pop_h0_fence;
                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
@@ -6149,6 +7144,9 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_fence            = pop_h3_fence;
                   lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
                   lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h5_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h5_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h5_bkptb;
                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
@@ -6158,17 +7156,90 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h5_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h5_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h5_vl[7:0];
                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
                   lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
                   lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
                   lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
                   lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h5_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h5_split1_type[2:0];
                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_5[14:0];
                   end
-       5'b1?1?0 : begin
+       7'b1?01?1? : begin
+                  lbuf_pop_inst0_valid            = pop_h0_vld;
+                  lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
+                  lbuf_pop_inst0_br               = pop_h0_br;
+                  lbuf_pop_inst1_valid            = pop_h2_vld;
+                  lbuf_pop_inst1_data[31:0]       = {16'b0,pop_h2_data[15:0]};
+                  lbuf_pop_inst1_br               = pop_h2_br;
+                  lbuf_pop_inst2_valid            = pop_h3_vld;
+                  lbuf_pop_inst2_data[31:0]       = {pop_h4_data[15:0],pop_h3_data[15:0]};
+                  lbuf_pop_inst2_br               = pop_h3_br;
+                  lbuf_pop_inst3_valid            = pop_h5_vld;
+                  lbuf_pop_inst3_data[31:0]       = {pop_h6_data[15:0],pop_h5_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h5_br;
+                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
+                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
+                  lbuf_pop_inst1_front_br         = pop_h2_front_br;
+                  lbuf_pop_inst1_back_br          = pop_h2_back_br;
+                  lbuf_pop_inst2_front_br         = pop_h3_front_br;
+                  lbuf_pop_inst2_back_br          = pop_h3_back_br;
+                  lbuf_pop_inst3_front_br         = pop_h5_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h5_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0111; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0101;
+                  lbuf_pop2_half_num[3:0]         = 4'b0011;
+                  lbuf_pop1_half_num[3:0]         = 4'b0010;
+                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+                  lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
+                  lbuf_pop_inst2_vsetvli          = pop_h3_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h5_vsetvli;
+                  lbuf_pop_inst0_fence            = pop_h0_fence;
+                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+                  lbuf_pop_inst1_fence            = pop_h2_fence;
+                  lbuf_pop_inst1_bkpta            = pop_h2_bkpta;
+                  lbuf_pop_inst1_bkptb            = pop_h2_bkptb;
+                  lbuf_pop_inst2_fence            = pop_h3_fence;
+                  lbuf_pop_inst2_bkpta            = pop_h3_bkpta;
+                  lbuf_pop_inst2_bkptb            = pop_h3_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h5_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h5_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h5_bkptb;
+                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h2_vl[7:0];
+                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h3_vlmul[1:0];
+                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h3_vsew[2:0];
+                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h3_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h5_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h5_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h5_vl[7:0];
+                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+                  lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
+                  lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
+                  lbuf_pop_inst2_split0_type[2:0] = pop_h3_split0_type[2:0];
+                  lbuf_pop_inst2_split1_type[2:0] = pop_h3_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h5_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h5_split1_type[2:0];
+                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
+                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_3[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_5[14:0];
+                  end
+       
+       7'b1?1?00? : begin
                   lbuf_pop_inst0_valid            = pop_h0_vld;
                   lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
                   lbuf_pop_inst0_br               = pop_h0_br;
@@ -6178,18 +7249,25 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_valid            = pop_h4_vld;
                   lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h4_data[15:0]};
                   lbuf_pop_inst2_br               = pop_h4_br;
+                  lbuf_pop_inst3_valid            = pop_h5_vld;
+                  lbuf_pop_inst3_data[31:0]       = {6'b0,pop_h5_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h5_br;
                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
                   lbuf_pop_inst1_front_br         = pop_h2_front_br;
                   lbuf_pop_inst1_back_br          = pop_h2_back_br;
                   lbuf_pop_inst2_front_br         = pop_h4_front_br;
                   lbuf_pop_inst2_back_br          = pop_h4_back_br;
-                  lbuf_pop3_half_num[2:0]         = 3'b101;
-                  lbuf_pop2_half_num[2:0]         = 3'b100;
-                  lbuf_pop1_half_num[2:0]         = 3'b010;
+                  lbuf_pop_inst3_front_br         = pop_h5_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h5_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0110; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0101;
+                  lbuf_pop2_half_num[3:0]         = 4'b0100;
+                  lbuf_pop1_half_num[3:0]         = 4'b0010;
                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
                   lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
                   lbuf_pop_inst2_vsetvli          = pop_h4_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h5_vsetvli;
                   lbuf_pop_inst0_fence            = pop_h0_fence;
                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
@@ -6199,6 +7277,9 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_fence            = pop_h4_fence;
                   lbuf_pop_inst2_bkpta            = pop_h4_bkpta;
                   lbuf_pop_inst2_bkptb            = pop_h4_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h5_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h5_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h5_bkptb;
                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
@@ -6208,17 +7289,90 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h4_vsew[2:0];
                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h4_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h5_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h5_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h5_vl[7:0];
                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
                   lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
                   lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
                   lbuf_pop_inst2_split0_type[2:0] = pop_h4_split0_type[2:0];
                   lbuf_pop_inst2_split1_type[2:0] = pop_h4_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h5_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h5_split1_type[2:0];
                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_4[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_5[14:0];
                   end
-       5'b1?1?1 : begin
+       
+       7'b1?1?01? : begin
+                  lbuf_pop_inst0_valid            = pop_h0_vld;
+                  lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
+                  lbuf_pop_inst0_br               = pop_h0_br;
+                  lbuf_pop_inst1_valid            = pop_h2_vld;
+                  lbuf_pop_inst1_data[31:0]       = {pop_h3_data[15:0],pop_h2_data[15:0]};
+                  lbuf_pop_inst1_br               = pop_h2_br;
+                  lbuf_pop_inst2_valid            = pop_h4_vld;
+                  lbuf_pop_inst2_data[31:0]       = {16'b0,pop_h4_data[15:0]};
+                  lbuf_pop_inst2_br               = pop_h4_br;
+                  lbuf_pop_inst3_valid            = pop_h5_vld;
+                  lbuf_pop_inst3_data[31:0]       = {pop_h6_data[15:0],pop_h5_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h5_br;
+                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
+                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
+                  lbuf_pop_inst1_front_br         = pop_h2_front_br;
+                  lbuf_pop_inst1_back_br          = pop_h2_back_br;
+                  lbuf_pop_inst2_front_br         = pop_h4_front_br;
+                  lbuf_pop_inst2_back_br          = pop_h4_back_br;
+                  lbuf_pop_inst3_front_br         = pop_h5_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h5_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0111; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0101;
+                  lbuf_pop2_half_num[3:0]         = 4'b0100;
+                  lbuf_pop1_half_num[3:0]         = 4'b0010;
+                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+                  lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
+                  lbuf_pop_inst2_vsetvli          = pop_h4_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h5_vsetvli;
+                  lbuf_pop_inst0_fence            = pop_h0_fence;
+                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+                  lbuf_pop_inst1_fence            = pop_h2_fence;
+                  lbuf_pop_inst1_bkpta            = pop_h2_bkpta;
+                  lbuf_pop_inst1_bkptb            = pop_h2_bkptb;
+                  lbuf_pop_inst2_fence            = pop_h4_fence;
+                  lbuf_pop_inst2_bkpta            = pop_h4_bkpta;
+                  lbuf_pop_inst2_bkptb            = pop_h4_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h5_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h5_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h5_bkptb;
+                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h2_vl[7:0];
+                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h4_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h5_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h5_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h5_vl[7:0];
+                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+                  lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
+                  lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
+                  lbuf_pop_inst2_split0_type[2:0] = pop_h4_split0_type[2:0];
+                  lbuf_pop_inst2_split1_type[2:0] = pop_h4_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h5_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h5_split1_type[2:0];
+                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
+                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_4[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_5[14:0];
+                  end
+       7'b1?1?1?0? : begin
                   lbuf_pop_inst0_valid            = pop_h0_vld;
                   lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
                   lbuf_pop_inst0_br               = pop_h0_br;
@@ -6228,18 +7382,25 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_valid            = pop_h4_vld;
                   lbuf_pop_inst2_data[31:0]       = {pop_h5_data[15:0],pop_h4_data[15:0]};
                   lbuf_pop_inst2_br               = pop_h4_br;
+                  lbuf_pop_inst3_valid            = pop_h6_vld;
+                  lbuf_pop_inst3_data[31:0]       = {16'b0,pop_h6_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h6_br;
                   lbuf_pop_inst0_front_br         = pop_h0_front_br;
                   lbuf_pop_inst0_back_br          = pop_h0_back_br;
                   lbuf_pop_inst1_front_br         = pop_h2_front_br;
                   lbuf_pop_inst1_back_br          = pop_h2_back_br;
                   lbuf_pop_inst2_front_br         = pop_h4_front_br;
                   lbuf_pop_inst2_back_br          = pop_h4_back_br;
-                  lbuf_pop3_half_num[2:0]         = 3'b110;
-                  lbuf_pop2_half_num[2:0]         = 3'b100;
-                  lbuf_pop1_half_num[2:0]         = 3'b010;
+                  lbuf_pop_inst3_front_br         = pop_h6_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h6_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0111; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0110;
+                  lbuf_pop2_half_num[3:0]         = 4'b0100;
+                  lbuf_pop1_half_num[3:0]         = 4'b0010;
                   lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
                   lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
                   lbuf_pop_inst2_vsetvli          = pop_h4_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h6_vsetvli;
                   lbuf_pop_inst0_fence            = pop_h0_fence;
                   lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
                   lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
@@ -6249,6 +7410,9 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_fence            = pop_h4_fence;
                   lbuf_pop_inst2_bkpta            = pop_h4_bkpta;
                   lbuf_pop_inst2_bkptb            = pop_h4_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h6_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h6_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h6_bkptb;
                   lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
                   lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
                   lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
@@ -6258,16 +7422,90 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
                   lbuf_pop_inst2_vsew_pre[2:0]    = pop_h4_vsew[2:0];
                   lbuf_pop_inst2_vl_pre[7:0]      = pop_h4_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h6_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h6_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h6_vl[7:0];
                   lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
                   lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
                   lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
                   lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
                   lbuf_pop_inst2_split0_type[2:0] = pop_h4_split0_type[2:0];
                   lbuf_pop_inst2_split1_type[2:0] = pop_h4_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h6_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h6_split1_type[2:0];
                   lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
                   lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
                   lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_4[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_6[14:0];
                   end
+       
+       7'b1?1?1?1? : begin
+                  lbuf_pop_inst0_valid            = pop_h0_vld;
+                  lbuf_pop_inst0_data[31:0]       = {pop_h1_data[15:0],pop_h0_data[15:0]};
+                  lbuf_pop_inst0_br               = pop_h0_br;
+                  lbuf_pop_inst1_valid            = pop_h2_vld;
+                  lbuf_pop_inst1_data[31:0]       = {pop_h3_data[15:0],pop_h2_data[15:0]};
+                  lbuf_pop_inst1_br               = pop_h2_br;
+                  lbuf_pop_inst2_valid            = pop_h4_vld;
+                  lbuf_pop_inst2_data[31:0]       = {pop_h5_data[15:0],pop_h4_data[15:0]};
+                  lbuf_pop_inst2_br               = pop_h4_br;
+                  lbuf_pop_inst3_valid            = pop_h6_vld;
+                  lbuf_pop_inst3_data[31:0]       = {pop_h7_data[15:0],pop_h6_data[15:0]};
+                  lbuf_pop_inst3_br               = pop_h6_br;
+                  lbuf_pop_inst0_front_br         = pop_h0_front_br;
+                  lbuf_pop_inst0_back_br          = pop_h0_back_br;
+                  lbuf_pop_inst1_front_br         = pop_h2_front_br;
+                  lbuf_pop_inst1_back_br          = pop_h2_back_br;
+                  lbuf_pop_inst2_front_br         = pop_h4_front_br;
+                  lbuf_pop_inst2_back_br          = pop_h4_back_br;
+                  lbuf_pop_inst3_front_br         = pop_h6_front_br;
+                  lbuf_pop_inst3_back_br          = pop_h6_back_br;
+                  lbuf_pop4_half_num[3:0]         = 4'b0111; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0110;
+                  lbuf_pop2_half_num[3:0]         = 4'b0100;
+                  lbuf_pop1_half_num[3:0]         = 4'b0010;
+                  lbuf_pop_inst0_vsetvli          = pop_h0_vsetvli;
+                  lbuf_pop_inst1_vsetvli          = pop_h2_vsetvli;
+                  lbuf_pop_inst2_vsetvli          = pop_h4_vsetvli;
+                  lbuf_pop_inst3_vsetvli          = pop_h6_vsetvli;
+                  lbuf_pop_inst0_fence            = pop_h0_fence;
+                  lbuf_pop_inst0_bkpta            = pop_h0_bkpta;
+                  lbuf_pop_inst0_bkptb            = pop_h0_bkptb;
+                  lbuf_pop_inst1_fence            = pop_h2_fence;
+                  lbuf_pop_inst1_bkpta            = pop_h2_bkpta;
+                  lbuf_pop_inst1_bkptb            = pop_h2_bkptb;
+                  lbuf_pop_inst2_fence            = pop_h4_fence;
+                  lbuf_pop_inst2_bkpta            = pop_h4_bkpta;
+                  lbuf_pop_inst2_bkptb            = pop_h4_bkptb;
+                  lbuf_pop_inst3_fence            = pop_h6_fence;
+                  lbuf_pop_inst3_bkpta            = pop_h6_bkpta;
+                  lbuf_pop_inst3_bkptb            = pop_h6_bkptb;
+                  lbuf_pop_inst0_vlmul_pre[1:0]   = pop_h0_vlmul[1:0];
+                  lbuf_pop_inst0_vsew_pre[2:0]    = pop_h0_vsew[2:0];
+                  lbuf_pop_inst0_vl_pre[7:0]      = pop_h0_vl[7:0];
+                  lbuf_pop_inst1_vlmul_pre[1:0]   = pop_h2_vlmul[1:0];
+                  lbuf_pop_inst1_vsew_pre[2:0]    = pop_h2_vsew[2:0];
+                  lbuf_pop_inst1_vl_pre[7:0]      = pop_h2_vl[7:0];
+                  lbuf_pop_inst2_vlmul_pre[1:0]   = pop_h4_vlmul[1:0];
+                  lbuf_pop_inst2_vsew_pre[2:0]    = pop_h4_vsew[2:0];
+                  lbuf_pop_inst2_vl_pre[7:0]      = pop_h4_vl[7:0];
+                  lbuf_pop_inst3_vlmul_pre[1:0]   = pop_h6_vlmul[1:0];
+                  lbuf_pop_inst3_vsew_pre[2:0]    = pop_h6_vsew[2:0];
+                  lbuf_pop_inst3_vl_pre[7:0]      = pop_h6_vl[7:0];
+                  lbuf_pop_inst0_split0_type[2:0] = pop_h0_split0_type[2:0];
+                  lbuf_pop_inst0_split1_type[2:0] = pop_h0_split1_type[2:0];
+                  lbuf_pop_inst1_split0_type[2:0] = pop_h2_split0_type[2:0];
+                  lbuf_pop_inst1_split1_type[2:0] = pop_h2_split1_type[2:0];
+                  lbuf_pop_inst2_split0_type[2:0] = pop_h4_split0_type[2:0];
+                  lbuf_pop_inst2_split1_type[2:0] = pop_h4_split1_type[2:0];
+                  lbuf_pop_inst3_split0_type[2:0] = pop_h6_split0_type[2:0];
+                  lbuf_pop_inst3_split1_type[2:0] = pop_h6_split1_type[2:0];
+                  lbuf_pop_inst0_pc[14:0]         = lbuf_cur_pc[14:0];
+                  lbuf_pop_inst1_pc[14:0]         = lbuf_pc_add_2[14:0];
+                  lbuf_pop_inst2_pc[14:0]         = lbuf_pc_add_4[14:0];
+                  lbuf_pop_inst3_pc[14:0]         = lbuf_pc_add_6[14:0];
+                  end
+       
        default  : begin
                   lbuf_pop_inst0_valid            =  1'b0;
                   lbuf_pop_inst0_data[31:0]       = 32'b0;
@@ -6278,18 +7516,25 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_valid            =  1'b0; 
                   lbuf_pop_inst2_data[31:0]       = 32'b0; 
                   lbuf_pop_inst2_br               =  1'b0;
-                  lbuf_pop3_half_num[2:0]         =  3'b0; 
-                  lbuf_pop2_half_num[2:0]         =  3'b0; 
-                  lbuf_pop1_half_num[2:0]         =  3'b0; 
+                  lbuf_pop_inst3_valid            =  1'b0; 
+                  lbuf_pop_inst3_data[31:0]       = 32'b0; 
+                  lbuf_pop_inst3_br               =  1'b0;
+                  lbuf_pop4_half_num[3:0]         = 4'b0; // Jeremy add this logic to indicate current pop half number
+                  lbuf_pop3_half_num[3:0]         = 4'b0;
+                  lbuf_pop2_half_num[3:0]         = 4'b0;
+                  lbuf_pop1_half_num[3:0]         = 4'b0;
                   lbuf_pop_inst0_front_br         =  1'b0; 
                   lbuf_pop_inst0_back_br          =  1'b0; 
                   lbuf_pop_inst1_front_br         =  1'b0; 
                   lbuf_pop_inst1_back_br          =  1'b0; 
                   lbuf_pop_inst2_front_br         =  1'b0; 
                   lbuf_pop_inst2_back_br          =  1'b0; 
+                  lbuf_pop_inst3_front_br         =  1'b0; 
+                  lbuf_pop_inst3_back_br          =  1'b0; 
                   lbuf_pop_inst0_vsetvli          =  1'b0;
                   lbuf_pop_inst1_vsetvli          =  1'b0;
                   lbuf_pop_inst2_vsetvli          =  1'b0;
+                  lbuf_pop_inst3_vsetvli          =  1'b0;
                   lbuf_pop_inst0_fence            =  1'b0;
                   lbuf_pop_inst0_bkpta            =  1'b0;
                   lbuf_pop_inst0_bkptb            =  1'b0;
@@ -6299,6 +7544,9 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst2_fence            =  1'b0;
                   lbuf_pop_inst2_bkpta            =  1'b0;
                   lbuf_pop_inst2_bkptb            =  1'b0;
+                  lbuf_pop_inst3_fence            =  1'b0;
+                  lbuf_pop_inst3_bkpta            =  1'b0;
+                  lbuf_pop_inst3_bkptb            =  1'b0;
                   lbuf_pop_inst0_vlmul_pre[1:0]   =  2'b0; 
                   lbuf_pop_inst0_vsew_pre[2:0]    =  3'b0;
                   lbuf_pop_inst0_vl_pre[7:0]      =  8'b0;
@@ -6308,18 +7556,23 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,
                   lbuf_pop_inst1_vl_pre[7:0]      =  8'b0;
                   lbuf_pop_inst2_vsew_pre[2:0]    =  3'b0;
                   lbuf_pop_inst2_vl_pre[7:0]      =  8'b0;
+                  lbuf_pop_inst3_vlmul_pre[1:0]   =  2'b0; 
+                  lbuf_pop_inst3_vsew_pre[2:0]    =  3'b0;
+                  lbuf_pop_inst3_vl_pre[7:0]      =  8'b0;
                   lbuf_pop_inst0_split0_type[2:0] =  3'b0;
                   lbuf_pop_inst0_split1_type[2:0] =  3'b0;
                   lbuf_pop_inst1_split0_type[2:0] =  3'b0;
                   lbuf_pop_inst1_split1_type[2:0] =  3'b0;
                   lbuf_pop_inst2_split0_type[2:0] =  3'b0;
                   lbuf_pop_inst2_split1_type[2:0] =  3'b0;
+                  lbuf_pop_inst3_split0_type[2:0] =  3'b0;
+                  lbuf_pop_inst3_split1_type[2:0] =  3'b0;
                   lbuf_pop_inst0_pc[14:0]         =  15'b0;
                   lbuf_pop_inst1_pc[14:0]         =  15'b0;
                   lbuf_pop_inst2_pc[14:0]         =  15'b0;
+                  lbuf_pop_inst3_pc[14:0]         =  15'b0;
                   end
 endcase
-// &CombEnd; @3899
 end
 
 //==========================================================
@@ -6327,7 +7580,7 @@ end
 //==========================================================
 //No Branch PC prepare
 //Branch PC prepare
-
+//Jeremy add f/b target pc 2022.8.8
 //Branch Way LBUF Retire Pointer Prepare
 // &CombBeg; @3908
 always @( back_entry_target_pc[38:0]
@@ -6395,68 +7648,84 @@ else
   lbuf_cur_pc_branch_pre[PC_WIDTH-2:0] = lbuf_pop_inst2_pc_br_pre[PC_WIDTH-2:0];
 // &CombEnd; @3936
 end
-//jeremy todo pop_half-num
 //NO Branch Way LBUF Retire Pointer Prepare
 //Contain no branch and branch not jump
-// &CombBeg; @3940
-always @( lbuf_pop3_half_num[2:0]
+
+//Jeremy add pop4 half number 2022.8.8
+always @( lbuf_pop4_half_num[3:0]
+       or lbuf_pc_add_4[38:0]
+       or lbuf_cur_pc[38:0]
+       or lbuf_pc_add_6[38:0]
+       or lbuf_pc_add_7[38:0]
+       or lbuf_pc_add_8[38:0]
+       or lbuf_pc_add_5[38:0])
+begin
+case(lbuf_pop4_half_num[3:0])
+  4'b0100   : lbuf_pc_pop4_pre[PC_WIDTH-2:0] = lbuf_pc_add_4[PC_WIDTH-2:0]; 
+  4'b0101   : lbuf_pc_pop4_pre[PC_WIDTH-2:0] = lbuf_pc_add_5[PC_WIDTH-2:0]; 
+  4'b0110   : lbuf_pc_pop4_pre[PC_WIDTH-2:0] = lbuf_pc_add_6[PC_WIDTH-2:0]; 
+  4'b0111   : lbuf_pc_pop4_pre[PC_WIDTH-2:0] = lbuf_pc_add_7[PC_WIDTH-2:0]; 
+  4'b1000   : lbuf_pc_pop4_pre[PC_WIDTH-2:0] = lbuf_pc_add_8[PC_WIDTH-2:0]; 
+  default   : lbuf_pc_pop4_pre[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0];
+endcase
+end
+
+always @( lbuf_pop3_half_num[3:0]
        or lbuf_pc_add_4[38:0]
        or lbuf_cur_pc[38:0]
        or lbuf_pc_add_6[38:0]
        or lbuf_pc_add_3[38:0]
        or lbuf_pc_add_5[38:0])
 begin
-case(lbuf_pop3_half_num[2:0])
-  3'b011   : lbuf_pc_pop3_pre[PC_WIDTH-2:0] = lbuf_pc_add_3[PC_WIDTH-2:0]; 
-  3'b100   : lbuf_pc_pop3_pre[PC_WIDTH-2:0] = lbuf_pc_add_4[PC_WIDTH-2:0]; 
-  3'b101   : lbuf_pc_pop3_pre[PC_WIDTH-2:0] = lbuf_pc_add_5[PC_WIDTH-2:0]; 
-  3'b110   : lbuf_pc_pop3_pre[PC_WIDTH-2:0] = lbuf_pc_add_6[PC_WIDTH-2:0]; 
+case(lbuf_pop3_half_num[3:0])
+  4'b0011   : lbuf_pc_pop3_pre[PC_WIDTH-2:0] = lbuf_pc_add_3[PC_WIDTH-2:0]; 
+  4'b0100   : lbuf_pc_pop3_pre[PC_WIDTH-2:0] = lbuf_pc_add_4[PC_WIDTH-2:0]; 
+  4'b0101   : lbuf_pc_pop3_pre[PC_WIDTH-2:0] = lbuf_pc_add_5[PC_WIDTH-2:0]; 
+  4'b0110   : lbuf_pc_pop3_pre[PC_WIDTH-2:0] = lbuf_pc_add_6[PC_WIDTH-2:0]; 
   default  : lbuf_pc_pop3_pre[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0];
 endcase
-// &CombEnd; @3948
 end
 
-// &CombBeg; @3950
 always @( lbuf_pc_add_4[38:0]
        or lbuf_cur_pc[38:0]
        or lbuf_pc_add_2[38:0]
-       or lbuf_pop2_half_num[2:0]
+       or lbuf_pop2_half_num[3:0]
        or lbuf_pc_add_3[38:0])
 begin
-case(lbuf_pop2_half_num[2:0])
-  3'b010   : lbuf_pc_pop2_pre[PC_WIDTH-2:0] = lbuf_pc_add_2[PC_WIDTH-2:0];  
-  3'b011   : lbuf_pc_pop2_pre[PC_WIDTH-2:0] = lbuf_pc_add_3[PC_WIDTH-2:0];
-  3'b100   : lbuf_pc_pop2_pre[PC_WIDTH-2:0] = lbuf_pc_add_4[PC_WIDTH-2:0];
-  default  : lbuf_pc_pop2_pre[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0];
+case(lbuf_pop2_half_num[3:0])
+  4'b0010   : lbuf_pc_pop2_pre[PC_WIDTH-2:0] = lbuf_pc_add_2[PC_WIDTH-2:0];  
+  4'b0011   : lbuf_pc_pop2_pre[PC_WIDTH-2:0] = lbuf_pc_add_3[PC_WIDTH-2:0];
+  4'b0100   : lbuf_pc_pop2_pre[PC_WIDTH-2:0] = lbuf_pc_add_4[PC_WIDTH-2:0];
+  default   : lbuf_pc_pop2_pre[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0];
 endcase
-// &CombEnd; @3957
 end
 
-// &CombBeg; @3959
 always @( lbuf_cur_pc[38:0]
        or lbuf_pc_add_2[38:0]
        or lbuf_pc_add_1[38:0]
-       or lbuf_pop1_half_num[2:0])
+       or lbuf_pop1_half_num[3:0])
 begin
-case(lbuf_pop1_half_num[2:0])
-  3'b001   : lbuf_pc_pop1_pre[PC_WIDTH-2:0] = lbuf_pc_add_1[PC_WIDTH-2:0]; 
-  3'b010   : lbuf_pc_pop1_pre[PC_WIDTH-2:0] = lbuf_pc_add_2[PC_WIDTH-2:0]; 
-  default  : lbuf_pc_pop1_pre[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0];
+case(lbuf_pop1_half_num[3:0])
+  4'b0001   : lbuf_pc_pop1_pre[PC_WIDTH-2:0] = lbuf_pc_add_1[PC_WIDTH-2:0]; 
+  4'b0010   : lbuf_pc_pop1_pre[PC_WIDTH-2:0] = lbuf_pc_add_2[PC_WIDTH-2:0]; 
+  default   : lbuf_pc_pop1_pre[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0];
 endcase
-// &CombEnd; @3965
 end
 
-//jeremy todo
-// &CombBeg; @3967
+//Jeremy add this logic for inst3 pc pre
 always @( lbuf_pc_pop1_pre[38:0]
        or lbuf_pc_pop3_pre[38:0]
+       or lbuf_pc_pop4_pre[38:0]
        or lbuf_cur_pc[38:0]
        or lbuf_pop_inst0_br_mask_vld
        or lbuf_pc_pop2_pre[38:0]
+       or lbuf_pop_inst3_br_mask_vld
        or lbuf_pop_inst1_br_mask_vld
        or lbuf_pop_inst2_br_mask_vld)
 begin
-if(lbuf_pop_inst2_br_mask_vld)
+if(lbuf_pop_inst3_br_mask_vld)
+  lbuf_cur_pc_pre[PC_WIDTH-2:0] = lbuf_pc_pop4_pre[PC_WIDTH-2:0];
+else if(lbuf_pop_inst2_br_mask_vld)
   lbuf_cur_pc_pre[PC_WIDTH-2:0] = lbuf_pc_pop3_pre[PC_WIDTH-2:0];
 else if(lbuf_pop_inst1_br_mask_vld)
   lbuf_cur_pc_pre[PC_WIDTH-2:0] = lbuf_pc_pop2_pre[PC_WIDTH-2:0];
@@ -6464,7 +7733,6 @@ else if(lbuf_pop_inst0_br_mask_vld)
   lbuf_cur_pc_pre[PC_WIDTH-2:0] = lbuf_pc_pop1_pre[PC_WIDTH-2:0];
 else
   lbuf_cur_pc_pre[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0];
-// &CombEnd; @3976
 end
 
 //Branch and NO_Branch Way select
@@ -6516,14 +7784,17 @@ assign active_state_enter = ((lbuf_cur_state[5:0] == CACHE) || (lbuf_cur_state[5
 //loop start pc is the value which will be updated into back br target pc
 //active_state_enter when fill state & back br hit loop end
 assign loop_start_pc[PC_WIDTH-2:0] = back_update_target_pc[PC_WIDTH-2:0];
-//jeremy todo
-//lbuf_cur_pc add 1/2/3/4/5/6
+
+//Jeremy add lbuf_pc_add_7/8 2.22.8.8
+//lbuf_cur_pc add 1/2/3/4/5/6/7/8
 assign lbuf_pc_add_1[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0] + 38'd1;
 assign lbuf_pc_add_2[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0] + 38'd2;
 assign lbuf_pc_add_3[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0] + 38'd3;
 assign lbuf_pc_add_4[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0] + 38'd4;
 assign lbuf_pc_add_5[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0] + 38'd5;
 assign lbuf_pc_add_6[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0] + 38'd6;
+assign lbuf_pc_add_7[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0] + 38'd7;
+assign lbuf_pc_add_8[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0] + 38'd8;
 
 //==========================================================
 //            Loop Buffer BHT Inter Active
@@ -6538,9 +7809,13 @@ assign lbuf_pc_add_6[PC_WIDTH-2:0] = lbuf_cur_pc[PC_WIDTH-2:0] + 38'd6;
 assign pre_taken_result[31:0]  = bht_lbuf_pre_taken_result[31:0]; 
 assign pre_ntaken_result[31:0] = bht_lbuf_pre_ntaken_result[31:0];
 assign vghr[13:0]              = bht_lbuf_vghr[13:0];
+//Jeremy : 2-bit saturate branch predictor counter
 //need ip stage flop sel_array_result to ib stage loop buffer
+//2022.8.8
 assign sel_array_result[1:0]   = ibdp_lbuf_bht_sel_array_result[1:0];
 
+
+//Jeremy : 2022.8.8
 //---------------------Front_br----------------------------
 //Select Array Get from taken array and not taken array
 assign front_pre_array_result[31:0]  = (front_br_sel_array_result[1])
@@ -6559,6 +7834,8 @@ always @( front_pre_array_result[31:26]
        or vghr[3:0]
        or front_pre_array_result[17:14])
 begin
+//Jeremy : pc xor ghr to index bht result
+//2022.8.8
 case(front_entry_cur_pc[6:3] ^ vghr[3:0])
   4'b0000 : front_br_bht_pre_result[1:0] = front_pre_array_result[ 1: 0];
   4'b0001 : front_br_bht_pre_result[1:0] = front_pre_array_result[ 3: 2];
@@ -6624,7 +7901,8 @@ assign front_br_sel_array_clk_en = lbuf_flush ||
                                    fill_state_enter || 
                                    front_br_sel_array_record || 
                                    front_br_sel_array_update;
-  
+//Jeremy : front br check 
+//2022.8.8  
 assign front_br_sel_array_record = (lbuf_cur_state[5:0] == FILL) && 
                                    front_br_check && 
                                    lbuf_create_vld;
@@ -6651,6 +7929,7 @@ assign front_br_sel_array_update  = iu_ifu_bht_check_vld &&
                                        )
                                      );  
 
+//Jeremy : 2022.8.8
 //---------------------back_br-----------------------------
 //Select Array Get from taken array and not taken array
 assign back_pre_array_result[31:0]  = (back_br_sel_array_result[1])
@@ -6733,7 +8012,8 @@ assign back_br_sel_array_clk_en = lbuf_flush ||
                                   fill_state_enter || 
                                   back_br_sel_array_record || 
                                   back_br_sel_array_update;
-
+//Jeremy : back br check;
+//2022.8.8
 assign back_br_sel_array_record = (lbuf_cur_state[5:0] == FILL) && 
                                   back_br_check && 
                                   lbuf_create_vld;
@@ -6799,6 +8079,18 @@ else
 // &CombEnd; @4243
 end
 
+
+//Jeremy add inst3 bht result
+always @( back_br_bht_result
+       or lbuf_pop_inst3_front_br
+       or front_br_bht_result)
+begin
+if(lbuf_pop_inst3_front_br)
+  inst3_bht_result = front_br_bht_result;
+else
+  inst3_bht_result = back_br_bht_result;
+end
+
 //==========================================================
 //                Interface to BHT
 //==========================================================
@@ -6813,11 +8105,14 @@ assign lbuf_pop_con_br_inst   = lbuf_pop_inst0_con_br ||
 assign lbuf_pop_inst0_con_br  = lbuf_pop_inst0_br && lbuf_pop_inst0_valid;
 assign lbuf_pop_inst1_con_br  = lbuf_pop_inst1_br && lbuf_pop_inst1_valid;
 assign lbuf_pop_inst2_con_br  = lbuf_pop_inst2_br && lbuf_pop_inst2_valid;
+assign lbuf_pop_inst3_con_br  = lbuf_pop_inst3_br && lbuf_pop_inst3_valid;
 assign lbuf_pop_con_br_taken  = (lbuf_pop_inst0_con_br)
                               ? inst0_bht_result
                               : (lbuf_pop_inst1_con_br)
                                 ? inst1_bht_result
-                                : inst2_bht_result;
+                                : (lbuf_pop_inst2_con_br)
+                                  ? inst2_bht_result
+                                  : inst3_bht_result;
 
 //==========================================================
 //                  LBUF Change Flow
@@ -6956,13 +8251,14 @@ assign lbuf_chgflw_record_clk_en = lbuf_flush ||
                                    active_idle_chgflw_gateclk_en || 
                                    lbuf_stop_fetch_chgflw_gateclk_en;
 
-//gateclk en 
+//Jeremy add inst3 related logic 2022.8.8
 assign active_idle_chgflw_gateclk_en = (lbuf_cur_state[5:0] == ACTIVE) && 
 //                                       (lbuf_retire_vld && 
                                        (!back_br_bht_result && 
                                         (lbuf_pop_inst0_back_br || 
                                          lbuf_pop_inst1_back_br || 
-                                         lbuf_pop_inst2_back_br)
+                                         lbuf_pop_inst2_back_br || 
+                                         lbuf_pop_inst3_back_br)
                                        );
 assign active_front_fill_chgflw_gateclk_en = (lbuf_cur_state[5:0] == ACTIVE) && 
                                              (!front_entry_body_filled && 
@@ -6971,7 +8267,8 @@ assign active_front_fill_chgflw_gateclk_en = (lbuf_cur_state[5:0] == ACTIVE) &&
                                               !front_br_bht_result && 
                                               (lbuf_pop_inst0_front_br || 
                                                lbuf_pop_inst1_front_br || 
-                                               lbuf_pop_inst2_front_br)
+                                               lbuf_pop_inst2_front_br || 
+                                               lbuf_pop_inst3_front_br)
                                              );
 assign lbuf_stop_fetch_chgflw_gateclk_en = (lbuf_cur_state[5:0] == FILL) && 
                                             back_br_hit_lbuf_end || 
@@ -7042,44 +8339,57 @@ assign active_idle_chgflw_pc_pre[PC_WIDTH-2:0]       = (back_entry_inst_32)
 assign active_front_fill_chgflw_pc_pre[PC_WIDTH-2:0] = (front_entry_inst_32)
                                                      ? (front_entry_cur_pc[PC_WIDTH-2:0] + 38'd2)
                                                      : (front_entry_cur_pc[PC_WIDTH-2:0] + 38'd1);
-
+//Jeremy add inst3 related logic 2022.8.8
 //chgflw vlmul prepare
-assign active_idle_vlmul_pre[1:0]       = (lbuf_pop_inst2_valid) 
-                                        ? lbuf_pop_inst2_vlmul[1:0]
-                                        : (lbuf_pop_inst1_valid)
-                                          ? lbuf_pop_inst1_vlmul[1:0]
-                                          : lbuf_pop_inst0_vlmul[1:0];
-assign active_front_fill_vlmul_pre[1:0] = (lbuf_pop_inst2_valid)
-                                        ? lbuf_pop_inst2_vlmul[1:0]
-                                        : (lbuf_pop_inst1_valid)
-                                          ? lbuf_pop_inst1_vlmul[1:0]
-                                          : lbuf_pop_inst0_vlmul[1:0];
+assign active_idle_vlmul_pre[1:0]       = (lbuf_pop_inst3_valid) 
+                                        ? lbuf_pop_inst3_vlmul[1:0]
+                                        : (lbuf_pop_inst2_valid)
+                                          ? lbuf_pop_inst2_vlmul[1:0]
+                                          : (lbuf_pop_inst1_valid)
+                                            ? lbuf_pop_inst1_vlmul[1:0]
+                                            : lbuf_pop_inst0_vlmul[1:0];
+assign active_front_fill_vlmul_pre[1:0]  = (lbuf_pop_inst3_valid) 
+                                        ? lbuf_pop_inst3_vlmul[1:0]
+                                        : (lbuf_pop_inst2_valid)
+                                          ? lbuf_pop_inst2_vlmul[1:0]
+                                          : (lbuf_pop_inst1_valid)
+                                            ? lbuf_pop_inst1_vlmul[1:0]
+                                            : lbuf_pop_inst0_vlmul[1:0];
 assign lbuf_stop_fetch_vlmul_pre[1:0]   = ibdp_lbuf_con_br_vlmul[1:0];
 
 //chgflw vsew prepare
-assign active_idle_vsew_pre[2:0]        = (lbuf_pop_inst2_valid) 
-                                         ? lbuf_pop_inst2_vsew[2:0]
-                                         : (lbuf_pop_inst1_valid)
-                                           ? lbuf_pop_inst1_vsew[2:0]
-                                           : lbuf_pop_inst0_vsew[2:0];
-assign active_front_fill_vsew_pre[2:0]  = (lbuf_pop_inst2_valid)
-                                         ? lbuf_pop_inst2_vsew[2:0]
-                                         : (lbuf_pop_inst1_valid)
-                                           ? lbuf_pop_inst1_vsew[2:0]
-                                           : lbuf_pop_inst0_vsew[2:0];
+assign active_idle_vsew_pre[2:0]        = (lbuf_pop_inst3_valid) 
+                                        ? lbuf_pop_inst3_vsew[2:0]
+                                        : (lbuf_pop_inst2_valid)
+                                          ? lbuf_pop_inst2_vsew[2:0]
+                                          : (lbuf_pop_inst1_valid)
+                                            ? lbuf_pop_inst1_vsew[2:0]
+                                            : lbuf_pop_inst0_vsew[2:0];
+assign active_front_fill_vsew_pre[2:0]  = (lbuf_pop_inst3_valid) 
+                                         ? lbuf_pop_inst3_vsew[2:0]
+                                         : (lbuf_pop_inst2_valid)
+                                           ? lbuf_pop_inst2_vsew[2:0]
+                                           : (lbuf_pop_inst1_valid)
+                                             ? lbuf_pop_inst1_vsew[2:0]
+                                             : lbuf_pop_inst0_vsew[2:0];
+
 assign lbuf_stop_fetch_vsew_pre[2:0]    = ibdp_lbuf_con_br_vsew[2:0];
 
 //chgflw vl prepare
-assign active_idle_vl_pre[7:0]          = (lbuf_pop_inst2_valid) 
-                                         ? lbuf_pop_inst2_vl[7:0]
-                                         : (lbuf_pop_inst1_valid)
-                                           ? lbuf_pop_inst1_vl[7:0]
-                                           : lbuf_pop_inst0_vl[7:0];
-assign active_front_fill_vl_pre[7:0]    = (lbuf_pop_inst2_valid)
-                                         ? lbuf_pop_inst2_vl[7:0]
-                                         : (lbuf_pop_inst1_valid)
-                                           ? lbuf_pop_inst1_vl[7:0]
-                                           : lbuf_pop_inst0_vl[7:0];
+assign active_idle_vl_pre[7:0]   = (lbuf_pop_inst3_valid) 
+                                         ? lbuf_pop_inst3_vl[7:0]
+                                         : (lbuf_pop_inst2_valid)
+                                           ? lbuf_pop_inst2_vl[7:0]
+                                           : (lbuf_pop_inst1_valid)
+                                             ? lbuf_pop_inst1_vl[7:0]
+                                             : lbuf_pop_inst0_vl[7:0];
+assign active_front_fill_vl_pre[7:0] [7:0]   = (lbuf_pop_inst3_valid) 
+                                                 ? lbuf_pop_inst3_vl[7:0]
+                                                 : (lbuf_pop_inst2_valid)
+                                                   ? lbuf_pop_inst2_vl[7:0]
+                                                   : (lbuf_pop_inst1_valid)
+                                                     ? lbuf_pop_inst1_vl[7:0]
+                                                     : lbuf_pop_inst0_vl[7:0];
 assign lbuf_stop_fetch_vl_pre[7:0]      = ibdp_lbuf_con_br_vl[7:0];
 
 
@@ -7160,7 +8470,7 @@ assign lbuf_addrgen_chgflw_mask  = cp0_ifu_lbuf_en &&
                                    );
 
 //==========================================================
-//                Inst send to ibdp
+//               Jeremy : Inst send to ibdp
 //==========================================================
 assign lbuf_pop_inst0_vlmul[1:0] = (lbuf_pop_inst0_vsetvli)
                                  ? lbuf_pop_inst0_vlmul_pre[1:0]
@@ -7171,6 +8481,10 @@ assign lbuf_pop_inst1_vlmul[1:0] = (lbuf_pop_inst1_vsetvli)
 assign lbuf_pop_inst2_vlmul[1:0] = (lbuf_pop_inst2_vsetvli)
                                  ? lbuf_pop_inst2_vlmul_pre[1:0]
                                  : lbuf_pop_inst1_vlmul[1:0];
+assign lbuf_pop_inst3_vlmul[1:0] = (lbuf_pop_inst3_vsetvli)
+                                 ? lbuf_pop_inst3_vlmul_pre[1:0]
+                                 : lbuf_pop_inst2_vlmul[1:0];
+
 assign lbuf_pop_inst0_vsew[2:0]  = (lbuf_pop_inst0_vsetvli)
                                  ? lbuf_pop_inst0_vsew_pre[2:0]
                                  : ipdp_lbuf_vsew_reg[2:0];
@@ -7180,6 +8494,10 @@ assign lbuf_pop_inst1_vsew[2:0]  = (lbuf_pop_inst1_vsetvli)
 assign lbuf_pop_inst2_vsew[2:0]  = (lbuf_pop_inst2_vsetvli)
                                  ? lbuf_pop_inst2_vsew_pre[2:0]
                                  : lbuf_pop_inst1_vsew[2:0];
+assign lbuf_pop_inst3_vsew[2:0]  = (lbuf_pop_inst3_vsetvli)
+                                 ? lbuf_pop_inst3_vsew_pre[2:0]
+                                 : lbuf_pop_inst2_vsew[2:0];
+                                 
 assign lbuf_pop_inst0_vl[7:0]    = (lbuf_pop_inst0_vsetvli)
                                  ? lbuf_pop_inst0_vl_pre[7:0]
                                  : ipdp_lbuf_vl_reg[7:0];
@@ -7189,6 +8507,9 @@ assign lbuf_pop_inst1_vl[7:0]    = (lbuf_pop_inst1_vsetvli)
 assign lbuf_pop_inst2_vl[7:0]    = (lbuf_pop_inst2_vsetvli)
                                  ? lbuf_pop_inst2_vl_pre[7:0]
                                  : lbuf_pop_inst1_vl[7:0];
+assign lbuf_pop_inst3_vl[7:0]    = (lbuf_pop_inst3_vsetvli)
+                                 ? lbuf_pop_inst3_vl_pre[7:0]
+                                 : lbuf_pop_inst2_vl[7:0];
 
 assign lbuf_ibdp_inst0_valid    = lbuf_pop_inst0_br_mask_vld && 
                                   cp0_ifu_lbuf_en && 
@@ -7205,19 +8526,27 @@ assign lbuf_ibdp_inst2_valid    = lbuf_pop_inst2_br_mask_vld &&
                                   lbuf_retire_vld;
 assign lbuf_ibdp_inst2[31:0]    = lbuf_pop_inst2_data[31:0];
 assign lbuf_ibdp_inst2_pc[14:0] = lbuf_pop_inst2_pc[14:0];
+assign lbuf_ibdp_inst3_valid    = lbuf_pop_inst3_br_mask_vld && 
+                                  cp0_ifu_lbuf_en && 
+                                  lbuf_retire_vld;
+assign lbuf_ibdp_inst3[31:0]    = lbuf_pop_inst3_data[31:0];
+assign lbuf_ibdp_inst3_pc[14:0] = lbuf_pop_inst3_pc[14:0];
 
 
 assign lbuf_ibdp_inst0_vlmul[1:0] = lbuf_pop_inst0_vlmul[1:0];
 assign lbuf_ibdp_inst1_vlmul[1:0] = lbuf_pop_inst1_vlmul[1:0];
 assign lbuf_ibdp_inst2_vlmul[1:0] = lbuf_pop_inst2_vlmul[1:0];
+assign lbuf_ibdp_inst3_vlmul[1:0] = lbuf_pop_inst3_vlmul[1:0];
 
 assign lbuf_ibdp_inst0_vsew[2:0] = lbuf_pop_inst0_vsew[2:0];
 assign lbuf_ibdp_inst1_vsew[2:0] = lbuf_pop_inst1_vsew[2:0];
 assign lbuf_ibdp_inst2_vsew[2:0] = lbuf_pop_inst2_vsew[2:0];
+assign lbuf_ibdp_inst3_vsew[2:0] = lbuf_pop_inst3_vsew[2:0];
 
 assign lbuf_ibdp_inst0_vl[7:0]   = lbuf_pop_inst0_vl[7:0];
 assign lbuf_ibdp_inst1_vl[7:0]   = lbuf_pop_inst1_vl[7:0];
 assign lbuf_ibdp_inst2_vl[7:0]   = lbuf_pop_inst2_vl[7:0];
+assign lbuf_ibdp_inst3_vl[7:0]   = lbuf_pop_inst3_vl[7:0];
 
 assign lbuf_ibdp_inst0_split0 = lbuf_pop_inst0_split0_type[0]
                              || lbuf_pop_inst0_split0_type[1] && (lbuf_pop_inst0_vlmul[1:0] == 2'b0) && (|cp0_ifu_vl[7:0])
@@ -7228,6 +8557,9 @@ assign lbuf_ibdp_inst1_split0 = lbuf_pop_inst1_split0_type[0]
 assign lbuf_ibdp_inst2_split0 = lbuf_pop_inst2_split0_type[0]
                              || lbuf_pop_inst2_split0_type[1] && (lbuf_pop_inst2_vlmul[1:0] == 2'b0) && (|cp0_ifu_vl[7:0])
                              || lbuf_pop_inst2_split0_type[2] && (lbuf_pop_inst2_vlmul[1:0] == 2'b1) && (|cp0_ifu_vl[7:0]);
+assign lbuf_ibdp_inst3_split0 = lbuf_pop_inst3_split0_type[0]
+                             || lbuf_pop_inst3_split0_type[1] && (lbuf_pop_inst3_vlmul[1:0] == 2'b0) && (|cp0_ifu_vl[7:0])
+                             || lbuf_pop_inst3_split0_type[2] && (lbuf_pop_inst3_vlmul[1:0] == 2'b1) && (|cp0_ifu_vl[7:0]);
 assign lbuf_ibdp_inst0_split1 = lbuf_pop_inst0_split1_type[0]
                              || lbuf_pop_inst0_split1_type[1] && (|lbuf_pop_inst0_vlmul[1:0]) && (|cp0_ifu_vl[7:0])
                              || lbuf_pop_inst0_split1_type[2] && (lbuf_pop_inst0_vlmul[1])    && (|cp0_ifu_vl[7:0]);
@@ -7237,40 +8569,53 @@ assign lbuf_ibdp_inst1_split1 = lbuf_pop_inst1_split1_type[0]
 assign lbuf_ibdp_inst2_split1 = lbuf_pop_inst2_split1_type[0]
                              || lbuf_pop_inst2_split1_type[1] && (|lbuf_pop_inst2_vlmul[1:0]) && (|cp0_ifu_vl[7:0])
                              || lbuf_pop_inst2_split1_type[2] && (lbuf_pop_inst2_vlmul[1])    && (|cp0_ifu_vl[7:0]);
+assign lbuf_ibdp_inst3_split1 = lbuf_pop_inst3_split1_type[0]
+                             || lbuf_pop_inst3_split1_type[1] && (|lbuf_pop_inst3_vlmul[1:0]) && (|cp0_ifu_vl[7:0])
+                             || lbuf_pop_inst3_split1_type[2] && (lbuf_pop_inst3_vlmul[1])    && (|cp0_ifu_vl[7:0]);
+
 assign lbuf_ibdp_inst0_fence    = lbuf_pop_inst0_fence;
 assign lbuf_ibdp_inst1_fence    = lbuf_pop_inst1_fence;
 assign lbuf_ibdp_inst2_fence    = lbuf_pop_inst2_fence;
+assign lbuf_ibdp_inst3_fence    = lbuf_pop_inst3_fence;
 assign lbuf_ibdp_inst0_bkpta    = lbuf_pop_inst0_bkpta;
 assign lbuf_ibdp_inst1_bkpta    = lbuf_pop_inst1_bkpta;
 assign lbuf_ibdp_inst2_bkpta    = lbuf_pop_inst2_bkpta;
+assign lbuf_ibdp_inst3_bkpta    = lbuf_pop_inst3_bkpta;
 assign lbuf_ibdp_inst0_bkptb    = lbuf_pop_inst0_bkptb;
 assign lbuf_ibdp_inst1_bkptb    = lbuf_pop_inst1_bkptb;
 assign lbuf_ibdp_inst2_bkptb    = lbuf_pop_inst2_bkptb;
+assign lbuf_ibdp_inst3_bkptb    = lbuf_pop_inst3_bkptb;
 
 //==========================================================
-//               Infor send to ipdp
+//               Jeremy add this logic : Infor send to ipdp
 //==========================================================
 assign lbuf_ipdp_lbuf_active     = lbuf_cur_state[3];
 assign lbuf_ipdp_vtype_updt_vld  = lbuf_retire_vld
                                 && (lbuf_pop_inst0_br_mask_vld && lbuf_pop_inst0_vsetvli
                                     || lbuf_pop_inst1_br_mask_vld && lbuf_pop_inst1_vsetvli
-                                    || lbuf_pop_inst2_br_mask_vld && lbuf_pop_inst2_vsetvli);
-assign lbuf_ipdp_updt_vlmul[1:0] = (lbuf_pop_inst2_br_mask_vld) 
-                                 ? lbuf_pop_inst2_vlmul[1:0]
-                                 : (lbuf_pop_inst1_br_mask_vld)
-                                   ? lbuf_pop_inst1_vlmul[1:0]
-                                   : lbuf_pop_inst0_vlmul[1:0];
-assign lbuf_ipdp_updt_vsew[2:0]  = (lbuf_pop_inst2_br_mask_vld) 
-                                 ? lbuf_pop_inst2_vsew[2:0]
-                                 : (lbuf_pop_inst1_br_mask_vld)
-                                   ? lbuf_pop_inst1_vsew[2:0]
-                                   : lbuf_pop_inst0_vsew[2:0];
-
-assign lbuf_ipdp_updt_vl[7:0]    = (lbuf_pop_inst2_br_mask_vld) 
-                                 ? lbuf_pop_inst2_vl[7:0]
-                                 : (lbuf_pop_inst1_br_mask_vld)
-                                   ? lbuf_pop_inst1_vl[7:0]
-                                   : lbuf_pop_inst0_vl[7:0];
+                                    || lbuf_pop_inst2_br_mask_vld && lbuf_pop_inst2_vsetvli
+                                    || lbuf_pop_inst3_br_mask_vld && lbuf_pop_inst3_vsetvli);
+assign lbuf_ipdp_updt_vlmul[1:0] = (lbuf_pop_inst3_br_mask_vld) 
+                                 ? lbuf_pop_inst3_vlmul[1:0]
+                                 : (lbuf_pop_inst2_br_mask_vld)
+                                   ? lbuf_pop_inst2_vlmul[1:0]
+                                   : (lbuf_pop_inst1_br_mask_vld)
+                                     ? lbuf_pop_inst1_vlmul[1:0]
+                                     : lbuf_pop_inst0_vlmul[1:0];
+assign lbuf_ipdp_updt_vsew[2:0] = (lbuf_pop_inst3_br_mask_vld) 
+                                 ? lbuf_pop_inst3_vsew[2:0]
+                                 : (lbuf_pop_inst2_br_mask_vld)
+                                   ? lbuf_pop_inst2_vsew[2:0]
+                                   : (lbuf_pop_inst1_br_mask_vld)
+                                     ? lbuf_pop_inst1_vsew[2:0]
+                                     : lbuf_pop_inst0_vsew[2:0];
+assign lbuf_ipdp_updt_vl[7:0] = (lbuf_pop_inst3_br_mask_vld) 
+                                 ? lbuf_pop_inst3_vl[7:0]
+                                 : (lbuf_pop_inst2_br_mask_vld)
+                                   ? lbuf_pop_inst2_vl[7:0]
+                                   : (lbuf_pop_inst1_br_mask_vld)
+                                     ? lbuf_pop_inst1_vl[7:0]
+                                     : lbuf_pop_inst0_vl[7:0];
 
 //==========================================================
 //                Inst send to pcgen

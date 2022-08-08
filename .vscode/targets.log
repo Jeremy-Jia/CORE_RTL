@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Jul 30 19:52:22 2022
+# Make data base, printed on Mon Aug  8 18:45:51 2022
 
 # Variables
 
@@ -35,7 +35,7 @@ MGC_CALIBRE_SCHEMATIC_SERVER = IC_EDA:9199
 # automatic
 @D = $(patsubst %/,%,$(dir $@))
 # environment
-XAUTHORITY = /run/gdm/auth-for-ICer-ZU750m/database
+XAUTHORITY = /run/gdm/auth-for-ICer-3ObILa/database
 # environment
 GDMSESSION = gnome-classic
 # environment
@@ -73,7 +73,7 @@ DVE_HOME = /home/synopsys/vcs-mx/O-2018.09-1
 # environment
 XDG_DATA_DIRS = /home/ICer/.local/share/flatpak/exports/share/:/var/lib/flatpak/exports/share/:/usr/local/share/:/usr/share/
 # environment
-DBUS_SESSION_BUS_ADDRESS = unix:abstract=/tmp/dbus-WYShpNJjA3,guid=d5a8dc3bd955976a790d39f762e0b359
+DBUS_SESSION_BUS_ADDRESS = unix:abstract=/tmp/dbus-xnYjyjUGeE,guid=7d0aae55d4e734d6956d132d62f0e4a3
 # environment
 QT_PLUGIN_PATH = /usr/lib64/kde4/plugins:/usr/lib/kde4/plugins
 # environment
@@ -89,7 +89,7 @@ XILINX_VIVADO = /home/Xilinx/Vivado/2019.1
 # environment
 QT_GRAPHICSSYSTEM_CHECKED = 1
 # environment
-SESSION_MANAGER = local/unix:@/tmp/.ICE-unix/3317,unix/unix:/tmp/.ICE-unix/3317
+SESSION_MANAGER = local/unix:@/tmp/.ICE-unix/3295,unix/unix:/tmp/.ICE-unix/3295
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -133,7 +133,7 @@ MGC_LICENSE_FILE = /home/mentor//license/license.dat
 # environment
 XDG_SEAT = seat0
 # environment
-SSH_AGENT_PID = 3457
+SSH_AGENT_PID = 3433
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = GNOME-Classic:GNOME
 # environment
@@ -265,7 +265,7 @@ SCL_HOME = /home/synopsys/scl/2018.06
 # environment
 SANDBOX_LD_LIBRARY_PATH = :/home/synopsys/verdi/Verdi_O-2018.09-SP2/share/PLI/lib/LINUX64:/home/synopsys/verdi/Verdi_O-2018.09-SP2/share/PLI/IUS/LINUX64/boot:/home/cadence/INCISIVE152/tools.lnx86/lib
 # environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/8699bcbd_7a9d_4214_af7a_103396aad076
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/525552ed_28f6_472b_adc5_16c992c737e1
 # automatic
 ^F = $(notdir $^)
 # environment
@@ -294,7 +294,7 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 5349
+VSCODE_PID = 8851
 # variable set hash-table stats:
 # Load=141/1024=14%, Rehash=0, Collisions=26/163=16%
 
@@ -362,6 +362,6 @@ GNUmakefile:
 # strcache performance: lookups = 21 / hit rate = 14%
 # hash-table stats:
 # Load=18/8192=0%, Rehash=0, Collisions=1/21=5%
-# Finished Make data base on Sat Jul 30 19:52:22 2022
+# Finished Make data base on Mon Aug  8 18:45:51 2022
 
  
