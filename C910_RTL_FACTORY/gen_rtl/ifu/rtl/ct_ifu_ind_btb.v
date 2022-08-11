@@ -38,6 +38,7 @@ module ct_ifu_ind_btb(
   //jeremy need to modify
   rtu_ifu_retire0_chk_idx,
   rtu_ifu_retire0_jmp,
+  //if inst0 mispred 
   rtu_ifu_retire0_jmp_mispred,
   rtu_ifu_retire0_mispred,
   rtu_ifu_retire0_next_pc,
@@ -45,6 +46,10 @@ module ct_ifu_ind_btb(
   rtu_ifu_retire1_jmp,
   rtu_ifu_retire2_chk_idx,
   rtu_ifu_retire2_jmp
+  //Jeremy add inst3
+  rtu_ifu_retire3_chk_idx,
+  rtu_ifu_retire3_jmp
+
 );
 
 // &Ports; @23
@@ -72,7 +77,10 @@ input   [38:0]  rtu_ifu_retire0_next_pc;
 input   [7 :0]  rtu_ifu_retire1_chk_idx;    
 input           rtu_ifu_retire1_jmp;        
 input   [7 :0]  rtu_ifu_retire2_chk_idx;    
-input           rtu_ifu_retire2_jmp;        
+input           rtu_ifu_retire2_jmp;
+//Jeremy add inst3 jump info
+input   [7 :0]  rtu_ifu_retire3_chk_idx;    
+input           rtu_ifu_retire3_jmp        
 output  [22:0]  ind_btb_ibctrl_dout;        
 output  [1 :0]  ind_btb_ibctrl_priv_mode;   
 output          ind_btb_ifctrl_inv_done;    
@@ -349,9 +357,11 @@ gated_clk_cell  x_rtu_path_reg_updt_clk (
 assign rtu_path_reg_updt_clk_en = rtu_jmp_check_vld && 
                                   cp0_ifu_ind_btb_en || 
                                   ind_btb_inv_on_reg;
+//Jeremy add  this logic
 assign rtu_jmp_check_vld        = rtu_ifu_retire0_jmp || 
                                   rtu_ifu_retire1_jmp || 
-                                  rtu_ifu_retire2_jmp;
+                                  rtu_ifu_retire2_jmp || 
+                                  rtu_ifu_retire3_jmp;
 //rtu_path_reg                             
 always @(posedge rtu_path_reg_updt_clk or negedge cpurst_b)
 begin
@@ -392,60 +402,169 @@ always @( rtu_ifu_retire1_chk_idx[7:0]
        or rtu_path_reg_2[7:0]
        or rtu_ifu_retire0_jmp
        or rtu_ifu_retire0_chk_idx[7:0]
+       or rtu_ifu_retire3_chk_idx[7:0]
        or rtu_path_reg_1[7:0]
        or rtu_ifu_retire1_jmp
+       or rtu_ifu_retire3_jmp
        or rtu_path_reg_0[7:0]
        or rtu_path_reg_3[7:0]
        or rtu_ifu_retire2_jmp)
+       or rtu_ifu_retire3_jmp)
 begin
-case({rtu_ifu_retire0_jmp, rtu_ifu_retire1_jmp, rtu_ifu_retire2_jmp})
-  3'b000  : begin
+// case({rtu_ifu_retire0_jmp, rtu_ifu_retire1_jmp, rtu_ifu_retire2_jmp})
+//   3'b000  : begin
+//             rtu_path_reg_3_pre[7:0] = rtu_path_reg_3[7:0];
+//             rtu_path_reg_2_pre[7:0] = rtu_path_reg_2[7:0];
+//             rtu_path_reg_1_pre[7:0] = rtu_path_reg_1[7:0];
+//             rtu_path_reg_0_pre[7:0] = rtu_path_reg_0[7:0];
+//             end
+//   3'b001  : begin
+//             rtu_path_reg_3_pre[7:0] = rtu_path_reg_2[7:0];
+//             rtu_path_reg_2_pre[7:0] = rtu_path_reg_1[7:0];
+//             rtu_path_reg_1_pre[7:0] = rtu_path_reg_0[7:0];
+//             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
+//             end
+//   3'b010  : begin
+//             rtu_path_reg_3_pre[7:0] = rtu_path_reg_2[7:0];
+//             rtu_path_reg_2_pre[7:0] = rtu_path_reg_1[7:0];
+//             rtu_path_reg_1_pre[7:0] = rtu_path_reg_0[7:0];
+//             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
+//             end
+//   3'b100  : begin
+//             rtu_path_reg_3_pre[7:0] = rtu_path_reg_2[7:0];
+//             rtu_path_reg_2_pre[7:0] = rtu_path_reg_1[7:0];
+//             rtu_path_reg_1_pre[7:0] = rtu_path_reg_0[7:0];
+//             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
+//             end
+//   3'b011  : begin
+//             rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
+//             rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
+//             rtu_path_reg_1_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
+//             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
+//             end
+//   3'b101  : begin
+//             rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
+//             rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
+//             rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
+//             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
+//             end
+//   3'b110  : begin
+//             rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
+//             rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
+//             rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
+//             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
+//             end
+//   3'b111  : begin
+//             rtu_path_reg_3_pre[7:0] = rtu_path_reg_0[7:0];
+//             rtu_path_reg_2_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
+//             rtu_path_reg_1_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
+//             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
+//             end
+//   default : begin
+//             rtu_path_reg_3_pre[7:0] = rtu_path_reg_3[7:0];
+//             rtu_path_reg_2_pre[7:0] = rtu_path_reg_2[7:0];
+//             rtu_path_reg_1_pre[7:0] = rtu_path_reg_1[7:0];
+//             rtu_path_reg_0_pre[7:0] = rtu_path_reg_0[7:0];
+//             end
+// endcase
+
+//Jeremy add  this logic 
+case({rtu_ifu_retire0_jmp, rtu_ifu_retire1_jmp, rtu_ifu_retire2_jmp,rtu_ifu_retire3_jmp})
+  4'b0000  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_3[7:0];
             rtu_path_reg_2_pre[7:0] = rtu_path_reg_2[7:0];
             rtu_path_reg_1_pre[7:0] = rtu_path_reg_1[7:0];
             rtu_path_reg_0_pre[7:0] = rtu_path_reg_0[7:0];
             end
-  3'b001  : begin
+  4'b0001  : begin
+            rtu_path_reg_3_pre[7:0] = rtu_path_reg_2[7:0];
+            rtu_path_reg_2_pre[7:0] = rtu_path_reg_1[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_path_reg_0[7:0];
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
+            end
+  4'b0010  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_2[7:0];
             rtu_path_reg_2_pre[7:0] = rtu_path_reg_1[7:0];
             rtu_path_reg_1_pre[7:0] = rtu_path_reg_0[7:0];
             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
             end
-  3'b010  : begin
+  4'b0100  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_2[7:0];
             rtu_path_reg_2_pre[7:0] = rtu_path_reg_1[7:0];
             rtu_path_reg_1_pre[7:0] = rtu_path_reg_0[7:0];
             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
             end
-  3'b100  : begin
-            rtu_path_reg_3_pre[7:0] = rtu_path_reg_2[7:0];
-            rtu_path_reg_2_pre[7:0] = rtu_path_reg_1[7:0];
-            rtu_path_reg_1_pre[7:0] = rtu_path_reg_0[7:0];
-            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
+  4'b0011  : begin
+            rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
+            rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
             end
-  3'b011  : begin
+  4'b0101  : begin
+            rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
+            rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
+            end
+  4'b0110  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
             rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
             rtu_path_reg_1_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
             end
-  3'b101  : begin
+  4'b0111  : begin
+            rtu_path_reg_3_pre[7:0] = rtu_path_reg_0[7:0];
+            rtu_path_reg_2_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
+            end
+  4'b1000  : begin
+            rtu_path_reg_3_pre[7:0] = rtu_path_reg_2[7:0];
+            rtu_path_reg_2_pre[7:0] = rtu_path_reg_1[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_path_reg_0[7:0];
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
+            end
+  4'b1001  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
             rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
-            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
-            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0]
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
             end
-  3'b110  : begin
+  4'b1010  : begin
+            rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
+            rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0]
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
+            end
+  4'b1011  : begin
+            rtu_path_reg_3_pre[7:0] = rtu_path_reg_0[7:0];
+            rtu_path_reg_2_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0]
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0]
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
+            end
+  4'b1100  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
             rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
             rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
             end
-  3'b111  : begin
+  4'b1101  : begin
+            rtu_path_reg_3_pre[7:0] = rtu_path_reg_0[7:0];
+            rtu_path_reg_2_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
+            end
+  4'b1110  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_0[7:0];
             rtu_path_reg_2_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
             rtu_path_reg_1_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
+            end
+  4'b1111  : begin
+            rtu_path_reg_3_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
+            rtu_path_reg_2_pre[7:0] = rtu_ifu_retire1_chk_idx[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
+            rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
             end
   default : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_3[7:0];

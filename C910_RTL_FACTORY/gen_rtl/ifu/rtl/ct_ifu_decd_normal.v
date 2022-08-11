@@ -230,7 +230,7 @@ assign x_preturn = (
                    ); 
 
 
-//Hn_ind_jmp
+//Jeremy hn indirect branch 
 assign x_ind_br  = (
                     ({x_inst[14:12],x_inst[6:0]} == 10'b000_1100111) && //jalr
                     (

@@ -31,12 +31,11 @@ module ct_ifu_debug(
   ibctrl_debug_ind_btb_stall,
   ibctrl_debug_lbuf_inst_vld,
   ibctrl_debug_mispred_stall,
-  //jeremy need to modify
   ibdp_debug_inst0_vld,
   ibdp_debug_inst1_vld,
   ibdp_debug_inst2_vld,
-
-  
+  //Jeremy add inst3
+  ibdp_debug_inst3_vld,
   ibdp_debug_mmu_deny_vld,
   ifctrl_debug_if_pc_vld,
   ifctrl_debug_if_stall,
@@ -90,7 +89,9 @@ input           ibctrl_debug_lbuf_inst_vld;
 input           ibctrl_debug_mispred_stall;          
 input           ibdp_debug_inst0_vld;                
 input           ibdp_debug_inst1_vld;                
-input           ibdp_debug_inst2_vld;                
+input           ibdp_debug_inst2_vld; 
+//Jeremy add inst3               
+input           ibdp_debug_inst3_vld;                
 input           ibdp_debug_mmu_deny_vld;             
 input           ifctrl_debug_if_pc_vld;              
 input           ifctrl_debug_if_stall;               
@@ -120,12 +121,13 @@ input   [9 :0]  vector_debug_cur_st;
 input           vector_debug_reset_on;               
 input           vfdsu_ifu_debug_ex2_wait;            
 input           vfdsu_ifu_debug_idle;                
-input           vfdsu_ifu_debug_pipe_busy;           
-output  [82:0]  ifu_had_debug_info;                  
+input           vfdsu_ifu_debug_pipe_busy;
+//Jeremy change debug info 83->84           
+output  [83:0]  ifu_had_debug_info;                  
 output          ifu_had_reset_on;                    
 
 // &Regs; @24
-reg     [82:0]  ifu_had_debug_info;                  
+reg     [83:0]  ifu_had_debug_info;                  
 
 // &Wires; @25
 wire            bry_missigned_stall;                 
@@ -137,7 +139,7 @@ wire            dbg_ack_info;
 wire            fifo_full_stall;                     
 wire            fifo_stall;                          
 wire            forever_cpuclk;                      
-wire    [82:0]  had_debug_info;                      
+wire    [83:0]  had_debug_info;                      
 wire            had_rtu_xx_jdbreq;                   
 wire            ib_expt_vld;                         
 wire            ib_ip_stall;                         
@@ -158,7 +160,9 @@ wire            ibctrl_debug_lbuf_inst_vld;
 wire            ibctrl_debug_mispred_stall;          
 wire            ibdp_debug_inst0_vld;                
 wire            ibdp_debug_inst1_vld;                
-wire            ibdp_debug_inst2_vld;                
+wire            ibdp_debug_inst2_vld;
+//Jeremy add inst3                
+wire            ibdp_debug_inst3_vld;                
 wire            ibdp_debug_mmu_deny_vld;             
 wire            ibuf_empty;                          
 wire            ibuf_full;                           
@@ -183,6 +187,7 @@ wire            ind_btb_stall;
 wire            inst0_vld;                           
 wire            inst1_vld;                           
 wire            inst2_vld;                           
+wire            inst3_vld;                           
 wire    [3 :0]  inv_cur_st;                          
 wire            ip_expt_vld;                         
 wire            ip_h0_vld;                           
@@ -282,6 +287,8 @@ assign inst0_vld               = ibdp_debug_inst0_vld;
 assign inst1_vld               = ibdp_debug_inst1_vld;
 //44-inst2_vld
 assign inst2_vld               = ibdp_debug_inst2_vld;
+//Jeremy add inst3
+assign inst3_vld               = ibdp_debug_inst3_vld;
 //43-if_vld
 assign if_vld                  = ifctrl_debug_if_vld;
 //42-ip_vld
@@ -321,7 +328,7 @@ assign vfdsu_ex2_wait          = vfdsu_ifu_debug_ex2_wait;
 assign vfdsu_idle              = vfdsu_ifu_debug_idle;
 
 //Merge
-assign had_debug_info[82:0]    = {pc_bus[13:0],
+assign had_debug_info[83:0]    = {pc_bus[13:0],
                                    ib_ip_stall,
                                    ip_if_stall,
                                    if_self_stall,
@@ -347,6 +354,8 @@ assign had_debug_info[82:0]    = {pc_bus[13:0],
                                    inst0_vld,
                                    inst1_vld,
                                    inst2_vld,
+                                   //Jeremy add debug inst3
+                                   inst3_vld,
                                    if_vld,
                                    ip_vld,
                                    ib_vld,
@@ -373,11 +382,11 @@ assign dbg_ack_info            = had_rtu_xx_jdbreq
 always @(posedge forever_cpuclk or negedge cpurst_b)
 begin
   if(!cpurst_b)
-    ifu_had_debug_info[82:0] <= 83'b0;
+    ifu_had_debug_info[83:0] <= 83'b0;
   else if(dbg_ack_info)
-    ifu_had_debug_info[82:0] <= had_debug_info[82:0];
+    ifu_had_debug_info[83:0] <= had_debug_info[83:0];
   else
-    ifu_had_debug_info[82:0] <= ifu_had_debug_info[82:0];
+    ifu_had_debug_info[83:0] <= ifu_had_debug_info[82:0];
 end
     
 // &Force("output","ifu_had_debug_info"); @181

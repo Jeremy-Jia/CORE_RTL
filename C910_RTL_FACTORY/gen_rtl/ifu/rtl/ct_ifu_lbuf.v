@@ -1632,6 +1632,8 @@ assign back_br_taken          = (|hn_con_br[7:0]) &&
 //Jeremy : back br check 2022.8.8
 assign back_br_check          = (|hn_con_br[7:0]) && 
                                 con_br_offset[37];
+
+
 assign back_br_inst_32        = ibdp_lbuf_con_br_inst_32;
 assign back_br_pc[PC_WIDTH-2:0]     = con_br_cur_pc[PC_WIDTH-2:0];
 assign back_br_tar_pc[PC_WIDTH-2:0] = con_br_cur_pc[PC_WIDTH-2:0] + con_br_offset[PC_WIDTH-2:0];
@@ -1648,9 +1650,12 @@ assign front_br_taken    = (|hn_con_br[7:0]) &&
                            !con_br_offset[37] && //posetive offset
                            con_br_taken;
 
+
 //Jeremy : front br check 2022.8.8
 assign front_br_check    = (|hn_con_br[7:0]) && 
-                           !con_br_offset[37]; 
+                           !con_br_offset[37];
+
+
 assign front_br_inst_32 = ibdp_lbuf_con_br_inst_32;
 assign front_br_pc[PC_WIDTH-2:0] = con_br_cur_pc[PC_WIDTH-2:0]; 
 
@@ -2518,10 +2523,7 @@ gated_clk_cell  x_back_buffer_update_clk (
 //           .external_en    (1'b0), @1090
 //           .global_en      (cp0_yy_clk_en), @1091
 //           .local_en       (back_buffer_update_clk_en),//Local Condition @1092
-//           .module_en      (cp0_ifu_icg_en) @1093
-//         ); @1094
-assign back_buffer_update_clk_en = back_entry_update || 
-                                   lbuf_flush || 
+//           .module_en      (cp0_ifu_icg_en) @10932022.8.8
                                    fill_state_enter; 
 
 //Back branch Buffer Entry
