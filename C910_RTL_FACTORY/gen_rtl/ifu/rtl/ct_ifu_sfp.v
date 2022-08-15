@@ -25,7 +25,6 @@ module ct_ifu_sfp(
   pad_yy_icg_scan_en,
   pcgen_sfp_pc,
   rtu_ifu_chgflw_vld,
-  //jeremy need to modify
   rtu_ifu_retire_inst0_cur_pc,
   rtu_ifu_retire_inst0_load,
   rtu_ifu_retire_inst0_no_spec_hit,
@@ -50,6 +49,14 @@ module ct_ifu_sfp(
   rtu_ifu_retire_inst2_no_spec_miss,
   rtu_ifu_retire_inst2_store,
   rtu_ifu_retire_inst2_vl_pred,
+  //Jeremy add inst3
+  rtu_ifu_retire_inst3_cur_pc,
+  rtu_ifu_retire_inst3_load,
+  rtu_ifu_retire_inst3_no_spec_hit,
+  rtu_ifu_retire_inst3_no_spec_mispred,
+  rtu_ifu_retire_inst3_no_spec_miss,
+  rtu_ifu_retire_inst3_store,
+  rtu_ifu_retire_inst3_vl_pred,
   sfp_ifdp_hit_pc_lo,
   sfp_ifdp_hit_type,
   sfp_ifdp_pc_hit
@@ -91,13 +98,13 @@ input           rtu_ifu_retire_inst2_no_spec_miss;
 input           rtu_ifu_retire_inst2_store;          
 input           rtu_ifu_retire_inst2_vl_pred; 
 //jeremy add ifu-rtu retire signal for inst3
-input   [38:0]  rtu_ifu_retire_inst2_cur_pc;         
-input           rtu_ifu_retire_inst2_load;           
-input           rtu_ifu_retire_inst2_no_spec_hit;    
-input           rtu_ifu_retire_inst2_no_spec_mispred; 
-input           rtu_ifu_retire_inst2_no_spec_miss;   
-input           rtu_ifu_retire_inst2_store;          
-input           rtu_ifu_retire_inst2_vl_pred;        
+input   [38:0]  rtu_ifu_retire_inst3_cur_pc;         
+input           rtu_ifu_retire_inst3_load;           
+input           rtu_ifu_retire_inst3_no_spec_hit;    
+input           rtu_ifu_retire_inst3_no_spec_mispred; 
+input           rtu_ifu_retire_inst3_no_spec_miss;   
+input           rtu_ifu_retire_inst3_store;          
+input           rtu_ifu_retire_inst3_vl_pred;        
 output  [2 :0]  sfp_ifdp_hit_pc_lo;                  
 output  [3 :0]  sfp_ifdp_hit_type;                   
 output          sfp_ifdp_pc_hit;                     
@@ -206,7 +213,15 @@ wire            rtu_ifu_retire_inst2_no_spec_hit;
 wire            rtu_ifu_retire_inst2_no_spec_mispred; 
 wire            rtu_ifu_retire_inst2_no_spec_miss;   
 wire            rtu_ifu_retire_inst2_store;          
-wire            rtu_ifu_retire_inst2_vl_pred;        
+wire            rtu_ifu_retire_inst2_vl_pred;
+//jJeremy add inst3        
+wire    [38:0]  rtu_ifu_retire_inst3_cur_pc;         
+wire            rtu_ifu_retire_inst3_load;           
+wire            rtu_ifu_retire_inst3_no_spec_hit;    
+wire            rtu_ifu_retire_inst3_no_spec_mispred; 
+wire            rtu_ifu_retire_inst3_no_spec_miss;   
+wire            rtu_ifu_retire_inst3_store;          
+wire            rtu_ifu_retire_inst3_vl_pred;        
 wire    [11:0]  sf_pc_hit_sf_pc;                     
 wire            sfp_bar_hit;                         
 wire    [11:0]  sfp_bar_pc_hit;                      
@@ -219,7 +234,9 @@ wire    [3 :0]  sfp_ifdp_hit_type;
 wire            sfp_ifdp_pc_hit;                     
 wire            sfp_inst0_updt_vld;                  
 wire            sfp_inst1_updt_vld;                  
-wire            sfp_inst2_updt_vld;                  
+wire            sfp_inst2_updt_vld; 
+//Jeremy add inst3 update valid                 
+wire            sfp_inst3_updt_vld;                  
 wire    [11:0]  sfp_pc_hi_hit;                       
 wire            sfp_pc_hit;                          
 wire            sfp_sf_hit;                          
@@ -501,62 +518,119 @@ assign sfp_inst2_updt_vld = rtu_ifu_retire_inst2_no_spec_hit
                          || rtu_ifu_retire_inst2_no_spec_miss
                          || rtu_ifu_retire_inst2_no_spec_mispred
                          || rtu_ifu_retire_inst2_vl_pred; 
+assign sfp_inst3_updt_vld = rtu_ifu_retire_inst3_no_spec_hit
+                         || rtu_ifu_retire_inst3_no_spec_miss
+                         || rtu_ifu_retire_inst3_no_spec_mispred
+                         || rtu_ifu_retire_inst3_vl_pred; 
 // &CombBeg; @248
 always @( rtu_ifu_retire_inst0_vl_hit
        or rtu_ifu_retire_inst2_no_spec_miss
+       or rtu_ifu_retire_inst3_no_spec_miss
        or rtu_ifu_retire_inst0_no_spec_hit
        or rtu_ifu_retire_inst2_cur_pc[19:0]
+       or rtu_ifu_retire_inst3_cur_pc[19:0]
        or rtu_ifu_retire_inst0_load
        or rtu_ifu_retire_inst1_vl_pred
        or rtu_ifu_retire_inst0_cur_pc[19:0]
        or rtu_ifu_retire_inst1_no_spec_miss
        or rtu_ifu_retire_inst0_vl_pred
        or rtu_ifu_retire_inst2_store
+       or rtu_ifu_retire_inst3_store
        or rtu_ifu_retire_inst2_load
+       or rtu_ifu_retire_inst3_load
        or sfp_inst0_updt_vld
        or rtu_ifu_retire_inst0_vl_miss
        or rtu_ifu_retire_inst0_vl_mispred
        or rtu_ifu_retire_inst2_vl_pred
+       or rtu_ifu_retire_inst3_vl_pred
        or sfp_inst1_updt_vld
        or rtu_ifu_retire_inst0_no_spec_mispred
        or rtu_ifu_retire_inst1_load
        or rtu_ifu_retire_inst2_no_spec_mispred
+       or rtu_ifu_retire_inst3_no_spec_mispred
        or rtu_ifu_retire_inst1_store
        or rtu_ifu_retire_inst1_no_spec_mispred
        or rtu_ifu_retire_inst0_store
        or rtu_ifu_retire_inst1_no_spec_hit
        or sfp_inst2_updt_vld
+       or sfp_inst3_updt_vld
        or rtu_ifu_retire_inst0_no_spec_miss
        or rtu_ifu_retire_inst1_cur_pc[19:0]
        or rtu_ifu_retire_inst2_no_spec_hit)
+       or rtu_ifu_retire_inst3_no_spec_hit)
 begin
-casez({sfp_inst0_updt_vld,sfp_inst1_updt_vld,sfp_inst2_updt_vld})
-  3'b1??: begin
+// casez({sfp_inst0_updt_vld,sfp_inst1_updt_vld,sfp_inst2_updt_vld})
+//   3'b1??: begin
+//     sfp_wr_buf_updt_type[2:0] = {rtu_ifu_retire_inst0_no_spec_hit  || rtu_ifu_retire_inst0_vl_hit,
+//                                  rtu_ifu_retire_inst0_no_spec_miss || rtu_ifu_retire_inst0_vl_miss,
+//                                  rtu_ifu_retire_inst0_no_spec_mispred||rtu_ifu_retire_inst0_vl_mispred};
+//     sfp_wr_buf_inst_type[2:0] = { rtu_ifu_retire_inst0_vl_pred || rtu_ifu_retire_inst0_vl_miss,
+//                                   rtu_ifu_retire_inst0_store,
+//                                   rtu_ifu_retire_inst0_load};
+//     sfp_wr_buf_updt_pc[19:0]  = rtu_ifu_retire_inst0_cur_pc[19:0];
+//   end
+//   3'b01?: begin
+//     sfp_wr_buf_updt_type[2:0] = {rtu_ifu_retire_inst1_no_spec_hit || rtu_ifu_retire_inst1_vl_pred,
+//                                  rtu_ifu_retire_inst1_no_spec_miss,
+//                                  rtu_ifu_retire_inst1_no_spec_mispred};
+//     sfp_wr_buf_inst_type[2:0] = {rtu_ifu_retire_inst0_vl_pred,
+//                                  rtu_ifu_retire_inst1_store,
+//                                  rtu_ifu_retire_inst1_load};
+//     sfp_wr_buf_updt_pc[19:0]  = rtu_ifu_retire_inst1_cur_pc[19:0];
+//   end
+//   3'b001: begin
+//     sfp_wr_buf_updt_type[2:0] = {rtu_ifu_retire_inst2_no_spec_hit || rtu_ifu_retire_inst2_vl_pred,
+//                                  rtu_ifu_retire_inst2_no_spec_miss,
+//                                  rtu_ifu_retire_inst2_no_spec_mispred};
+//     sfp_wr_buf_inst_type[2:0] = {rtu_ifu_retire_inst2_vl_pred,
+//                                  rtu_ifu_retire_inst2_store,
+//                                  rtu_ifu_retire_inst2_load};
+//     sfp_wr_buf_updt_pc[19:0]  = rtu_ifu_retire_inst2_cur_pc[19:0];
+//   end
+//   default: begin
+//     sfp_wr_buf_updt_type[2:0] = 3'b0;
+//     sfp_wr_buf_inst_type[2:0] = 3'b0;
+//     sfp_wr_buf_updt_pc[19:0]  = 20'b0;
+//   end
+// endcase
+
+//Jeremy add  inst3 update tupe | inst type | pc
+casez({sfp_inst0_updt_vld,sfp_inst1_updt_vld,sfp_inst2_updt_vld,sfp_inst3_updt_vld})
+  4'b1???: begin
     sfp_wr_buf_updt_type[2:0] = {rtu_ifu_retire_inst0_no_spec_hit  || rtu_ifu_retire_inst0_vl_hit,
                                  rtu_ifu_retire_inst0_no_spec_miss || rtu_ifu_retire_inst0_vl_miss,
                                  rtu_ifu_retire_inst0_no_spec_mispred||rtu_ifu_retire_inst0_vl_mispred};
     sfp_wr_buf_inst_type[2:0] = { rtu_ifu_retire_inst0_vl_pred || rtu_ifu_retire_inst0_vl_miss,
                                   rtu_ifu_retire_inst0_store,
                                   rtu_ifu_retire_inst0_load};
-    sfp_wr_buf_updt_pc[19:0]  = rtu_ifu_retire_inst0_cur_pc[19:0];
+    sfp_wr_buf_updt_pc[19:0]  =  rtu_ifu_retire_inst0_cur_pc[19:0];
   end
-  3'b01?: begin
+  4'b01??: begin
     sfp_wr_buf_updt_type[2:0] = {rtu_ifu_retire_inst1_no_spec_hit || rtu_ifu_retire_inst1_vl_pred,
                                  rtu_ifu_retire_inst1_no_spec_miss,
                                  rtu_ifu_retire_inst1_no_spec_mispred};
     sfp_wr_buf_inst_type[2:0] = {rtu_ifu_retire_inst0_vl_pred,
                                  rtu_ifu_retire_inst1_store,
                                  rtu_ifu_retire_inst1_load};
-    sfp_wr_buf_updt_pc[19:0]  = rtu_ifu_retire_inst1_cur_pc[19:0];
+    sfp_wr_buf_updt_pc[19:0]  =  rtu_ifu_retire_inst1_cur_pc[19:0];
   end
-  3'b001: begin
+  4'b001?: begin
     sfp_wr_buf_updt_type[2:0] = {rtu_ifu_retire_inst2_no_spec_hit || rtu_ifu_retire_inst2_vl_pred,
                                  rtu_ifu_retire_inst2_no_spec_miss,
                                  rtu_ifu_retire_inst2_no_spec_mispred};
     sfp_wr_buf_inst_type[2:0] = {rtu_ifu_retire_inst2_vl_pred,
                                  rtu_ifu_retire_inst2_store,
                                  rtu_ifu_retire_inst2_load};
-    sfp_wr_buf_updt_pc[19:0]  = rtu_ifu_retire_inst2_cur_pc[19:0];
+    sfp_wr_buf_updt_pc[19:0]  =  rtu_ifu_retire_inst2_cur_pc[19:0];
+  end
+  4'b0001: begin
+    sfp_wr_buf_updt_type[2:0] = {rtu_ifu_retire_inst3_no_spec_hit || rtu_ifu_retire_inst3_vl_pred,
+                                 rtu_ifu_retire_inst3_no_spec_miss,
+                                 rtu_ifu_retire_inst3_no_spec_mispred};
+    sfp_wr_buf_inst_type[2:0] = {rtu_ifu_retire_inst3_vl_pred,
+                                 rtu_ifu_retire_inst3_store,
+                                 rtu_ifu_retire_inst3_load};
+    sfp_wr_buf_updt_pc[19:0]  =  rtu_ifu_retire_inst3_cur_pc[19:0];
   end
   default: begin
     sfp_wr_buf_updt_type[2:0] = 3'b0;
@@ -564,7 +638,6 @@ casez({sfp_inst0_updt_vld,sfp_inst1_updt_vld,sfp_inst2_updt_vld})
     sfp_wr_buf_updt_pc[19:0]  = 20'b0;
   end
 endcase
-// &CombEnd; @283
 end
 
 // &Instance("gated_clk_cell","x_sfp_wr_buf_clk"); @285
@@ -647,7 +720,8 @@ gated_clk_cell  x_sfp_sf_pc_clk (
 //         ); @342
 assign sfp_sf_pc_clk_en = sfp_inst0_updt_vld && rtu_ifu_retire_inst0_store
                        || sfp_inst1_updt_vld && rtu_ifu_retire_inst1_store
-                       || sfp_inst2_updt_vld && rtu_ifu_retire_inst2_store;
+                       || sfp_inst2_updt_vld && rtu_ifu_retire_inst2_store
+                       || sfp_inst3_updt_vld && rtu_ifu_retire_inst3_store;
 
 always @(posedge sfp_sf_pc_clk or negedge cpurst_b)
 begin

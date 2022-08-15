@@ -162,6 +162,8 @@ wire    [7 :0]  rtu_ifu_retire1_chk_idx;
 wire            rtu_ifu_retire1_jmp;        
 wire    [7 :0]  rtu_ifu_retire2_chk_idx;    
 wire            rtu_ifu_retire2_jmp;        
+wire    [7 :0]  rtu_ifu_retire3_chk_idx;    
+wire            rtu_ifu_retire3_jmp;        
 wire            rtu_ind_btb_update_vld;     
 wire            rtu_jmp_check_vld;          
 wire    [19:0]  rtu_jmp_target_pc;          
@@ -314,14 +316,14 @@ else //if(ind_btb_read)
   ind_btb_index[7:0] = ind_btb_rd_index[7:0];
 // &CombEnd; @151
 end
-
+//Jeremy ind-btb-index write
 assign ind_btb_wr_index[7:0] = {
                                  {rtu_path_reg_3[7:6] ^ rtu_ghr[7:6]}, 
                                  {rtu_path_reg_2[5:4] ^ rtu_ghr[5:4]}, 
                                  {rtu_path_reg_1[3:2] ^ rtu_ghr[3:2]}, 
                                  {rtu_path_reg_0[1:0] ^ rtu_ghr[1:0]}
                                };
-//For timing, use vghr_reg in stead of vghr_pre
+//Jeremy ind-btb-index read
 assign ind_btb_rd_index[7:0] = {
                                  {path_reg_3_pre[7:6] ^ vghr_reg[7:6]}, 
                                  {path_reg_2_pre[5:4] ^ vghr_reg[5:4]}, 
@@ -386,12 +388,12 @@ begin
     rtu_path_reg_1[7:0] <= rtu_path_reg_1_pre[7:0];
     rtu_path_reg_0[7:0] <= rtu_path_reg_0_pre[7:0];
   end
-  else[
+  else
   begin
     rtu_path_reg_3[7:0] <= rtu_path_reg_3[7:0];
     rtu_path_reg_2[7:0] <= rtu_path_reg_2[7:0];
     rtu_path_reg_1[7:0] <= rtu_path_reg_1[7:0];
-    rtu_path_reg_0[7:0] <= rtu_path_reg_07:0];
+    rtu_path_reg_0[7:0] <= rtu_path_reg_0[7:0];
   end    
 end 
 
@@ -791,9 +793,9 @@ ct_ifu_ind_btb_array  x_ct_ifu_ind_btb_array (
   .forever_cpuclk     (forever_cpuclk    ),
   .ind_btb_cen_b      (ind_btb_cen_b     ),
   .ind_btb_clk_en     (ind_btb_clk_en    ),
-  .ind_btb_data_in    (ind_btb_data_in   ),
-  .ind_btb_dout       (ind_btb_dout      ),
-  .ind_btb_index      (ind_btb_index     ),
+  .ind_btb_data_in    (ind_btb_data_in   ),//1
+  .ind_btb_dout       (ind_btb_dout      ),//2
+  .ind_btb_index      (ind_btb_index     ),//3
   .ind_btb_wen_b      (ind_btb_wen_b     ),
   .pad_yy_icg_scan_en (pad_yy_icg_scan_en)
 );

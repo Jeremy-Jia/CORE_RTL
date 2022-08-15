@@ -156,6 +156,23 @@ module ct_ifu_ibuf(
   ibuf_ibdp_bypass_inst2_vl_pred,
   ibuf_ibdp_bypass_inst2_vlmul,
   ibuf_ibdp_bypass_inst2_vsew,
+  ibuf_ibdp_bypass_inst3,
+  ibuf_ibdp_bypass_inst3_bkpta,
+  ibuf_ibdp_bypass_inst3_bkptb,
+  ibuf_ibdp_bypass_inst3_ecc_err,
+  ibuf_ibdp_bypass_inst3_expt,
+  ibuf_ibdp_bypass_inst3_fence,
+  ibuf_ibdp_bypass_inst3_high_expt,
+  ibuf_ibdp_bypass_inst3_no_spec,
+  ibuf_ibdp_bypass_inst3_pc,
+  ibuf_ibdp_bypass_inst3_split0,
+  ibuf_ibdp_bypass_inst3_split1,
+  ibuf_ibdp_bypass_inst3_valid,
+  ibuf_ibdp_bypass_inst3_vec,
+  ibuf_ibdp_bypass_inst3_vl,
+  ibuf_ibdp_bypass_inst3_vl_pred,
+  ibuf_ibdp_bypass_inst3_vlmul,
+  ibuf_ibdp_bypass_inst3_vsew,
   ibuf_ibdp_inst0,
   ibuf_ibdp_inst0_bkpta,
   ibuf_ibdp_inst0_bkptb,
@@ -207,6 +224,23 @@ module ct_ifu_ibuf(
   ibuf_ibdp_inst2_vl_pred,
   ibuf_ibdp_inst2_vlmul,
   ibuf_ibdp_inst2_vsew,
+  ibuf_ibdp_inst3,
+  ibuf_ibdp_inst3_bkpta,
+  ibuf_ibdp_inst3_bkptb,
+  ibuf_ibdp_inst3_ecc_err,
+  ibuf_ibdp_inst3_expt_vld,
+  ibuf_ibdp_inst3_fence,
+  ibuf_ibdp_inst3_high_expt,
+  ibuf_ibdp_inst3_no_spec,
+  ibuf_ibdp_inst3_pc,
+  ibuf_ibdp_inst3_split0,
+  ibuf_ibdp_inst3_split1,
+  ibuf_ibdp_inst3_valid,
+  ibuf_ibdp_inst3_vec,
+  ibuf_ibdp_inst3_vl,
+  ibuf_ibdp_inst3_vl_pred,
+  ibuf_ibdp_inst3_vlmul,
+  ibuf_ibdp_inst3_vsew,
   ibuf_lbuf_empty,
   pad_yy_icg_scan_en
   //jeremy todo : add port list
@@ -1356,6 +1390,23 @@ wire    [7 :0]  ibuf_ibdp_bypass_inst2_vl;
 wire            ibuf_ibdp_bypass_inst2_vl_pred;        
 wire    [1 :0]  ibuf_ibdp_bypass_inst2_vlmul;          
 wire    [2 :0]  ibuf_ibdp_bypass_inst2_vsew;           
+wire    [31:0]  ibuf_ibdp_bypass_inst3;                
+wire            ibuf_ibdp_bypass_inst3_bkpta;          
+wire            ibuf_ibdp_bypass_inst3_bkptb;          
+wire            ibuf_ibdp_bypass_inst3_ecc_err;        
+wire            ibuf_ibdp_bypass_inst3_expt;           
+wire            ibuf_ibdp_bypass_inst3_fence;          
+wire            ibuf_ibdp_bypass_inst3_high_expt;      
+wire            ibuf_ibdp_bypass_inst3_no_spec;        
+wire    [14:0]  ibuf_ibdp_bypass_inst3_pc;             
+wire            ibuf_ibdp_bypass_inst3_split0;         
+wire            ibuf_ibdp_bypass_inst3_split1;         
+wire            ibuf_ibdp_bypass_inst3_valid;          
+wire    [3 :0]  ibuf_ibdp_bypass_inst3_vec;            
+wire    [7 :0]  ibuf_ibdp_bypass_inst3_vl;             
+wire            ibuf_ibdp_bypass_inst3_vl_pred;        
+wire    [1 :0]  ibuf_ibdp_bypass_inst3_vlmul;          
+wire    [2 :0]  ibuf_ibdp_bypass_inst3_vsew;           
 wire    [31:0]  ibuf_ibdp_inst0;                       
 wire            ibuf_ibdp_inst0_bkpta;                 
 wire            ibuf_ibdp_inst0_bkptb;                 
@@ -1406,7 +1457,25 @@ wire    [3 :0]  ibuf_ibdp_inst2_vec;
 wire    [7 :0]  ibuf_ibdp_inst2_vl;                    
 wire            ibuf_ibdp_inst2_vl_pred;               
 wire    [1 :0]  ibuf_ibdp_inst2_vlmul;                 
-wire    [2 :0]  ibuf_ibdp_inst2_vsew;                  
+wire    [2 :0]  ibuf_ibdp_inst2_vsew;
+//Jeremy add inst3                  
+wire    [31:0]  ibuf_ibdp_inst3;                       
+wire            ibuf_ibdp_inst3_bkpta;                 
+wire            ibuf_ibdp_inst3_bkptb;                 
+wire            ibuf_ibdp_inst3_ecc_err;               
+wire            ibuf_ibdp_inst3_expt_vld;              
+wire            ibuf_ibdp_inst3_fence;                 
+wire            ibuf_ibdp_inst3_high_expt;             
+wire            ibuf_ibdp_inst3_no_spec;               
+wire    [14:0]  ibuf_ibdp_inst3_pc;                    
+wire            ibuf_ibdp_inst3_split0;                
+wire            ibuf_ibdp_inst3_split1;                
+wire            ibuf_ibdp_inst3_valid;                 
+wire    [3 :0]  ibuf_ibdp_inst3_vec;                   
+wire    [7 :0]  ibuf_ibdp_inst3_vl;                    
+wire            ibuf_ibdp_inst3_vl_pred;               
+wire    [1 :0]  ibuf_ibdp_inst3_vlmul;                 
+wire    [2 :0]  ibuf_ibdp_inst3_vsew;                  
 wire            ibuf_lbuf_empty;                       
 wire    [31:0]  ibuf_merge_retire_pointer;             
 wire    [8 :0]  ibuf_nopass_merge_mask;                
@@ -1422,7 +1491,9 @@ wire    [31:0]  ibuf_retire_pointer4;
 wire    [31:0]  ibuf_retire_pointer5;
 // add to  increase the read port of ibuf  //jeremy
 wire    [31:0]  ibuf_retire_pointer6;                  
-wire    [31:0]  ibuf_retire_pointer7;                                                      
+wire    [31:0]  ibuf_retire_pointer7;   
+
+
 wire            ibuf_retire_pointer_update_clk;        
 wire            ibuf_retire_pointer_update_clk_en;     
 wire            ibuf_retire_vld;                       

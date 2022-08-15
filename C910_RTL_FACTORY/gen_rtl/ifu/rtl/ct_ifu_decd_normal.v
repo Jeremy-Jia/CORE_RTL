@@ -230,7 +230,7 @@ assign x_preturn = (
                    ); 
 
 
-//Jeremy hn indirect branch 
+//Jeremy hn indirect branch decode 2022.8.15
 assign x_ind_br  = (
                     ({x_inst[14:12],x_inst[6:0]} == 10'b000_1100111) && //jalr
                     (

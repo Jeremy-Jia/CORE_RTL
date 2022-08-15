@@ -101,13 +101,16 @@ module ct_ifu_top(
   ifu_hpcp_frontend_stall,
   ifu_hpcp_icache_access,
   ifu_hpcp_icache_miss,
-  //jeremy need to modify
+  //jeremy need to m   odify
   ifu_idu_ib_inst0_data,
   ifu_idu_ib_inst0_vld,
   ifu_idu_ib_inst1_data,
   ifu_idu_ib_inst1_vld,
   ifu_idu_ib_inst2_data,
   ifu_idu_ib_inst2_vld,
+  //Jeremy add inst3
+  ifu_idu_ib_inst3_data,
+  ifu_idu_ib_inst3_vld,
   ifu_idu_ib_pipedown_gateclk,
   ifu_iu_pcfifo_create0_bht_pred,
   ifu_iu_pcfifo_create0_chk_idx,
@@ -183,6 +186,11 @@ module ct_ifu_top(
   rtu_ifu_retire2_condbr,
   rtu_ifu_retire2_condbr_taken,
   rtu_ifu_retire2_jmp,
+  //Jeremy add inst3
+  rtu_ifu_retire3_chk_idx,
+  rtu_ifu_retire3_condbr,
+  rtu_ifu_retire3_condbr_taken,
+  rtu_ifu_retire3_jmp,
   rtu_ifu_retire_inst0_cur_pc,
   rtu_ifu_retire_inst0_load,
   rtu_ifu_retire_inst0_no_spec_hit,
@@ -207,6 +215,14 @@ module ct_ifu_top(
   rtu_ifu_retire_inst2_no_spec_miss,
   rtu_ifu_retire_inst2_store,
   rtu_ifu_retire_inst2_vl_pred,
+  //Jeremy add inst3
+  rtu_ifu_retire_inst3_cur_pc,
+  rtu_ifu_retire_inst3_load,
+  rtu_ifu_retire_inst3_no_spec_hit,
+  rtu_ifu_retire_inst3_no_spec_mispred,
+  rtu_ifu_retire_inst3_no_spec_miss,
+  rtu_ifu_retire_inst3_store,
+  rtu_ifu_retire_inst3_vl_pred,
   rtu_ifu_xx_dbgon,
   rtu_ifu_xx_expt_vec,
   rtu_ifu_xx_expt_vld,
@@ -319,6 +335,10 @@ input   [7  :0]  rtu_ifu_retire2_chk_idx;
 input            rtu_ifu_retire2_condbr;              
 input            rtu_ifu_retire2_condbr_taken;        
 input            rtu_ifu_retire2_jmp;                 
+input   [7  :0]  rtu_ifu_retire3_chk_idx;             
+input            rtu_ifu_retire3_condbr;              
+input            rtu_ifu_retire3_condbr_taken;        
+input            rtu_ifu_retire3_jmp;                 
 input   [38 :0]  rtu_ifu_retire_inst0_cur_pc;         
 input            rtu_ifu_retire_inst0_load;           
 input            rtu_ifu_retire_inst0_no_spec_hit;    
@@ -343,6 +363,13 @@ input            rtu_ifu_retire_inst2_no_spec_mispred;
 input            rtu_ifu_retire_inst2_no_spec_miss;   
 input            rtu_ifu_retire_inst2_store;          
 input            rtu_ifu_retire_inst2_vl_pred;        
+input   [38 :0]  rtu_ifu_retire_inst3_cur_pc;         
+input            rtu_ifu_retire_inst3_load;           
+input            rtu_ifu_retire_inst3_no_spec_hit;    
+input            rtu_ifu_retire_inst3_no_spec_mispred; 
+input            rtu_ifu_retire_inst3_no_spec_miss;   
+input            rtu_ifu_retire_inst3_store;          
+input            rtu_ifu_retire_inst3_vl_pred;        
 input            rtu_ifu_xx_dbgon;                    
 input   [5  :0]  rtu_ifu_xx_expt_vec;                 
 input            rtu_ifu_xx_expt_vld;                 
@@ -385,6 +412,8 @@ output  [72 :0]  ifu_idu_ib_inst1_data;
 output           ifu_idu_ib_inst1_vld;                
 output  [72 :0]  ifu_idu_ib_inst2_data;               
 output           ifu_idu_ib_inst2_vld;                
+output  [72 :0]  ifu_idu_ib_inst3_data;               
+output           ifu_idu_ib_inst3_vld;                
 output           ifu_idu_ib_pipedown_gateclk;         
 output           ifu_iu_pcfifo_create0_bht_pred;      
 output  [24 :0]  ifu_iu_pcfifo_create0_chk_idx;       
@@ -847,6 +876,23 @@ wire    [7  :0]  ibuf_ibdp_bypass_inst2_vl;
 wire             ibuf_ibdp_bypass_inst2_vl_pred;      
 wire    [1  :0]  ibuf_ibdp_bypass_inst2_vlmul;        
 wire    [2  :0]  ibuf_ibdp_bypass_inst2_vsew;         
+wire    [31 :0]  ibuf_ibdp_bypass_inst3;              
+wire             ibuf_ibdp_bypass_inst3_bkpta;        
+wire             ibuf_ibdp_bypass_inst3_bkptb;        
+wire             ibuf_ibdp_bypass_inst3_ecc_err;      
+wire             ibuf_ibdp_bypass_inst3_expt;         
+wire             ibuf_ibdp_bypass_inst3_fence;        
+wire             ibuf_ibdp_bypass_inst3_high_expt;    
+wire             ibuf_ibdp_bypass_inst3_no_spec;      
+wire    [14 :0]  ibuf_ibdp_bypass_inst3_pc;           
+wire             ibuf_ibdp_bypass_inst3_split0;       
+wire             ibuf_ibdp_bypass_inst3_split1;       
+wire             ibuf_ibdp_bypass_inst3_valid;        
+wire    [3  :0]  ibuf_ibdp_bypass_inst3_vec;          
+wire    [7  :0]  ibuf_ibdp_bypass_inst3_vl;           
+wire             ibuf_ibdp_bypass_inst3_vl_pred;      
+wire    [1  :0]  ibuf_ibdp_bypass_inst3_vlmul;        
+wire    [2  :0]  ibuf_ibdp_bypass_inst3_vsew;         
 wire    [31 :0]  ibuf_ibdp_inst0;                     
 wire             ibuf_ibdp_inst0_bkpta;               
 wire             ibuf_ibdp_inst0_bkptb;               
@@ -898,6 +944,23 @@ wire    [7  :0]  ibuf_ibdp_inst2_vl;
 wire             ibuf_ibdp_inst2_vl_pred;             
 wire    [1  :0]  ibuf_ibdp_inst2_vlmul;               
 wire    [2  :0]  ibuf_ibdp_inst2_vsew;                
+wire    [31 :0]  ibuf_ibdp_inst3;                     
+wire             ibuf_ibdp_inst3_bkpta;               
+wire             ibuf_ibdp_inst3_bkptb;               
+wire             ibuf_ibdp_inst3_ecc_err;             
+wire             ibuf_ibdp_inst3_expt_vld;            
+wire             ibuf_ibdp_inst3_fence;               
+wire             ibuf_ibdp_inst3_high_expt;           
+wire             ibuf_ibdp_inst3_no_spec;             
+wire    [14 :0]  ibuf_ibdp_inst3_pc;                  
+wire             ibuf_ibdp_inst3_split0;              
+wire             ibuf_ibdp_inst3_split1;              
+wire             ibuf_ibdp_inst3_valid;               
+wire    [3  :0]  ibuf_ibdp_inst3_vec;                 
+wire    [7  :0]  ibuf_ibdp_inst3_vl;                  
+wire             ibuf_ibdp_inst3_vl_pred;             
+wire    [1  :0]  ibuf_ibdp_inst3_vlmul;               
+wire    [2  :0]  ibuf_ibdp_inst3_vsew;                
 wire             ibuf_lbuf_empty;                     
 wire    [127:0]  icache_if_ifctrl_inst_data0;         
 wire    [127:0]  icache_if_ifctrl_inst_data1;         
@@ -1128,6 +1191,8 @@ wire    [72 :0]  ifu_idu_ib_inst1_data;
 wire             ifu_idu_ib_inst1_vld;                
 wire    [72 :0]  ifu_idu_ib_inst2_data;               
 wire             ifu_idu_ib_inst2_vld;                
+wire    [72 :0]  ifu_idu_ib_inst3_data;               
+wire             ifu_idu_ib_inst3_vld;                
 wire             ifu_idu_ib_pipedown_gateclk;         
 wire             ifu_iu_pcfifo_create0_bht_pred;      
 wire    [24 :0]  ifu_iu_pcfifo_create0_chk_idx;       
@@ -1565,6 +1630,17 @@ wire             lbuf_ibdp_inst2_valid;
 wire    [7  :0]  lbuf_ibdp_inst2_vl;                  
 wire    [1  :0]  lbuf_ibdp_inst2_vlmul;               
 wire    [2  :0]  lbuf_ibdp_inst2_vsew;                
+wire    [31 :0]  lbuf_ibdp_inst3;                     
+wire             lbuf_ibdp_inst3_bkpta;               
+wire             lbuf_ibdp_inst3_bkptb;               
+wire             lbuf_ibdp_inst3_fence;               
+wire    [14 :0]  lbuf_ibdp_inst3_pc;                  
+wire             lbuf_ibdp_inst3_split0;              
+wire             lbuf_ibdp_inst3_split1;              
+wire             lbuf_ibdp_inst3_valid;               
+wire    [7  :0]  lbuf_ibdp_inst3_vl;                  
+wire    [1  :0]  lbuf_ibdp_inst3_vlmul;               
+wire    [2  :0]  lbuf_ibdp_inst3_vsew;                
 wire             lbuf_ipdp_lbuf_active;               
 wire    [7  :0]  lbuf_ipdp_updt_vl;                   
 wire    [1  :0]  lbuf_ipdp_updt_vlmul;                
@@ -1670,6 +1746,10 @@ wire    [7  :0]  rtu_ifu_retire2_chk_idx;
 wire             rtu_ifu_retire2_condbr;              
 wire             rtu_ifu_retire2_condbr_taken;        
 wire             rtu_ifu_retire2_jmp;                 
+wire    [7  :0]  rtu_ifu_retire3_chk_idx;             
+wire             rtu_ifu_retire3_condbr;              
+wire             rtu_ifu_retire3_condbr_taken;        
+wire             rtu_ifu_retire3_jmp;                 
 wire    [38 :0]  rtu_ifu_retire_inst0_cur_pc;         
 wire             rtu_ifu_retire_inst0_load;           
 wire             rtu_ifu_retire_inst0_no_spec_hit;    
@@ -1694,6 +1774,13 @@ wire             rtu_ifu_retire_inst2_no_spec_mispred;
 wire             rtu_ifu_retire_inst2_no_spec_miss;   
 wire             rtu_ifu_retire_inst2_store;          
 wire             rtu_ifu_retire_inst2_vl_pred;        
+wire    [38 :0]  rtu_ifu_retire_inst3_cur_pc;         
+wire             rtu_ifu_retire_inst3_load;           
+wire             rtu_ifu_retire_inst3_no_spec_hit;    
+wire             rtu_ifu_retire_inst3_no_spec_mispred; 
+wire             rtu_ifu_retire_inst3_no_spec_miss;   
+wire             rtu_ifu_retire_inst3_store;          
+wire             rtu_ifu_retire_inst3_vl_pred;        
 wire             rtu_ifu_xx_dbgon;                    
 wire    [5  :0]  rtu_ifu_xx_expt_vec;                 
 wire             rtu_ifu_xx_expt_vld;                 
@@ -1823,7 +1910,9 @@ ct_ifu_bht  x_ct_ifu_bht (
   .rtu_ifu_retire1_condbr        (rtu_ifu_retire1_condbr       ),
   .rtu_ifu_retire1_condbr_taken  (rtu_ifu_retire1_condbr_taken ),
   .rtu_ifu_retire2_condbr        (rtu_ifu_retire2_condbr       ),
-  .rtu_ifu_retire2_condbr_taken  (rtu_ifu_retire2_condbr_taken )
+  .rtu_ifu_retire2_condbr_taken  (rtu_ifu_retire2_condbr_taken ),
+  .rtu_ifu_retire3_condbr        (rtu_ifu_retire3_condbr       ),
+  .rtu_ifu_retire3_condbr_taken  (rtu_ifu_retire3_condbr_taken )
 );
 
 // &Instance("ct_ifu_btb",            "x_ct_ifu_btb"); @49
@@ -1959,6 +2048,13 @@ ct_ifu_sfp  x_ct_ifu_sfp (
   .rtu_ifu_retire_inst2_no_spec_miss    (rtu_ifu_retire_inst2_no_spec_miss   ),
   .rtu_ifu_retire_inst2_store           (rtu_ifu_retire_inst2_store          ),
   .rtu_ifu_retire_inst2_vl_pred         (rtu_ifu_retire_inst2_vl_pred        ),
+  .rtu_ifu_retire_inst3_cur_pc          (rtu_ifu_retire_inst3_cur_pc         ),
+  .rtu_ifu_retire_inst3_load            (rtu_ifu_retire_inst3_load           ),
+  .rtu_ifu_retire_inst3_no_spec_hit     (rtu_ifu_retire_inst3_no_spec_hit    ),
+  .rtu_ifu_retire_inst3_no_spec_mispred (rtu_ifu_retire_inst3_no_spec_mispred),
+  .rtu_ifu_retire_inst3_no_spec_miss    (rtu_ifu_retire_inst3_no_spec_miss   ),
+  .rtu_ifu_retire_inst3_store           (rtu_ifu_retire_inst3_store          ),
+  .rtu_ifu_retire_inst3_vl_pred         (rtu_ifu_retire_inst3_vl_pred        ),
   .sfp_ifdp_hit_pc_lo                   (sfp_ifdp_hit_pc_lo                  ),
   .sfp_ifdp_hit_type                    (sfp_ifdp_hit_type                   ),
   .sfp_ifdp_pc_hit                      (sfp_ifdp_pc_hit                     )
@@ -2373,6 +2469,23 @@ ct_ifu_ibdp  x_ct_ifu_ibdp (
   .ibuf_ibdp_bypass_inst2_vl_pred   (ibuf_ibdp_bypass_inst2_vl_pred  ),
   .ibuf_ibdp_bypass_inst2_vlmul     (ibuf_ibdp_bypass_inst2_vlmul    ),
   .ibuf_ibdp_bypass_inst2_vsew      (ibuf_ibdp_bypass_inst2_vsew     ),
+  .ibuf_ibdp_bypass_inst3           (ibuf_ibdp_bypass_inst3          ),
+  .ibuf_ibdp_bypass_inst3_bkpta     (ibuf_ibdp_bypass_inst3_bkpta    ),
+  .ibuf_ibdp_bypass_inst3_bkptb     (ibuf_ibdp_bypass_inst3_bkptb    ),
+  .ibuf_ibdp_bypass_inst3_ecc_err   (ibuf_ibdp_bypass_inst3_ecc_err  ),
+  .ibuf_ibdp_bypass_inst3_expt      (ibuf_ibdp_bypass_inst3_expt     ),
+  .ibuf_ibdp_bypass_inst3_fence     (ibuf_ibdp_bypass_inst3_fence    ),
+  .ibuf_ibdp_bypass_inst3_high_expt (ibuf_ibdp_bypass_inst3_high_expt),
+  .ibuf_ibdp_bypass_inst3_no_spec   (ibuf_ibdp_bypass_inst3_no_spec  ),
+  .ibuf_ibdp_bypass_inst3_pc        (ibuf_ibdp_bypass_inst3_pc       ),
+  .ibuf_ibdp_bypass_inst3_split0    (ibuf_ibdp_bypass_inst3_split0   ),
+  .ibuf_ibdp_bypass_inst3_split1    (ibuf_ibdp_bypass_inst3_split1   ),
+  .ibuf_ibdp_bypass_inst3_valid     (ibuf_ibdp_bypass_inst3_valid    ),
+  .ibuf_ibdp_bypass_inst3_vec       (ibuf_ibdp_bypass_inst3_vec      ),
+  .ibuf_ibdp_bypass_inst3_vl        (ibuf_ibdp_bypass_inst3_vl       ),
+  .ibuf_ibdp_bypass_inst3_vl_pred   (ibuf_ibdp_bypass_inst3_vl_pred  ),
+  .ibuf_ibdp_bypass_inst3_vlmul     (ibuf_ibdp_bypass_inst3_vlmul    ),
+  .ibuf_ibdp_bypass_inst3_vsew      (ibuf_ibdp_bypass_inst3_vsew     ),
   .ibuf_ibdp_inst0                  (ibuf_ibdp_inst0                 ),
   .ibuf_ibdp_inst0_bkpta            (ibuf_ibdp_inst0_bkpta           ),
   .ibuf_ibdp_inst0_bkptb            (ibuf_ibdp_inst0_bkptb           ),
@@ -2424,6 +2537,23 @@ ct_ifu_ibdp  x_ct_ifu_ibdp (
   .ibuf_ibdp_inst2_vl_pred          (ibuf_ibdp_inst2_vl_pred         ),
   .ibuf_ibdp_inst2_vlmul            (ibuf_ibdp_inst2_vlmul           ),
   .ibuf_ibdp_inst2_vsew             (ibuf_ibdp_inst2_vsew            ),
+  .ibuf_ibdp_inst3                  (ibuf_ibdp_inst3                 ),
+  .ibuf_ibdp_inst3_bkpta            (ibuf_ibdp_inst3_bkpta           ),
+  .ibuf_ibdp_inst3_bkptb            (ibuf_ibdp_inst3_bkptb           ),
+  .ibuf_ibdp_inst3_ecc_err          (ibuf_ibdp_inst3_ecc_err         ),
+  .ibuf_ibdp_inst3_expt_vld         (ibuf_ibdp_inst3_expt_vld        ),
+  .ibuf_ibdp_inst3_fence            (ibuf_ibdp_inst3_fence           ),
+  .ibuf_ibdp_inst3_high_expt        (ibuf_ibdp_inst3_high_expt       ),
+  .ibuf_ibdp_inst3_no_spec          (ibuf_ibdp_inst3_no_spec         ),
+  .ibuf_ibdp_inst3_pc               (ibuf_ibdp_inst3_pc              ),
+  .ibuf_ibdp_inst3_split0           (ibuf_ibdp_inst3_split0          ),
+  .ibuf_ibdp_inst3_split1           (ibuf_ibdp_inst3_split1          ),
+  .ibuf_ibdp_inst3_valid            (ibuf_ibdp_inst3_valid           ),
+  .ibuf_ibdp_inst3_vec              (ibuf_ibdp_inst3_vec             ),
+  .ibuf_ibdp_inst3_vl               (ibuf_ibdp_inst3_vl              ),
+  .ibuf_ibdp_inst3_vl_pred          (ibuf_ibdp_inst3_vl_pred         ),
+  .ibuf_ibdp_inst3_vlmul            (ibuf_ibdp_inst3_vlmul           ),
+  .ibuf_ibdp_inst3_vsew             (ibuf_ibdp_inst3_vsew            ),
   .ifu_had_no_inst                  (ifu_had_no_inst                 ),
   .ifu_idu_ib_inst0_data            (ifu_idu_ib_inst0_data           ),
   .ifu_idu_ib_inst0_vld             (ifu_idu_ib_inst0_vld            ),
@@ -2431,6 +2561,8 @@ ct_ifu_ibdp  x_ct_ifu_ibdp (
   .ifu_idu_ib_inst1_vld             (ifu_idu_ib_inst1_vld            ),
   .ifu_idu_ib_inst2_data            (ifu_idu_ib_inst2_data           ),
   .ifu_idu_ib_inst2_vld             (ifu_idu_ib_inst2_vld            ),
+  .ifu_idu_ib_inst3_data            (ifu_idu_ib_inst3_data           ),
+  .ifu_idu_ib_inst3_vld             (ifu_idu_ib_inst3_vld            ),
   .ipctrl_ibdp_expt_vld             (ipctrl_ibdp_expt_vld            ),
   .ipctrl_ibdp_vld                  (ipctrl_ibdp_vld                 ),
   .ipdp_ibdp_bht_pre_result         (ipdp_ibdp_bht_pre_result        ),
@@ -2612,6 +2744,17 @@ ct_ifu_ibdp  x_ct_ifu_ibdp (
   .lbuf_ibdp_inst2_vl               (lbuf_ibdp_inst2_vl              ),
   .lbuf_ibdp_inst2_vlmul            (lbuf_ibdp_inst2_vlmul           ),
   .lbuf_ibdp_inst2_vsew             (lbuf_ibdp_inst2_vsew            ),
+  .lbuf_ibdp_inst3                  (lbuf_ibdp_inst3                 ),
+  .lbuf_ibdp_inst3_bkpta            (lbuf_ibdp_inst3_bkpta           ),
+  .lbuf_ibdp_inst3_bkptb            (lbuf_ibdp_inst3_bkptb           ),
+  .lbuf_ibdp_inst3_fence            (lbuf_ibdp_inst3_fence           ),
+  .lbuf_ibdp_inst3_pc               (lbuf_ibdp_inst3_pc              ),
+  .lbuf_ibdp_inst3_split0           (lbuf_ibdp_inst3_split0          ),
+  .lbuf_ibdp_inst3_split1           (lbuf_ibdp_inst3_split1          ),
+  .lbuf_ibdp_inst3_valid            (lbuf_ibdp_inst3_valid           ),
+  .lbuf_ibdp_inst3_vl               (lbuf_ibdp_inst3_vl              ),
+  .lbuf_ibdp_inst3_vlmul            (lbuf_ibdp_inst3_vlmul           ),
+  .lbuf_ibdp_inst3_vsew             (lbuf_ibdp_inst3_vsew            ),
   .pad_yy_icg_scan_en               (pad_yy_icg_scan_en              ),
   .pcfifo_if_ibdp_over_mask         (pcfifo_if_ibdp_over_mask        )
 );
@@ -2759,6 +2902,23 @@ ct_ifu_ibuf  x_ct_ifu_ibuf (
   .ibuf_ibdp_bypass_inst2_vl_pred   (ibuf_ibdp_bypass_inst2_vl_pred  ),
   .ibuf_ibdp_bypass_inst2_vlmul     (ibuf_ibdp_bypass_inst2_vlmul    ),
   .ibuf_ibdp_bypass_inst2_vsew      (ibuf_ibdp_bypass_inst2_vsew     ),
+  .ibuf_ibdp_bypass_inst3           (ibuf_ibdp_bypass_inst3          ),
+  .ibuf_ibdp_bypass_inst3_bkpta     (ibuf_ibdp_bypass_inst3_bkpta    ),
+  .ibuf_ibdp_bypass_inst3_bkptb     (ibuf_ibdp_bypass_inst3_bkptb    ),
+  .ibuf_ibdp_bypass_inst3_ecc_err   (ibuf_ibdp_bypass_inst3_ecc_err  ),
+  .ibuf_ibdp_bypass_inst3_expt      (ibuf_ibdp_bypass_inst3_expt     ),
+  .ibuf_ibdp_bypass_inst3_fence     (ibuf_ibdp_bypass_inst3_fence    ),
+  .ibuf_ibdp_bypass_inst3_high_expt (ibuf_ibdp_bypass_inst3_high_expt),
+  .ibuf_ibdp_bypass_inst3_no_spec   (ibuf_ibdp_bypass_inst3_no_spec  ),
+  .ibuf_ibdp_bypass_inst3_pc        (ibuf_ibdp_bypass_inst3_pc       ),
+  .ibuf_ibdp_bypass_inst3_split0    (ibuf_ibdp_bypass_inst3_split0   ),
+  .ibuf_ibdp_bypass_inst3_split1    (ibuf_ibdp_bypass_inst3_split1   ),
+  .ibuf_ibdp_bypass_inst3_valid     (ibuf_ibdp_bypass_inst3_valid    ),
+  .ibuf_ibdp_bypass_inst3_vec       (ibuf_ibdp_bypass_inst3_vec      ),
+  .ibuf_ibdp_bypass_inst3_vl        (ibuf_ibdp_bypass_inst3_vl       ),
+  .ibuf_ibdp_bypass_inst3_vl_pred   (ibuf_ibdp_bypass_inst3_vl_pred  ),
+  .ibuf_ibdp_bypass_inst3_vlmul     (ibuf_ibdp_bypass_inst3_vlmul    ),
+  .ibuf_ibdp_bypass_inst3_vsew      (ibuf_ibdp_bypass_inst3_vsew     ),
   .ibuf_ibdp_inst0                  (ibuf_ibdp_inst0                 ),
   .ibuf_ibdp_inst0_bkpta            (ibuf_ibdp_inst0_bkpta           ),
   .ibuf_ibdp_inst0_bkptb            (ibuf_ibdp_inst0_bkptb           ),
@@ -2810,6 +2970,23 @@ ct_ifu_ibuf  x_ct_ifu_ibuf (
   .ibuf_ibdp_inst2_vl_pred          (ibuf_ibdp_inst2_vl_pred         ),
   .ibuf_ibdp_inst2_vlmul            (ibuf_ibdp_inst2_vlmul           ),
   .ibuf_ibdp_inst2_vsew             (ibuf_ibdp_inst2_vsew            ),
+  .ibuf_ibdp_inst3                  (ibuf_ibdp_inst3                 ),
+  .ibuf_ibdp_inst3_bkpta            (ibuf_ibdp_inst3_bkpta           ),
+  .ibuf_ibdp_inst3_bkptb            (ibuf_ibdp_inst3_bkptb           ),
+  .ibuf_ibdp_inst3_ecc_err          (ibuf_ibdp_inst3_ecc_err         ),
+  .ibuf_ibdp_inst3_expt_vld         (ibuf_ibdp_inst3_expt_vld        ),
+  .ibuf_ibdp_inst3_fence            (ibuf_ibdp_inst3_fence           ),
+  .ibuf_ibdp_inst3_high_expt        (ibuf_ibdp_inst3_high_expt       ),
+  .ibuf_ibdp_inst3_no_spec          (ibuf_ibdp_inst3_no_spec         ),
+  .ibuf_ibdp_inst3_pc               (ibuf_ibdp_inst3_pc              ),
+  .ibuf_ibdp_inst3_split0           (ibuf_ibdp_inst3_split0          ),
+  .ibuf_ibdp_inst3_split1           (ibuf_ibdp_inst3_split1          ),
+  .ibuf_ibdp_inst3_valid            (ibuf_ibdp_inst3_valid           ),
+  .ibuf_ibdp_inst3_vec              (ibuf_ibdp_inst3_vec             ),
+  .ibuf_ibdp_inst3_vl               (ibuf_ibdp_inst3_vl              ),
+  .ibuf_ibdp_inst3_vl_pred          (ibuf_ibdp_inst3_vl_pred         ),
+  .ibuf_ibdp_inst3_vlmul            (ibuf_ibdp_inst3_vlmul           ),
+  .ibuf_ibdp_inst3_vsew             (ibuf_ibdp_inst3_vsew            ),
   .ibuf_lbuf_empty                  (ibuf_lbuf_empty                 ),
   .pad_yy_icg_scan_en               (pad_yy_icg_scan_en              )
 );
@@ -3238,7 +3415,9 @@ ct_ifu_ind_btb  x_ct_ifu_ind_btb (
   .rtu_ifu_retire1_chk_idx     (rtu_ifu_retire1_chk_idx    ),
   .rtu_ifu_retire1_jmp         (rtu_ifu_retire1_jmp        ),
   .rtu_ifu_retire2_chk_idx     (rtu_ifu_retire2_chk_idx    ),
-  .rtu_ifu_retire2_jmp         (rtu_ifu_retire2_jmp        )
+  .rtu_ifu_retire2_jmp         (rtu_ifu_retire2_jmp        ),
+  .rtu_ifu_retire3_chk_idx     (rtu_ifu_retire3_chk_idx    ),
+  .rtu_ifu_retire3_jmp         (rtu_ifu_retire3_jmp        )
 );
 
 // &Instance("ct_ifu_ind_btb_alter",  "x_ct_ifu_ind_btb_alter"); @63
@@ -4068,6 +4247,17 @@ ct_ifu_lbuf  x_ct_ifu_lbuf (
   .lbuf_ibdp_inst2_vl                 (lbuf_ibdp_inst2_vl                ),
   .lbuf_ibdp_inst2_vlmul              (lbuf_ibdp_inst2_vlmul             ),
   .lbuf_ibdp_inst2_vsew               (lbuf_ibdp_inst2_vsew              ),
+  .lbuf_ibdp_inst3                    (lbuf_ibdp_inst3                   ),
+  .lbuf_ibdp_inst3_bkpta              (lbuf_ibdp_inst3_bkpta             ),
+  .lbuf_ibdp_inst3_bkptb              (lbuf_ibdp_inst3_bkptb             ),
+  .lbuf_ibdp_inst3_fence              (lbuf_ibdp_inst3_fence             ),
+  .lbuf_ibdp_inst3_pc                 (lbuf_ibdp_inst3_pc                ),
+  .lbuf_ibdp_inst3_split0             (lbuf_ibdp_inst3_split0            ),
+  .lbuf_ibdp_inst3_split1             (lbuf_ibdp_inst3_split1            ),
+  .lbuf_ibdp_inst3_valid              (lbuf_ibdp_inst3_valid             ),
+  .lbuf_ibdp_inst3_vl                 (lbuf_ibdp_inst3_vl                ),
+  .lbuf_ibdp_inst3_vlmul              (lbuf_ibdp_inst3_vlmul             ),
+  .lbuf_ibdp_inst3_vsew               (lbuf_ibdp_inst3_vsew              ),
   .lbuf_ipdp_lbuf_active              (lbuf_ipdp_lbuf_active             ),
   .lbuf_ipdp_updt_vl                  (lbuf_ipdp_updt_vl                 ),
   .lbuf_ipdp_updt_vlmul               (lbuf_ipdp_updt_vlmul              ),

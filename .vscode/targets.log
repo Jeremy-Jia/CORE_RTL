@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Aug  8 18:45:51 2022
+# Make data base, printed on Mon Aug 15 18:21:39 2022
 
 # Variables
 
@@ -274,8 +274,8 @@ GNOME_TERMINAL_SERVICE = :1.108
 SUFFIXES := 
 # environment
 HISTSIZE = 1000
- 
 # environment
+ 
 CHROME_DESKTOP = code-url-handler.desktop
 # environment
 QEMU_HOME = /home/Riscv_Tools/riscv-gnu-toolchain/qemu-6.0.0
@@ -304,9 +304,9 @@ VSCODE_PID = 8851
 
 # Directories
 
-# . (device 64770, inode 134346383): 10 files, no impossibilities.
+# . (device 64770, inode 134346383): 11 files, no impossibilities.
 
-# 10 files, no impossibilities in 1 directories.
+# 11 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -356,12 +356,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 18 / storage = 159 B / avg = 8 B
-# current buf: size = 8162 B / used = 159 B / count = 18 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 19 / storage = 167 B / avg = 8 B
+# current buf: size = 8162 B / used = 167 B / count = 19 / avg = 8 B
 
-# strcache performance: lookups = 21 / hit rate = 14%
+# strcache performance: lookups = 22 / hit rate = 13%
 # hash-table stats:
-# Load=18/8192=0%, Rehash=0, Collisions=1/21=5%
-# Finished Make data base on Mon Aug  8 18:45:51 2022
+# Load=19/8192=0%, Rehash=0, Collisions=1/22=5%
+# Finished Make data base on Mon Aug 15 18:21:39 2022
 
  

@@ -51,6 +51,7 @@ module ct_ifu_ibdp(
   ibdp_debug_inst0_vld,
   ibdp_debug_inst1_vld,
   ibdp_debug_inst2_vld,
+  ibdp_debug_inst3_vld,
   ibdp_debug_mmu_deny_vld,
   ibdp_ibctrl_chgflw_vl,
   ibdp_ibctrl_chgflw_vlmul,
@@ -301,6 +302,23 @@ module ct_ifu_ibdp(
   ibuf_ibdp_bypass_inst2_vl_pred,
   ibuf_ibdp_bypass_inst2_vlmul,
   ibuf_ibdp_bypass_inst2_vsew,
+  ibuf_ibdp_bypass_inst3,
+  ibuf_ibdp_bypass_inst3_bkpta,
+  ibuf_ibdp_bypass_inst3_bkptb,
+  ibuf_ibdp_bypass_inst3_ecc_err,
+  ibuf_ibdp_bypass_inst3_expt,
+  ibuf_ibdp_bypass_inst3_fence,
+  ibuf_ibdp_bypass_inst3_high_expt,
+  ibuf_ibdp_bypass_inst3_no_spec,
+  ibuf_ibdp_bypass_inst3_pc,
+  ibuf_ibdp_bypass_inst3_split0,
+  ibuf_ibdp_bypass_inst3_split1,
+  ibuf_ibdp_bypass_inst3_valid,
+  ibuf_ibdp_bypass_inst3_vec,
+  ibuf_ibdp_bypass_inst3_vl,
+  ibuf_ibdp_bypass_inst3_vl_pred,
+  ibuf_ibdp_bypass_inst3_vlmul,
+  ibuf_ibdp_bypass_inst3_vsew,
   ibuf_ibdp_inst0,
   ibuf_ibdp_inst0_bkpta,
   ibuf_ibdp_inst0_bkptb,
@@ -352,6 +370,23 @@ module ct_ifu_ibdp(
   ibuf_ibdp_inst2_vl_pred,
   ibuf_ibdp_inst2_vlmul,
   ibuf_ibdp_inst2_vsew,
+  ibuf_ibdp_inst3,
+  ibuf_ibdp_inst3_bkpta,
+  ibuf_ibdp_inst3_bkptb,
+  ibuf_ibdp_inst3_ecc_err,
+  ibuf_ibdp_inst3_expt_vld,
+  ibuf_ibdp_inst3_fence,
+  ibuf_ibdp_inst3_high_expt,
+  ibuf_ibdp_inst3_no_spec,
+  ibuf_ibdp_inst3_pc,
+  ibuf_ibdp_inst3_split0,
+  ibuf_ibdp_inst3_split1,
+  ibuf_ibdp_inst3_valid,
+  ibuf_ibdp_inst3_vec,
+  ibuf_ibdp_inst3_vl,
+  ibuf_ibdp_inst3_vl_pred,
+  ibuf_ibdp_inst3_vlmul,
+  ibuf_ibdp_inst3_vsew,
   ifu_had_no_inst,
   ifu_idu_ib_inst0_data,
   ifu_idu_ib_inst0_vld,
@@ -359,6 +394,8 @@ module ct_ifu_ibdp(
   ifu_idu_ib_inst1_vld,
   ifu_idu_ib_inst2_data,
   ifu_idu_ib_inst2_vld,
+  ifu_idu_ib_inst3_data,
+  ifu_idu_ib_inst3_vld,
   ipctrl_ibdp_expt_vld,
   ipctrl_ibdp_vld,
   ipdp_ibdp_bht_pre_result,
@@ -540,6 +577,17 @@ module ct_ifu_ibdp(
   lbuf_ibdp_inst2_vl,
   lbuf_ibdp_inst2_vlmul,
   lbuf_ibdp_inst2_vsew,
+  lbuf_ibdp_inst3,
+  lbuf_ibdp_inst3_bkpta,
+  lbuf_ibdp_inst3_bkptb,
+  lbuf_ibdp_inst3_fence,
+  lbuf_ibdp_inst3_pc,
+  lbuf_ibdp_inst3_split0,
+  lbuf_ibdp_inst3_split1,
+  lbuf_ibdp_inst3_valid,
+  lbuf_ibdp_inst3_vl,
+  lbuf_ibdp_inst3_vlmul,
+  lbuf_ibdp_inst3_vsew,
   //jeremy need to modify
   pad_yy_icg_scan_en,
   pcfifo_if_ibdp_over_mask
@@ -1600,6 +1648,23 @@ wire    [7 :0]  ibuf_ibdp_bypass_inst2_vl;
 wire            ibuf_ibdp_bypass_inst2_vl_pred;  
 wire    [1 :0]  ibuf_ibdp_bypass_inst2_vlmul;    
 wire    [2 :0]  ibuf_ibdp_bypass_inst2_vsew;     
+wire    [31:0]  ibuf_ibdp_bypass_inst3;          
+wire            ibuf_ibdp_bypass_inst3_bkpta;    
+wire            ibuf_ibdp_bypass_inst3_bkptb;    
+wire            ibuf_ibdp_bypass_inst3_ecc_err;  
+wire            ibuf_ibdp_bypass_inst3_expt;     
+wire            ibuf_ibdp_bypass_inst3_fence;    
+wire            ibuf_ibdp_bypass_inst3_high_expt; 
+wire            ibuf_ibdp_bypass_inst3_no_spec;  
+wire    [14:0]  ibuf_ibdp_bypass_inst3_pc;       
+wire            ibuf_ibdp_bypass_inst3_split0;   
+wire            ibuf_ibdp_bypass_inst3_split1;   
+wire            ibuf_ibdp_bypass_inst3_valid;    
+wire    [3 :0]  ibuf_ibdp_bypass_inst3_vec;      
+wire    [7 :0]  ibuf_ibdp_bypass_inst3_vl;       
+wire            ibuf_ibdp_bypass_inst3_vl_pred;  
+wire    [1 :0]  ibuf_ibdp_bypass_inst3_vlmul;    
+wire    [2 :0]  ibuf_ibdp_bypass_inst3_vsew;     
 wire    [31:0]  ibuf_ibdp_inst0;                 
 wire            ibuf_ibdp_inst0_bkpta;           
 wire            ibuf_ibdp_inst0_bkptb;           
@@ -1651,6 +1716,23 @@ wire    [7 :0]  ibuf_ibdp_inst2_vl;
 wire            ibuf_ibdp_inst2_vl_pred;         
 wire    [1 :0]  ibuf_ibdp_inst2_vlmul;           
 wire    [2 :0]  ibuf_ibdp_inst2_vsew;            
+wire    [31:0]  ibuf_ibdp_inst3;                 
+wire            ibuf_ibdp_inst3_bkpta;           
+wire            ibuf_ibdp_inst3_bkptb;           
+wire            ibuf_ibdp_inst3_ecc_err;         
+wire            ibuf_ibdp_inst3_expt_vld;        
+wire            ibuf_ibdp_inst3_fence;           
+wire            ibuf_ibdp_inst3_high_expt;       
+wire            ibuf_ibdp_inst3_no_spec;         
+wire    [14:0]  ibuf_ibdp_inst3_pc;              
+wire            ibuf_ibdp_inst3_split0;          
+wire            ibuf_ibdp_inst3_split1;          
+wire            ibuf_ibdp_inst3_valid;           
+wire    [3 :0]  ibuf_ibdp_inst3_vec;             
+wire    [7 :0]  ibuf_ibdp_inst3_vl;              
+wire            ibuf_ibdp_inst3_vl_pred;         
+wire    [1 :0]  ibuf_ibdp_inst3_vlmul;           
+wire    [2 :0]  ibuf_ibdp_inst3_vsew;            
 wire            ibuf_inst_vld;                   
 wire            ifu_had_no_inst;                 
 wire    [72:0]  ifu_idu_ib_inst0_data;           
@@ -1659,6 +1741,8 @@ wire    [72:0]  ifu_idu_ib_inst1_data;
 wire            ifu_idu_ib_inst1_vld;            
 wire    [72:0]  ifu_idu_ib_inst2_data;           
 wire            ifu_idu_ib_inst2_vld;            
+wire    [72:0]  ifu_idu_ib_inst3_data;           
+wire            ifu_idu_ib_inst3_vld;            
 wire            ind_btb_rd_stall;                
 wire            ipctrl_ibdp_expt_vld;            
 wire            ipctrl_ibdp_vld;                 
@@ -1855,6 +1939,17 @@ wire            lbuf_ibdp_inst2_valid;
 wire    [7 :0]  lbuf_ibdp_inst2_vl;              
 wire    [1 :0]  lbuf_ibdp_inst2_vlmul;           
 wire    [2 :0]  lbuf_ibdp_inst2_vsew;            
+wire    [31:0]  lbuf_ibdp_inst3;                 
+wire            lbuf_ibdp_inst3_bkpta;           
+wire            lbuf_ibdp_inst3_bkptb;           
+wire            lbuf_ibdp_inst3_fence;           
+wire    [14:0]  lbuf_ibdp_inst3_pc;              
+wire            lbuf_ibdp_inst3_split0;          
+wire            lbuf_ibdp_inst3_split1;          
+wire            lbuf_ibdp_inst3_valid;           
+wire    [7 :0]  lbuf_ibdp_inst3_vl;              
+wire    [1 :0]  lbuf_ibdp_inst3_vlmul;           
+wire    [2 :0]  lbuf_ibdp_inst3_vsew;            
 wire            lbuf_inst_vld;                   
 wire            mispred_stall;                   
 wire            pad_yy_icg_scan_en;              
@@ -2607,6 +2702,23 @@ always @( ibuf_ibdp_inst1[31:0]
        or ibuf_ibdp_bypass_inst0_valid
        or lbuf_ibdp_inst1_fence
        or bypass_inst_vld
+       or ibuf_ibdp_bypass_inst3[31:0]         
+       or ibuf_ibdp_bypass_inst3_bkpta   
+       or ibuf_ibdp_bypass_inst3_bkptb    
+       or ibuf_ibdp_bypass_inst3_ecc_err  
+       or ibuf_ibdp_bypass_inst3_expt     
+       or ibuf_ibdp_bypass_inst3_fence    
+       or ibuf_ibdp_bypass_inst3_high_expt 
+       or ibuf_ibdp_bypass_inst3_no_spec  
+       or ibuf_ibdp_bypass_inst3_pc[14:0]       
+       or ibuf_ibdp_bypass_inst3_split0   
+       or ibuf_ibdp_bypass_inst3_split1   
+       or ibuf_ibdp_bypass_inst3_valid    
+       or ibuf_ibdp_bypass_inst3_vec[3 :0]      
+       or ibuf_ibdp_bypass_inst3_vl[7 :0]       
+       or ibuf_ibdp_bypass_inst3_vl_pred  
+       or ibuf_ibdp_bypass_inst3_vlmul[1 :0]    
+       or ibuf_ibdp_bypass_inst3_vsew[2 :0] 
        //jeremy todo : add sensitivw )
 begin
 //jeremy  add this logic:
