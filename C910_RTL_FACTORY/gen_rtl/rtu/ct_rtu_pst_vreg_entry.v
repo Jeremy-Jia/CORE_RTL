@@ -31,18 +31,28 @@ module ct_rtu_pst_vreg_entry(
   idu_rtu_pst_dis_inst3_dstv_reg,
   idu_rtu_pst_dis_inst3_rel_vreg,
   idu_rtu_pst_dis_inst3_vreg_iid,
+  //Jeremy add inst4
+  idu_rtu_pst_dis_inst4_dstv_reg,
+  idu_rtu_pst_dis_inst4_rel_vreg,
+  idu_rtu_pst_dis_inst4_vreg_iid,
   ifu_xx_sync_reset,
   pad_yy_icg_scan_en,
   retire_pst_async_flush,
   retire_pst_wb_retire_inst0_vreg_vld,
   retire_pst_wb_retire_inst1_vreg_vld,
   retire_pst_wb_retire_inst2_vreg_vld,
+  //Jeremy add inst3 retire
+  retire_pst_wb_retire_inst3_vreg_vld,
+
   rob_pst_retire_inst0_gateclk_vld,
   rob_pst_retire_inst0_iid_updt_val,
   rob_pst_retire_inst1_gateclk_vld,
   rob_pst_retire_inst1_iid_updt_val,
   rob_pst_retire_inst2_gateclk_vld,
   rob_pst_retire_inst2_iid_updt_val,
+  //Jeremy add rob retire inst3
+  rob_pst_retire_inst3_gateclk_vld,
+  rob_pst_retire_inst3_iid_updt_val,
   rtu_yy_xx_flush,
   vreg_top_clk,
   x_create_vld,
@@ -75,19 +85,28 @@ input   [5 :0]  idu_rtu_pst_dis_inst2_rel_vreg;
 input   [6 :0]  idu_rtu_pst_dis_inst2_vreg_iid;     
 input   [4 :0]  idu_rtu_pst_dis_inst3_dstv_reg;     
 input   [5 :0]  idu_rtu_pst_dis_inst3_rel_vreg;     
-input   [6 :0]  idu_rtu_pst_dis_inst3_vreg_iid;     
+input   [6 :0]  idu_rtu_pst_dis_inst3_vreg_iid; 
+//Jeremy add inst4  disp  
+input   [4 :0]  idu_rtu_pst_dis_inst4_dstv_reg;     
+input   [5 :0]  idu_rtu_pst_dis_inst4_rel_vreg;     
+input   [6 :0]  idu_rtu_pst_dis_inst4_vreg_iid;     
 input           ifu_xx_sync_reset;                  
 input           pad_yy_icg_scan_en;                 
 input           retire_pst_async_flush;             
 input           retire_pst_wb_retire_inst0_vreg_vld; 
 input           retire_pst_wb_retire_inst1_vreg_vld; 
 input           retire_pst_wb_retire_inst2_vreg_vld; 
+//Jeremy add int3 retire
+input           retire_pst_wb_retire_inst3_vreg_vld; 
 input           rob_pst_retire_inst0_gateclk_vld;   
 input   [6 :0]  rob_pst_retire_inst0_iid_updt_val;  
 input           rob_pst_retire_inst1_gateclk_vld;   
 input   [6 :0]  rob_pst_retire_inst1_iid_updt_val;  
 input           rob_pst_retire_inst2_gateclk_vld;   
 input   [6 :0]  rob_pst_retire_inst2_iid_updt_val;  
+//Jeremy add inst3 rob retire
+input           rob_pst_retire_inst3_gateclk_vld;   
+input   [6 :0]  rob_pst_retire_inst3_iid_updt_val;  
 input           rtu_yy_xx_flush;                    
 input           vreg_top_clk;                       
 input   [3 :0]  x_create_vld;                       
@@ -114,7 +133,9 @@ reg     [4 :0]  lifecycle_next_state;
 reg     [5 :0]  rel_vreg;                           
 reg             retire_inst0_iid_match;             
 reg             retire_inst1_iid_match;             
-reg             retire_inst2_iid_match;             
+reg             retire_inst2_iid_match;
+//Jeremy add inst3 retire iid             
+reg             retire_inst3_iid_match;             
 reg             wb_cur_state;                       
 reg             wb_next_state;                      
 
@@ -139,6 +160,9 @@ wire    [6 :0]  idu_rtu_pst_dis_inst2_vreg_iid;
 wire    [4 :0]  idu_rtu_pst_dis_inst3_dstv_reg;     
 wire    [5 :0]  idu_rtu_pst_dis_inst3_rel_vreg;     
 wire    [6 :0]  idu_rtu_pst_dis_inst3_vreg_iid;     
+wire    [4 :0]  idu_rtu_pst_dis_inst4_dstv_reg;     
+wire    [5 :0]  idu_rtu_pst_dis_inst4_rel_vreg;     
+wire    [6 :0]  idu_rtu_pst_dis_inst4_vreg_iid;     
 wire            ifu_xx_sync_reset;                  
 wire            lifecycle_cur_state_alloc;          
 wire            lifecycle_cur_state_dealloc;        
@@ -153,11 +177,13 @@ wire            retire_gateclk_vld;
 wire            retire_inst0_iid_match_updt_val;    
 wire            retire_inst1_iid_match_updt_val;    
 wire            retire_inst2_iid_match_updt_val;    
+wire            retire_inst3_iid_match_updt_val;    
 wire            retire_inst_iid_match_gateclk_en;   
 wire            retire_pst_async_flush;             
 wire            retire_pst_wb_retire_inst0_vreg_vld; 
 wire            retire_pst_wb_retire_inst1_vreg_vld; 
 wire            retire_pst_wb_retire_inst2_vreg_vld; 
+wire            retire_pst_wb_retire_inst3_vreg_vld; 
 wire            retire_vld;                         
 wire            rob_pst_retire_inst0_gateclk_vld;   
 wire    [6 :0]  rob_pst_retire_inst0_iid_updt_val;  
@@ -165,6 +191,8 @@ wire            rob_pst_retire_inst1_gateclk_vld;
 wire    [6 :0]  rob_pst_retire_inst1_iid_updt_val;  
 wire            rob_pst_retire_inst2_gateclk_vld;   
 wire    [6 :0]  rob_pst_retire_inst2_iid_updt_val;  
+wire            rob_pst_retire_inst3_gateclk_vld;   
+wire    [6 :0]  rob_pst_retire_inst3_iid_updt_val;  
 wire            rtu_yy_xx_flush;                    
 wire            sm_clk;                             
 wire            sm_clk_en;                          
@@ -406,28 +434,36 @@ always @( idu_rtu_pst_dis_inst2_dstv_reg[4:0]
        or x_create_vld[3:0]
        or idu_rtu_pst_dis_inst1_dstv_reg[4:0]
        or idu_rtu_pst_dis_inst3_rel_vreg[5:0]
-       or idu_rtu_pst_dis_inst1_rel_vreg[5:0])
+       or idu_rtu_pst_dis_inst1_rel_vreg[5:0]
+       or idu_rtu_pst_dis_inst4_vreg_iid[6:0]
+       or idu_rtu_pst_dis_inst4_dstv_reg[4:0]
+       or idu_rtu_pst_dis_inst4_rel_vreg[5:0])
 begin
   case (x_create_vld[3:0])
-    4'h1   : begin
+    5'h1   : begin
                create_iid[6:0]      = idu_rtu_pst_dis_inst0_vreg_iid[6:0];
                create_dstv_reg[4:0] = idu_rtu_pst_dis_inst0_dstv_reg[4:0];
                create_rel_vreg[5:0] = idu_rtu_pst_dis_inst0_rel_vreg[5:0];
              end
-    4'h2   : begin
+    5'h2   : begin
                create_iid[6:0]      = idu_rtu_pst_dis_inst1_vreg_iid[6:0];
                create_dstv_reg[4:0] = idu_rtu_pst_dis_inst1_dstv_reg[4:0];
                create_rel_vreg[5:0] = idu_rtu_pst_dis_inst1_rel_vreg[5:0];
              end
-    4'h4   : begin
+    5'h4   : begin
                create_iid[6:0]      = idu_rtu_pst_dis_inst2_vreg_iid[6:0];
                create_dstv_reg[4:0] = idu_rtu_pst_dis_inst2_dstv_reg[4:0];
                create_rel_vreg[5:0] = idu_rtu_pst_dis_inst2_rel_vreg[5:0];
              end
-    4'h8   : begin
+    5'h8   : begin
                create_iid[6:0]      = idu_rtu_pst_dis_inst3_vreg_iid[6:0];
                create_dstv_reg[4:0] = idu_rtu_pst_dis_inst3_dstv_reg[4:0];
                create_rel_vreg[5:0] = idu_rtu_pst_dis_inst3_rel_vreg[5:0];
+             end
+    5'h10   : begin
+               create_iid[6:0]      = idu_rtu_pst_dis_inst4_vreg_iid[6:0];
+               create_dstv_reg[4:0] = idu_rtu_pst_dis_inst4_dstv_reg[4:0];
+               create_rel_vreg[5:0] = idu_rtu_pst_dis_inst4_rel_vreg[5:0];
              end
     default: begin
                create_iid[6:0]      = {7{1'bx}};
@@ -478,11 +514,16 @@ assign retire_inst1_iid_match_updt_val =
 assign retire_inst2_iid_match_updt_val =
          lifecycle_cur_state_alloc 
          && (iid[6:0] == rob_pst_retire_inst2_iid_updt_val[6:0]);
+//Jeremy add retire iis match
+assign retire_inst3_iid_match_updt_val =
+         lifecycle_cur_state_alloc 
+         && (iid[6:0] == rob_pst_retire_inst3_iid_updt_val[6:0]);
 
 assign retire_inst_iid_match_gateclk_en =
             rob_pst_retire_inst0_gateclk_vld
          || rob_pst_retire_inst1_gateclk_vld
-         || rob_pst_retire_inst2_gateclk_vld;
+         || rob_pst_retire_inst2_gateclk_vld
+         || rob_pst_retire_inst3_gateclk_vld;
 
 always @(posedge sm_clk or negedge cpurst_b)
 begin
@@ -519,6 +560,18 @@ begin
   else
     retire_inst2_iid_match <= retire_inst2_iid_match;
 end
+//Jeremy add inst3
+always @(posedge sm_clk or negedge cpurst_b)
+begin
+  if(!cpurst_b)
+    retire_inst3_iid_match <= 1'b0;
+  else if(ifu_xx_sync_reset)
+    retire_inst3_iid_match <= 1'b0;
+  else if(rob_pst_retire_inst3_gateclk_vld)
+    retire_inst3_iid_match <= retire_inst3_iid_match_updt_val;
+  else
+    retire_inst3_iid_match <= retire_inst3_iid_match;
+end
 
 //==========================================================
 //                       Retire signal
@@ -528,10 +581,13 @@ assign retire_vld = retire_pst_wb_retire_inst0_vreg_vld
                  || retire_pst_wb_retire_inst1_vreg_vld
                     && retire_inst1_iid_match
                  || retire_pst_wb_retire_inst2_vreg_vld
-                    && retire_inst2_iid_match;
+                    && retire_inst2_iid_match
+                 || retire_pst_wb_retire_inst3_vreg_vld
+                    && retire_inst3_iid_match;
 assign retire_gateclk_vld = retire_pst_wb_retire_inst0_vreg_vld
                          || retire_pst_wb_retire_inst1_vreg_vld
-                         || retire_pst_wb_retire_inst2_vreg_vld;
+                         || retire_pst_wb_retire_inst2_vreg_vld
+                         || retire_pst_wb_retire_inst3_vreg_vld;
 
 //==========================================================
 //                      Release signal

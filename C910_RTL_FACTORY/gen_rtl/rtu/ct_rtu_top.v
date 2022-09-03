@@ -1552,6 +1552,7 @@ wire    [6  :0]  vfpu_rtu_pipe7_iid;
 //                     Instance PST
 //==========================================================
 // &Instance("ct_rtu_pst_preg", "x_ct_rtu_pst_preg"); @33
+//Jeremmy: integer reg
 ct_rtu_pst_preg  x_ct_rtu_pst_preg (
   .cp0_rtu_icg_en                      (cp0_rtu_icg_en                     ),
   .cp0_yy_clk_en                       (cp0_yy_clk_en                      ),

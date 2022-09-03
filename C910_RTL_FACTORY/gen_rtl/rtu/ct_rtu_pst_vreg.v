@@ -23,6 +23,8 @@ module ct_rtu_pst_vreg(
   idu_rtu_ir_xreg1_alloc_vld,
   idu_rtu_ir_xreg2_alloc_vld,
   idu_rtu_ir_xreg3_alloc_vld,
+  //Jeremy add xreg4 alloc
+  idu_rtu_ir_xreg4_alloc_vld,
   idu_rtu_ir_xreg_alloc_gateclk_vld,
   idu_rtu_pst_dis_inst0_dstv_reg,
   idu_rtu_pst_dis_inst0_rel_vreg,
@@ -44,6 +46,12 @@ module ct_rtu_pst_vreg(
   idu_rtu_pst_dis_inst3_vreg,
   idu_rtu_pst_dis_inst3_vreg_iid,
   idu_rtu_pst_dis_inst3_xreg_vld,
+  //Jeremy add inst4 disp
+  idu_rtu_pst_dis_inst4_dstv_reg,
+  idu_rtu_pst_dis_inst4_rel_vreg,
+  idu_rtu_pst_dis_inst4_vreg,
+  idu_rtu_pst_dis_inst4_vreg_iid,
+  idu_rtu_pst_dis_inst4_xreg_vld,
   idu_rtu_pst_xreg_dealloc_mask,
   ifu_xx_sync_reset,
   lsu_rtu_wb_pipe3_wb_vreg_expand,
@@ -54,12 +62,17 @@ module ct_rtu_pst_vreg(
   retire_pst_wb_retire_inst0_vreg_vld,
   retire_pst_wb_retire_inst1_vreg_vld,
   retire_pst_wb_retire_inst2_vreg_vld,
+  //Jeremy add retire inst3
+  retire_pst_wb_retire_inst3_vreg_vld,
   rob_pst_retire_inst0_gateclk_vld,
   rob_pst_retire_inst0_iid_updt_val,
   rob_pst_retire_inst1_gateclk_vld,
   rob_pst_retire_inst1_iid_updt_val,
   rob_pst_retire_inst2_gateclk_vld,
   rob_pst_retire_inst2_iid_updt_val,
+  //Jeremy add inst3 rob rt
+  rob_pst_retire_inst3_gateclk_vld,
+  rob_pst_retire_inst3_iid_updt_val,
   rtu_idu_alloc_xreg0,
   rtu_idu_alloc_xreg0_vld,
   rtu_idu_alloc_xreg1,
@@ -68,6 +81,9 @@ module ct_rtu_pst_vreg(
   rtu_idu_alloc_xreg2_vld,
   rtu_idu_alloc_xreg3,
   rtu_idu_alloc_xreg3_vld,
+  //Jeremy add alloc xreg4
+  rtu_idu_alloc_xreg4,
+  rtu_idu_alloc_xreg4_vld,
   rtu_idu_rt_recover_xreg,
   rtu_yy_xx_flush,
   vfpu_rtu_ex5_pipe6_wb_vreg_expand,
@@ -84,7 +100,9 @@ input            forever_cpuclk;
 input            idu_rtu_ir_xreg0_alloc_vld;         
 input            idu_rtu_ir_xreg1_alloc_vld;         
 input            idu_rtu_ir_xreg2_alloc_vld;         
-input            idu_rtu_ir_xreg3_alloc_vld;         
+input            idu_rtu_ir_xreg3_alloc_vld;
+         
+input            idu_rtu_ir_xreg4_alloc_vld;         
 input            idu_rtu_ir_xreg_alloc_gateclk_vld;  
 input   [4  :0]  idu_rtu_pst_dis_inst0_dstv_reg;     
 input   [5  :0]  idu_rtu_pst_dis_inst0_rel_vreg;     
@@ -105,7 +123,13 @@ input   [4  :0]  idu_rtu_pst_dis_inst3_dstv_reg;
 input   [5  :0]  idu_rtu_pst_dis_inst3_rel_vreg;     
 input   [5  :0]  idu_rtu_pst_dis_inst3_vreg;         
 input   [6  :0]  idu_rtu_pst_dis_inst3_vreg_iid;     
-input            idu_rtu_pst_dis_inst3_xreg_vld;     
+input            idu_rtu_pst_dis_inst3_xreg_vld;
+
+input   [4  :0]  idu_rtu_pst_dis_inst4_dstv_reg;     
+input   [5  :0]  idu_rtu_pst_dis_inst4_rel_vreg;     
+input   [5  :0]  idu_rtu_pst_dis_inst4_vreg;         
+input   [6  :0]  idu_rtu_pst_dis_inst4_vreg_iid;     
+input            idu_rtu_pst_dis_inst4_xreg_vld;     
 input   [63 :0]  idu_rtu_pst_xreg_dealloc_mask;      
 input            ifu_xx_sync_reset;                  
 input   [63 :0]  lsu_rtu_wb_pipe3_wb_vreg_expand;    
@@ -115,12 +139,17 @@ input            retire_pst_async_flush;
 input            retire_pst_wb_retire_inst0_vreg_vld; 
 input            retire_pst_wb_retire_inst1_vreg_vld; 
 input            retire_pst_wb_retire_inst2_vreg_vld; 
+
+input            retire_pst_wb_retire_inst3_vreg_vld; 
 input            rob_pst_retire_inst0_gateclk_vld;   
 input   [6  :0]  rob_pst_retire_inst0_iid_updt_val;  
 input            rob_pst_retire_inst1_gateclk_vld;   
 input   [6  :0]  rob_pst_retire_inst1_iid_updt_val;  
 input            rob_pst_retire_inst2_gateclk_vld;   
-input   [6  :0]  rob_pst_retire_inst2_iid_updt_val;  
+input   [6  :0]  rob_pst_retire_inst2_iid_updt_val;
+
+input            rob_pst_retire_inst3_gateclk_vld;   
+input   [6  :0]  rob_pst_retire_inst3_iid_updt_val;  
 input            rtu_yy_xx_flush;                    
 input   [63 :0]  vfpu_rtu_ex5_pipe6_wb_vreg_expand;  
 input            vfpu_rtu_ex5_pipe6_wb_vreg_vld;     
@@ -135,6 +164,8 @@ output  [5  :0]  rtu_idu_alloc_xreg2;
 output           rtu_idu_alloc_xreg2_vld;            
 output  [5  :0]  rtu_idu_alloc_xreg3;                
 output           rtu_idu_alloc_xreg3_vld;            
+output  [5  :0]  rtu_idu_alloc_xreg4;                
+output           rtu_idu_alloc_xreg4_vld;            
 output  [191:0]  rtu_idu_rt_recover_xreg;            
 
 // &Regs; @30
@@ -146,6 +177,8 @@ reg     [5  :0]  alloc_vreg2;
 reg              alloc_vreg2_vld;                    
 reg     [5  :0]  alloc_vreg3;                        
 reg              alloc_vreg3_vld;                    
+reg     [5  :0]  alloc_vreg4;                        
+reg              alloc_vreg4_vld;                    
 
 // &Wires; @31
 wire    [63 :0]  alloc_release;                      
@@ -153,6 +186,8 @@ wire             alloc_vreg0_invalid;
 wire             alloc_vreg1_invalid;                
 wire             alloc_vreg2_invalid;                
 wire             alloc_vreg3_invalid;                
+wire             alloc_vreg4_invalid; 
+
 wire             alloc_vreg_clk;                     
 wire             alloc_vreg_clk_en;                  
 wire             cp0_rtu_icg_en;                     
@@ -162,6 +197,7 @@ wire    [63 :0]  d0_vreg;
 wire    [63 :0]  d1_vreg;                            
 wire    [63 :0]  d2_vreg;                            
 wire    [63 :0]  d3_vreg;                            
+wire    [63 :0]  d4_vreg;                            
 wire    [63 :0]  dealloc;                            
 wire    [63 :0]  dealloc0;                           
 wire    [63 :0]  dealloc0_vec;                       
@@ -171,8 +207,11 @@ wire    [63 :0]  dealloc2;
 wire    [63 :0]  dealloc2_vec;                       
 wire    [63 :0]  dealloc3;                           
 wire    [63 :0]  dealloc3_vec;                       
+wire    [63 :0]  dealloc4;                           
+wire    [63 :0]  dealloc4_vec;                       
 wire    [63 :0]  dealloc_no_0;                       
 wire    [63 :0]  dealloc_no_1;                       
+wire    [63 :0]  dealloc_no_2;                       
 wire    [63 :0]  dealloc_vld;                        
 wire             dealloc_vld_for_gateclk;            
 wire    [5  :0]  dealloc_vreg0;                      
@@ -187,11 +226,17 @@ wire             dealloc_vreg2_vld;
 wire    [5  :0]  dealloc_vreg3;                      
 wire    [63 :0]  dealloc_vreg3_expand;               
 wire             dealloc_vreg3_vld;                  
+wire    [5  :0]  dealloc_vreg4;                      
+wire    [63 :0]  dealloc_vreg4_expand;               
+wire             dealloc_vreg4_vld;    
+
 wire             forever_cpuclk;                     
 wire             idu_rtu_ir_xreg0_alloc_vld;         
 wire             idu_rtu_ir_xreg1_alloc_vld;         
 wire             idu_rtu_ir_xreg2_alloc_vld;         
 wire             idu_rtu_ir_xreg3_alloc_vld;         
+wire             idu_rtu_ir_xreg4_alloc_vld;
+
 wire             idu_rtu_ir_xreg_alloc_gateclk_vld;  
 wire    [4  :0]  idu_rtu_pst_dis_inst0_dstv_reg;     
 wire    [5  :0]  idu_rtu_pst_dis_inst0_rel_vreg;     
@@ -217,6 +262,12 @@ wire    [5  :0]  idu_rtu_pst_dis_inst3_vreg;
 wire    [63 :0]  idu_rtu_pst_dis_inst3_vreg_expand;  
 wire    [6  :0]  idu_rtu_pst_dis_inst3_vreg_iid;     
 wire             idu_rtu_pst_dis_inst3_xreg_vld;     
+wire    [4  :0]  idu_rtu_pst_dis_inst4_dstv_reg;     
+wire    [5  :0]  idu_rtu_pst_dis_inst4_rel_vreg;     
+wire    [5  :0]  idu_rtu_pst_dis_inst4_vreg;         
+wire    [63 :0]  idu_rtu_pst_dis_inst4_vreg_expand;  
+wire    [6  :0]  idu_rtu_pst_dis_inst4_vreg_iid;     
+wire             idu_rtu_pst_dis_inst4_xreg_vld;     
 wire    [63 :0]  idu_rtu_pst_xreg_dealloc_mask;      
 wire             ifu_xx_sync_reset;                  
 wire    [63 :0]  lsu_rtu_wb_pipe3_wb_vreg_expand;    
@@ -292,6 +343,7 @@ wire             retire_pst_async_flush;
 wire             retire_pst_wb_retire_inst0_vreg_vld; 
 wire             retire_pst_wb_retire_inst1_vreg_vld; 
 wire             retire_pst_wb_retire_inst2_vreg_vld; 
+wire             retire_pst_wb_retire_inst3_vreg_vld; 
 wire    [63 :0]  retired_released_wb;                
 wire             rob_pst_retire_inst0_gateclk_vld;   
 wire    [6  :0]  rob_pst_retire_inst0_iid_updt_val;  
@@ -299,6 +351,8 @@ wire             rob_pst_retire_inst1_gateclk_vld;
 wire    [6  :0]  rob_pst_retire_inst1_iid_updt_val;  
 wire             rob_pst_retire_inst2_gateclk_vld;   
 wire    [6  :0]  rob_pst_retire_inst2_iid_updt_val;  
+wire             rob_pst_retire_inst3_gateclk_vld;   
+wire    [6  :0]  rob_pst_retire_inst3_iid_updt_val;  
 wire    [5  :0]  rtu_idu_alloc_xreg0;                
 wire             rtu_idu_alloc_xreg0_vld;            
 wire    [5  :0]  rtu_idu_alloc_xreg1;                
@@ -307,13 +361,15 @@ wire    [5  :0]  rtu_idu_alloc_xreg2;
 wire             rtu_idu_alloc_xreg2_vld;            
 wire    [5  :0]  rtu_idu_alloc_xreg3;                
 wire             rtu_idu_alloc_xreg3_vld;            
+wire    [5  :0]  rtu_idu_alloc_xreg4;                
+wire             rtu_idu_alloc_xreg4_vld;            
 wire    [191:0]  rtu_idu_rt_recover_xreg;            
 wire             rtu_yy_xx_flush;                    
 wire    [63 :0]  vfpu_rtu_ex5_pipe6_wb_vreg_expand;  
 wire             vfpu_rtu_ex5_pipe6_wb_vreg_vld;     
 wire    [63 :0]  vfpu_rtu_ex5_pipe7_wb_vreg_expand;  
 wire             vfpu_rtu_ex5_pipe7_wb_vreg_vld;     
-wire    [3  :0]  vreg0_create_vld;                   
+wire    [4 :0]  vreg0_create_vld;                   
 wire             vreg0_cur_state_alloc_release;      
 wire             vreg0_cur_state_dealloc;            
 wire             vreg0_dealloc_mask;                 
@@ -325,7 +381,7 @@ wire    [4  :0]  vreg0_reset_dstv_reg;
 wire             vreg0_reset_mapped;                 
 wire             vreg0_retired_released_wb;          
 wire             vreg0_wb_vld;                       
-wire    [3  :0]  vreg10_create_vld;                  
+wire    [4 :0]  vreg10_create_vld;                  
 wire             vreg10_cur_state_alloc_release;     
 wire             vreg10_cur_state_dealloc;           
 wire             vreg10_dealloc_mask;                
@@ -337,7 +393,7 @@ wire    [4  :0]  vreg10_reset_dstv_reg;
 wire             vreg10_reset_mapped;                
 wire             vreg10_retired_released_wb;         
 wire             vreg10_wb_vld;                      
-wire    [3  :0]  vreg11_create_vld;                  
+wire    [4 :0]  vreg11_create_vld;                  
 wire             vreg11_cur_state_alloc_release;     
 wire             vreg11_cur_state_dealloc;           
 wire             vreg11_dealloc_mask;                
@@ -349,7 +405,7 @@ wire    [4  :0]  vreg11_reset_dstv_reg;
 wire             vreg11_reset_mapped;                
 wire             vreg11_retired_released_wb;         
 wire             vreg11_wb_vld;                      
-wire    [3  :0]  vreg12_create_vld;                  
+wire    [4 :0]  vreg12_create_vld;                  
 wire             vreg12_cur_state_alloc_release;     
 wire             vreg12_cur_state_dealloc;           
 wire             vreg12_dealloc_mask;                
@@ -361,7 +417,7 @@ wire    [4  :0]  vreg12_reset_dstv_reg;
 wire             vreg12_reset_mapped;                
 wire             vreg12_retired_released_wb;         
 wire             vreg12_wb_vld;                      
-wire    [3  :0]  vreg13_create_vld;                  
+wire    [4 :0]  vreg13_create_vld;                  
 wire             vreg13_cur_state_alloc_release;     
 wire             vreg13_cur_state_dealloc;           
 wire             vreg13_dealloc_mask;                
@@ -373,7 +429,7 @@ wire    [4  :0]  vreg13_reset_dstv_reg;
 wire             vreg13_reset_mapped;                
 wire             vreg13_retired_released_wb;         
 wire             vreg13_wb_vld;                      
-wire    [3  :0]  vreg14_create_vld;                  
+wire    [4 :0]  vreg14_create_vld;                  
 wire             vreg14_cur_state_alloc_release;     
 wire             vreg14_cur_state_dealloc;           
 wire             vreg14_dealloc_mask;                
@@ -385,7 +441,7 @@ wire    [4  :0]  vreg14_reset_dstv_reg;
 wire             vreg14_reset_mapped;                
 wire             vreg14_retired_released_wb;         
 wire             vreg14_wb_vld;                      
-wire    [3  :0]  vreg15_create_vld;                  
+wire    [4 :0]  vreg15_create_vld;                  
 wire             vreg15_cur_state_alloc_release;     
 wire             vreg15_cur_state_dealloc;           
 wire             vreg15_dealloc_mask;                
@@ -397,7 +453,7 @@ wire    [4  :0]  vreg15_reset_dstv_reg;
 wire             vreg15_reset_mapped;                
 wire             vreg15_retired_released_wb;         
 wire             vreg15_wb_vld;                      
-wire    [3  :0]  vreg16_create_vld;                  
+wire    [4 :0]  vreg16_create_vld;                  
 wire             vreg16_cur_state_alloc_release;     
 wire             vreg16_cur_state_dealloc;           
 wire             vreg16_dealloc_mask;                
@@ -409,7 +465,7 @@ wire    [4  :0]  vreg16_reset_dstv_reg;
 wire             vreg16_reset_mapped;                
 wire             vreg16_retired_released_wb;         
 wire             vreg16_wb_vld;                      
-wire    [3  :0]  vreg17_create_vld;                  
+wire    [4 :0]  vreg17_create_vld;                  
 wire             vreg17_cur_state_alloc_release;     
 wire             vreg17_cur_state_dealloc;           
 wire             vreg17_dealloc_mask;                
@@ -421,7 +477,7 @@ wire    [4  :0]  vreg17_reset_dstv_reg;
 wire             vreg17_reset_mapped;                
 wire             vreg17_retired_released_wb;         
 wire             vreg17_wb_vld;                      
-wire    [3  :0]  vreg18_create_vld;                  
+wire    [4 :0]  vreg18_create_vld;                  
 wire             vreg18_cur_state_alloc_release;     
 wire             vreg18_cur_state_dealloc;           
 wire             vreg18_dealloc_mask;                
@@ -433,7 +489,7 @@ wire    [4  :0]  vreg18_reset_dstv_reg;
 wire             vreg18_reset_mapped;                
 wire             vreg18_retired_released_wb;         
 wire             vreg18_wb_vld;                      
-wire    [3  :0]  vreg19_create_vld;                  
+wire    [4 :0]  vreg19_create_vld;                  
 wire             vreg19_cur_state_alloc_release;     
 wire             vreg19_cur_state_dealloc;           
 wire             vreg19_dealloc_mask;                
@@ -445,7 +501,7 @@ wire    [4  :0]  vreg19_reset_dstv_reg;
 wire             vreg19_reset_mapped;                
 wire             vreg19_retired_released_wb;         
 wire             vreg19_wb_vld;                      
-wire    [3  :0]  vreg1_create_vld;                   
+wire    [4 :0]  vreg1_create_vld;                   
 wire             vreg1_cur_state_alloc_release;      
 wire             vreg1_cur_state_dealloc;            
 wire             vreg1_dealloc_mask;                 
@@ -457,7 +513,7 @@ wire    [4  :0]  vreg1_reset_dstv_reg;
 wire             vreg1_reset_mapped;                 
 wire             vreg1_retired_released_wb;          
 wire             vreg1_wb_vld;                       
-wire    [3  :0]  vreg20_create_vld;                  
+wire    [4 :0]  vreg20_create_vld;                  
 wire             vreg20_cur_state_alloc_release;     
 wire             vreg20_cur_state_dealloc;           
 wire             vreg20_dealloc_mask;                
@@ -469,7 +525,7 @@ wire    [4  :0]  vreg20_reset_dstv_reg;
 wire             vreg20_reset_mapped;                
 wire             vreg20_retired_released_wb;         
 wire             vreg20_wb_vld;                      
-wire    [3  :0]  vreg21_create_vld;                  
+wire    [4 :0]  vreg21_create_vld;                  
 wire             vreg21_cur_state_alloc_release;     
 wire             vreg21_cur_state_dealloc;           
 wire             vreg21_dealloc_mask;                
@@ -481,7 +537,7 @@ wire    [4  :0]  vreg21_reset_dstv_reg;
 wire             vreg21_reset_mapped;                
 wire             vreg21_retired_released_wb;         
 wire             vreg21_wb_vld;                      
-wire    [3  :0]  vreg22_create_vld;                  
+wire    [4 :0]  vreg22_create_vld;                  
 wire             vreg22_cur_state_alloc_release;     
 wire             vreg22_cur_state_dealloc;           
 wire             vreg22_dealloc_mask;                
@@ -493,7 +549,7 @@ wire    [4  :0]  vreg22_reset_dstv_reg;
 wire             vreg22_reset_mapped;                
 wire             vreg22_retired_released_wb;         
 wire             vreg22_wb_vld;                      
-wire    [3  :0]  vreg23_create_vld;                  
+wire    [4 :0]  vreg23_create_vld;                  
 wire             vreg23_cur_state_alloc_release;     
 wire             vreg23_cur_state_dealloc;           
 wire             vreg23_dealloc_mask;                
@@ -505,7 +561,7 @@ wire    [4  :0]  vreg23_reset_dstv_reg;
 wire             vreg23_reset_mapped;                
 wire             vreg23_retired_released_wb;         
 wire             vreg23_wb_vld;                      
-wire    [3  :0]  vreg24_create_vld;                  
+wire    [4 :0]  vreg24_create_vld;                  
 wire             vreg24_cur_state_alloc_release;     
 wire             vreg24_cur_state_dealloc;           
 wire             vreg24_dealloc_mask;                
@@ -517,7 +573,7 @@ wire    [4  :0]  vreg24_reset_dstv_reg;
 wire             vreg24_reset_mapped;                
 wire             vreg24_retired_released_wb;         
 wire             vreg24_wb_vld;                      
-wire    [3  :0]  vreg25_create_vld;                  
+wire    [4 :0]  vreg25_create_vld;                  
 wire             vreg25_cur_state_alloc_release;     
 wire             vreg25_cur_state_dealloc;           
 wire             vreg25_dealloc_mask;                
@@ -529,7 +585,7 @@ wire    [4  :0]  vreg25_reset_dstv_reg;
 wire             vreg25_reset_mapped;                
 wire             vreg25_retired_released_wb;         
 wire             vreg25_wb_vld;                      
-wire    [3  :0]  vreg26_create_vld;                  
+wire    [4 :0]  vreg26_create_vld;                  
 wire             vreg26_cur_state_alloc_release;     
 wire             vreg26_cur_state_dealloc;           
 wire             vreg26_dealloc_mask;                
@@ -541,7 +597,7 @@ wire    [4  :0]  vreg26_reset_dstv_reg;
 wire             vreg26_reset_mapped;                
 wire             vreg26_retired_released_wb;         
 wire             vreg26_wb_vld;                      
-wire    [3  :0]  vreg27_create_vld;                  
+wire    [4 :0]  vreg27_create_vld;                  
 wire             vreg27_cur_state_alloc_release;     
 wire             vreg27_cur_state_dealloc;           
 wire             vreg27_dealloc_mask;                
@@ -553,7 +609,7 @@ wire    [4  :0]  vreg27_reset_dstv_reg;
 wire             vreg27_reset_mapped;                
 wire             vreg27_retired_released_wb;         
 wire             vreg27_wb_vld;                      
-wire    [3  :0]  vreg28_create_vld;                  
+wire    [4 :0]  vreg28_create_vld;                  
 wire             vreg28_cur_state_alloc_release;     
 wire             vreg28_cur_state_dealloc;           
 wire             vreg28_dealloc_mask;                
@@ -565,7 +621,7 @@ wire    [4  :0]  vreg28_reset_dstv_reg;
 wire             vreg28_reset_mapped;                
 wire             vreg28_retired_released_wb;         
 wire             vreg28_wb_vld;                      
-wire    [3  :0]  vreg29_create_vld;                  
+wire    [4 :0]  vreg29_create_vld;                  
 wire             vreg29_cur_state_alloc_release;     
 wire             vreg29_cur_state_dealloc;           
 wire             vreg29_dealloc_mask;                
@@ -577,7 +633,7 @@ wire    [4  :0]  vreg29_reset_dstv_reg;
 wire             vreg29_reset_mapped;                
 wire             vreg29_retired_released_wb;         
 wire             vreg29_wb_vld;                      
-wire    [3  :0]  vreg2_create_vld;                   
+wire    [4 :0]  vreg2_create_vld;                   
 wire             vreg2_cur_state_alloc_release;      
 wire             vreg2_cur_state_dealloc;            
 wire             vreg2_dealloc_mask;                 
@@ -589,7 +645,7 @@ wire    [4  :0]  vreg2_reset_dstv_reg;
 wire             vreg2_reset_mapped;                 
 wire             vreg2_retired_released_wb;          
 wire             vreg2_wb_vld;                       
-wire    [3  :0]  vreg30_create_vld;                  
+wire    [4 :0]  vreg30_create_vld;                  
 wire             vreg30_cur_state_alloc_release;     
 wire             vreg30_cur_state_dealloc;           
 wire             vreg30_dealloc_mask;                
@@ -601,7 +657,7 @@ wire    [4  :0]  vreg30_reset_dstv_reg;
 wire             vreg30_reset_mapped;                
 wire             vreg30_retired_released_wb;         
 wire             vreg30_wb_vld;                      
-wire    [3  :0]  vreg31_create_vld;                  
+wire    [4 :0]  vreg31_create_vld;                  
 wire             vreg31_cur_state_alloc_release;     
 wire             vreg31_cur_state_dealloc;           
 wire             vreg31_dealloc_mask;                
@@ -613,7 +669,7 @@ wire    [4  :0]  vreg31_reset_dstv_reg;
 wire             vreg31_reset_mapped;                
 wire             vreg31_retired_released_wb;         
 wire             vreg31_wb_vld;                      
-wire    [3  :0]  vreg32_create_vld;                  
+wire    [4 :0]  vreg32_create_vld;                  
 wire             vreg32_cur_state_alloc_release;     
 wire             vreg32_cur_state_dealloc;           
 wire             vreg32_dealloc_mask;                
@@ -625,7 +681,7 @@ wire    [4  :0]  vreg32_reset_dstv_reg;
 wire             vreg32_reset_mapped;                
 wire             vreg32_retired_released_wb;         
 wire             vreg32_wb_vld;                      
-wire    [3  :0]  vreg33_create_vld;                  
+wire    [4 :0]  vreg33_create_vld;                  
 wire             vreg33_cur_state_alloc_release;     
 wire             vreg33_cur_state_dealloc;           
 wire             vreg33_dealloc_mask;                
@@ -637,7 +693,7 @@ wire    [4  :0]  vreg33_reset_dstv_reg;
 wire             vreg33_reset_mapped;                
 wire             vreg33_retired_released_wb;         
 wire             vreg33_wb_vld;                      
-wire    [3  :0]  vreg34_create_vld;                  
+wire    [4 :0]  vreg34_create_vld;                  
 wire             vreg34_cur_state_alloc_release;     
 wire             vreg34_cur_state_dealloc;           
 wire             vreg34_dealloc_mask;                
@@ -649,7 +705,7 @@ wire    [4  :0]  vreg34_reset_dstv_reg;
 wire             vreg34_reset_mapped;                
 wire             vreg34_retired_released_wb;         
 wire             vreg34_wb_vld;                      
-wire    [3  :0]  vreg35_create_vld;                  
+wire    [4 :0]  vreg35_create_vld;                  
 wire             vreg35_cur_state_alloc_release;     
 wire             vreg35_cur_state_dealloc;           
 wire             vreg35_dealloc_mask;                
@@ -661,7 +717,7 @@ wire    [4  :0]  vreg35_reset_dstv_reg;
 wire             vreg35_reset_mapped;                
 wire             vreg35_retired_released_wb;         
 wire             vreg35_wb_vld;                      
-wire    [3  :0]  vreg36_create_vld;                  
+wire    [4 :0]  vreg36_create_vld;                  
 wire             vreg36_cur_state_alloc_release;     
 wire             vreg36_cur_state_dealloc;           
 wire             vreg36_dealloc_mask;                
@@ -673,7 +729,7 @@ wire    [4  :0]  vreg36_reset_dstv_reg;
 wire             vreg36_reset_mapped;                
 wire             vreg36_retired_released_wb;         
 wire             vreg36_wb_vld;                      
-wire    [3  :0]  vreg37_create_vld;                  
+wire    [4 :0]  vreg37_create_vld;                  
 wire             vreg37_cur_state_alloc_release;     
 wire             vreg37_cur_state_dealloc;           
 wire             vreg37_dealloc_mask;                
@@ -685,7 +741,7 @@ wire    [4  :0]  vreg37_reset_dstv_reg;
 wire             vreg37_reset_mapped;                
 wire             vreg37_retired_released_wb;         
 wire             vreg37_wb_vld;                      
-wire    [3  :0]  vreg38_create_vld;                  
+wire    [4 :0]  vreg38_create_vld;                  
 wire             vreg38_cur_state_alloc_release;     
 wire             vreg38_cur_state_dealloc;           
 wire             vreg38_dealloc_mask;                
@@ -697,7 +753,7 @@ wire    [4  :0]  vreg38_reset_dstv_reg;
 wire             vreg38_reset_mapped;                
 wire             vreg38_retired_released_wb;         
 wire             vreg38_wb_vld;                      
-wire    [3  :0]  vreg39_create_vld;                  
+wire    [4 :0]  vreg39_create_vld;                  
 wire             vreg39_cur_state_alloc_release;     
 wire             vreg39_cur_state_dealloc;           
 wire             vreg39_dealloc_mask;                
@@ -709,7 +765,7 @@ wire    [4  :0]  vreg39_reset_dstv_reg;
 wire             vreg39_reset_mapped;                
 wire             vreg39_retired_released_wb;         
 wire             vreg39_wb_vld;                      
-wire    [3  :0]  vreg3_create_vld;                   
+wire    [4 :0]  vreg3_create_vld;                   
 wire             vreg3_cur_state_alloc_release;      
 wire             vreg3_cur_state_dealloc;            
 wire             vreg3_dealloc_mask;                 
@@ -721,7 +777,7 @@ wire    [4  :0]  vreg3_reset_dstv_reg;
 wire             vreg3_reset_mapped;                 
 wire             vreg3_retired_released_wb;          
 wire             vreg3_wb_vld;                       
-wire    [3  :0]  vreg40_create_vld;                  
+wire    [4 :0]  vreg40_create_vld;                  
 wire             vreg40_cur_state_alloc_release;     
 wire             vreg40_cur_state_dealloc;           
 wire             vreg40_dealloc_mask;                
@@ -733,7 +789,7 @@ wire    [4  :0]  vreg40_reset_dstv_reg;
 wire             vreg40_reset_mapped;                
 wire             vreg40_retired_released_wb;         
 wire             vreg40_wb_vld;                      
-wire    [3  :0]  vreg41_create_vld;                  
+wire    [4 :0]  vreg41_create_vld;                  
 wire             vreg41_cur_state_alloc_release;     
 wire             vreg41_cur_state_dealloc;           
 wire             vreg41_dealloc_mask;                
@@ -745,7 +801,7 @@ wire    [4  :0]  vreg41_reset_dstv_reg;
 wire             vreg41_reset_mapped;                
 wire             vreg41_retired_released_wb;         
 wire             vreg41_wb_vld;                      
-wire    [3  :0]  vreg42_create_vld;                  
+wire    [4 :0]  vreg42_create_vld;                  
 wire             vreg42_cur_state_alloc_release;     
 wire             vreg42_cur_state_dealloc;           
 wire             vreg42_dealloc_mask;                
@@ -757,7 +813,7 @@ wire    [4  :0]  vreg42_reset_dstv_reg;
 wire             vreg42_reset_mapped;                
 wire             vreg42_retired_released_wb;         
 wire             vreg42_wb_vld;                      
-wire    [3  :0]  vreg43_create_vld;                  
+wire    [4 :0]  vreg43_create_vld;                  
 wire             vreg43_cur_state_alloc_release;     
 wire             vreg43_cur_state_dealloc;           
 wire             vreg43_dealloc_mask;                
@@ -769,7 +825,7 @@ wire    [4  :0]  vreg43_reset_dstv_reg;
 wire             vreg43_reset_mapped;                
 wire             vreg43_retired_released_wb;         
 wire             vreg43_wb_vld;                      
-wire    [3  :0]  vreg44_create_vld;                  
+wire    [4 :0]  vreg44_create_vld;                  
 wire             vreg44_cur_state_alloc_release;     
 wire             vreg44_cur_state_dealloc;           
 wire             vreg44_dealloc_mask;                
@@ -781,7 +837,7 @@ wire    [4  :0]  vreg44_reset_dstv_reg;
 wire             vreg44_reset_mapped;                
 wire             vreg44_retired_released_wb;         
 wire             vreg44_wb_vld;                      
-wire    [3  :0]  vreg45_create_vld;                  
+wire    [4 :0]  vreg45_create_vld;                  
 wire             vreg45_cur_state_alloc_release;     
 wire             vreg45_cur_state_dealloc;           
 wire             vreg45_dealloc_mask;                
@@ -793,7 +849,7 @@ wire    [4  :0]  vreg45_reset_dstv_reg;
 wire             vreg45_reset_mapped;                
 wire             vreg45_retired_released_wb;         
 wire             vreg45_wb_vld;                      
-wire    [3  :0]  vreg46_create_vld;                  
+wire    [4 :0]  vreg46_create_vld;                  
 wire             vreg46_cur_state_alloc_release;     
 wire             vreg46_cur_state_dealloc;           
 wire             vreg46_dealloc_mask;                
@@ -805,7 +861,7 @@ wire    [4  :0]  vreg46_reset_dstv_reg;
 wire             vreg46_reset_mapped;                
 wire             vreg46_retired_released_wb;         
 wire             vreg46_wb_vld;                      
-wire    [3  :0]  vreg47_create_vld;                  
+wire    [4 :0]  vreg47_create_vld;                  
 wire             vreg47_cur_state_alloc_release;     
 wire             vreg47_cur_state_dealloc;           
 wire             vreg47_dealloc_mask;                
@@ -817,7 +873,7 @@ wire    [4  :0]  vreg47_reset_dstv_reg;
 wire             vreg47_reset_mapped;                
 wire             vreg47_retired_released_wb;         
 wire             vreg47_wb_vld;                      
-wire    [3  :0]  vreg48_create_vld;                  
+wire    [4 :0]  vreg48_create_vld;                  
 wire             vreg48_cur_state_alloc_release;     
 wire             vreg48_cur_state_dealloc;           
 wire             vreg48_dealloc_mask;                
@@ -829,7 +885,7 @@ wire    [4  :0]  vreg48_reset_dstv_reg;
 wire             vreg48_reset_mapped;                
 wire             vreg48_retired_released_wb;         
 wire             vreg48_wb_vld;                      
-wire    [3  :0]  vreg49_create_vld;                  
+wire    [4 :0]  vreg49_create_vld;                  
 wire             vreg49_cur_state_alloc_release;     
 wire             vreg49_cur_state_dealloc;           
 wire             vreg49_dealloc_mask;                
@@ -841,7 +897,7 @@ wire    [4  :0]  vreg49_reset_dstv_reg;
 wire             vreg49_reset_mapped;                
 wire             vreg49_retired_released_wb;         
 wire             vreg49_wb_vld;                      
-wire    [3  :0]  vreg4_create_vld;                   
+wire    [4 :0]  vreg4_create_vld;                   
 wire             vreg4_cur_state_alloc_release;      
 wire             vreg4_cur_state_dealloc;            
 wire             vreg4_dealloc_mask;                 
@@ -853,7 +909,7 @@ wire    [4  :0]  vreg4_reset_dstv_reg;
 wire             vreg4_reset_mapped;                 
 wire             vreg4_retired_released_wb;          
 wire             vreg4_wb_vld;                       
-wire    [3  :0]  vreg50_create_vld;                  
+wire    [4 :0]  vreg50_create_vld;                  
 wire             vreg50_cur_state_alloc_release;     
 wire             vreg50_cur_state_dealloc;           
 wire             vreg50_dealloc_mask;                
@@ -865,7 +921,7 @@ wire    [4  :0]  vreg50_reset_dstv_reg;
 wire             vreg50_reset_mapped;                
 wire             vreg50_retired_released_wb;         
 wire             vreg50_wb_vld;                      
-wire    [3  :0]  vreg51_create_vld;                  
+wire    [4 :0]  vreg51_create_vld;                  
 wire             vreg51_cur_state_alloc_release;     
 wire             vreg51_cur_state_dealloc;           
 wire             vreg51_dealloc_mask;                
@@ -877,7 +933,7 @@ wire    [4  :0]  vreg51_reset_dstv_reg;
 wire             vreg51_reset_mapped;                
 wire             vreg51_retired_released_wb;         
 wire             vreg51_wb_vld;                      
-wire    [3  :0]  vreg52_create_vld;                  
+wire    [4 :0]  vreg52_create_vld;                  
 wire             vreg52_cur_state_alloc_release;     
 wire             vreg52_cur_state_dealloc;           
 wire             vreg52_dealloc_mask;                
@@ -889,7 +945,7 @@ wire    [4  :0]  vreg52_reset_dstv_reg;
 wire             vreg52_reset_mapped;                
 wire             vreg52_retired_released_wb;         
 wire             vreg52_wb_vld;                      
-wire    [3  :0]  vreg53_create_vld;                  
+wire    [4 :0]  vreg53_create_vld;                  
 wire             vreg53_cur_state_alloc_release;     
 wire             vreg53_cur_state_dealloc;           
 wire             vreg53_dealloc_mask;                
@@ -901,7 +957,7 @@ wire    [4  :0]  vreg53_reset_dstv_reg;
 wire             vreg53_reset_mapped;                
 wire             vreg53_retired_released_wb;         
 wire             vreg53_wb_vld;                      
-wire    [3  :0]  vreg54_create_vld;                  
+wire    [4 :0]  vreg54_create_vld;                  
 wire             vreg54_cur_state_alloc_release;     
 wire             vreg54_cur_state_dealloc;           
 wire             vreg54_dealloc_mask;                
@@ -913,7 +969,7 @@ wire    [4  :0]  vreg54_reset_dstv_reg;
 wire             vreg54_reset_mapped;                
 wire             vreg54_retired_released_wb;         
 wire             vreg54_wb_vld;                      
-wire    [3  :0]  vreg55_create_vld;                  
+wire    [4 :0]  vreg55_create_vld;                  
 wire             vreg55_cur_state_alloc_release;     
 wire             vreg55_cur_state_dealloc;           
 wire             vreg55_dealloc_mask;                
@@ -925,7 +981,7 @@ wire    [4  :0]  vreg55_reset_dstv_reg;
 wire             vreg55_reset_mapped;                
 wire             vreg55_retired_released_wb;         
 wire             vreg55_wb_vld;                      
-wire    [3  :0]  vreg56_create_vld;                  
+wire    [4 :0]  vreg56_create_vld;                  
 wire             vreg56_cur_state_alloc_release;     
 wire             vreg56_cur_state_dealloc;           
 wire             vreg56_dealloc_mask;                
@@ -937,7 +993,7 @@ wire    [4  :0]  vreg56_reset_dstv_reg;
 wire             vreg56_reset_mapped;                
 wire             vreg56_retired_released_wb;         
 wire             vreg56_wb_vld;                      
-wire    [3  :0]  vreg57_create_vld;                  
+wire    [4 :0]  vreg57_create_vld;                  
 wire             vreg57_cur_state_alloc_release;     
 wire             vreg57_cur_state_dealloc;           
 wire             vreg57_dealloc_mask;                
@@ -949,7 +1005,7 @@ wire    [4  :0]  vreg57_reset_dstv_reg;
 wire             vreg57_reset_mapped;                
 wire             vreg57_retired_released_wb;         
 wire             vreg57_wb_vld;                      
-wire    [3  :0]  vreg58_create_vld;                  
+wire    [4 :0]  vreg58_create_vld;                  
 wire             vreg58_cur_state_alloc_release;     
 wire             vreg58_cur_state_dealloc;           
 wire             vreg58_dealloc_mask;                
@@ -961,7 +1017,7 @@ wire    [4  :0]  vreg58_reset_dstv_reg;
 wire             vreg58_reset_mapped;                
 wire             vreg58_retired_released_wb;         
 wire             vreg58_wb_vld;                      
-wire    [3  :0]  vreg59_create_vld;                  
+wire    [4 :0]  vreg59_create_vld;                  
 wire             vreg59_cur_state_alloc_release;     
 wire             vreg59_cur_state_dealloc;           
 wire             vreg59_dealloc_mask;                
@@ -973,7 +1029,7 @@ wire    [4  :0]  vreg59_reset_dstv_reg;
 wire             vreg59_reset_mapped;                
 wire             vreg59_retired_released_wb;         
 wire             vreg59_wb_vld;                      
-wire    [3  :0]  vreg5_create_vld;                   
+wire    [4 :0]  vreg5_create_vld;                   
 wire             vreg5_cur_state_alloc_release;      
 wire             vreg5_cur_state_dealloc;            
 wire             vreg5_dealloc_mask;                 
@@ -985,7 +1041,7 @@ wire    [4  :0]  vreg5_reset_dstv_reg;
 wire             vreg5_reset_mapped;                 
 wire             vreg5_retired_released_wb;          
 wire             vreg5_wb_vld;                       
-wire    [3  :0]  vreg60_create_vld;                  
+wire    [4 :0]  vreg60_create_vld;                  
 wire             vreg60_cur_state_alloc_release;     
 wire             vreg60_cur_state_dealloc;           
 wire             vreg60_dealloc_mask;                
@@ -997,7 +1053,7 @@ wire    [4  :0]  vreg60_reset_dstv_reg;
 wire             vreg60_reset_mapped;                
 wire             vreg60_retired_released_wb;         
 wire             vreg60_wb_vld;                      
-wire    [3  :0]  vreg61_create_vld;                  
+wire    [4 :0]  vreg61_create_vld;                  
 wire             vreg61_cur_state_alloc_release;     
 wire             vreg61_cur_state_dealloc;           
 wire             vreg61_dealloc_mask;                
@@ -1009,7 +1065,7 @@ wire    [4  :0]  vreg61_reset_dstv_reg;
 wire             vreg61_reset_mapped;                
 wire             vreg61_retired_released_wb;         
 wire             vreg61_wb_vld;                      
-wire    [3  :0]  vreg62_create_vld;                  
+wire    [4 :0]  vreg62_create_vld;                  
 wire             vreg62_cur_state_alloc_release;     
 wire             vreg62_cur_state_dealloc;           
 wire             vreg62_dealloc_mask;                
@@ -1021,7 +1077,7 @@ wire    [4  :0]  vreg62_reset_dstv_reg;
 wire             vreg62_reset_mapped;                
 wire             vreg62_retired_released_wb;         
 wire             vreg62_wb_vld;                      
-wire    [3  :0]  vreg63_create_vld;                  
+wire    [4 :0]  vreg63_create_vld;                  
 wire             vreg63_cur_state_alloc_release;     
 wire             vreg63_cur_state_dealloc;           
 wire             vreg63_dealloc_mask;                
@@ -1033,7 +1089,7 @@ wire    [4  :0]  vreg63_reset_dstv_reg;
 wire             vreg63_reset_mapped;                
 wire             vreg63_retired_released_wb;         
 wire             vreg63_wb_vld;                      
-wire    [3  :0]  vreg6_create_vld;                   
+wire    [4 :0]  vreg6_create_vld;                   
 wire             vreg6_cur_state_alloc_release;      
 wire             vreg6_cur_state_dealloc;            
 wire             vreg6_dealloc_mask;                 
@@ -1045,7 +1101,7 @@ wire    [4  :0]  vreg6_reset_dstv_reg;
 wire             vreg6_reset_mapped;                 
 wire             vreg6_retired_released_wb;          
 wire             vreg6_wb_vld;                       
-wire    [3  :0]  vreg7_create_vld;                   
+wire    [4 :0]  vreg7_create_vld;                   
 wire             vreg7_cur_state_alloc_release;      
 wire             vreg7_cur_state_dealloc;            
 wire             vreg7_dealloc_mask;                 
@@ -1057,7 +1113,7 @@ wire    [4  :0]  vreg7_reset_dstv_reg;
 wire             vreg7_reset_mapped;                 
 wire             vreg7_retired_released_wb;          
 wire             vreg7_wb_vld;                       
-wire    [3  :0]  vreg8_create_vld;                   
+wire    [4 :0]  vreg8_create_vld;                   
 wire             vreg8_cur_state_alloc_release;      
 wire             vreg8_cur_state_dealloc;            
 wire             vreg8_dealloc_mask;                 
@@ -1069,7 +1125,7 @@ wire    [4  :0]  vreg8_reset_dstv_reg;
 wire             vreg8_reset_mapped;                 
 wire             vreg8_retired_released_wb;          
 wire             vreg8_wb_vld;                       
-wire    [3  :0]  vreg9_create_vld;                   
+wire    [4 :0]  vreg9_create_vld;                   
 wire             vreg9_cur_state_alloc_release;      
 wire             vreg9_cur_state_dealloc;            
 wire             vreg9_dealloc_mask;                 
@@ -1103,6 +1159,7 @@ assign vreg_clk_en = rtu_yy_xx_flush
                      || idu_rtu_pst_dis_inst1_xreg_vld
                      || idu_rtu_pst_dis_inst2_xreg_vld
                      || idu_rtu_pst_dis_inst3_xreg_vld
+                     || idu_rtu_pst_dis_inst4_xreg_vld//Jeremy add
                      || vreg_alloc_release;
 
 // &Instance("gated_clk_cell", "x_vreg_gated_clk"); @51
@@ -1148,18 +1205,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg0 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg0_create_vld                   ),
@@ -1195,18 +1258,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg1 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg1_create_vld                   ),
@@ -1242,18 +1311,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg2 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg2_create_vld                   ),
@@ -1289,18 +1364,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg3 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg3_create_vld                   ),
@@ -1336,18 +1417,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg4 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg4_create_vld                   ),
@@ -1383,18 +1470,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg5 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg5_create_vld                   ),
@@ -1430,18 +1523,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg6 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg6_create_vld                   ),
@@ -1477,18 +1576,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg7 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg7_create_vld                   ),
@@ -1524,18 +1629,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg8 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg8_create_vld                   ),
@@ -1571,18 +1682,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg9 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg9_create_vld                   ),
@@ -1618,18 +1735,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg10 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg10_create_vld                  ),
@@ -1665,18 +1788,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg11 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg11_create_vld                  ),
@@ -1712,18 +1841,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg12 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg12_create_vld                  ),
@@ -1759,18 +1894,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg13 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg13_create_vld                  ),
@@ -1806,18 +1947,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg14 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg14_create_vld                  ),
@@ -1853,18 +2000,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg15 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg15_create_vld                  ),
@@ -1900,18 +2053,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg16 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg16_create_vld                  ),
@@ -1947,18 +2106,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg17 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg17_create_vld                  ),
@@ -1994,18 +2159,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg18 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg18_create_vld                  ),
@@ -2041,18 +2212,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg19 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg19_create_vld                  ),
@@ -2088,18 +2265,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg20 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg20_create_vld                  ),
@@ -2135,18 +2318,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg21 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg21_create_vld                  ),
@@ -2182,18 +2371,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg22 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg22_create_vld                  ),
@@ -2229,18 +2424,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg23 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg23_create_vld                  ),
@@ -2276,18 +2477,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg24 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg24_create_vld                  ),
@@ -2323,18 +2530,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg25 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg25_create_vld                  ),
@@ -2370,18 +2583,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg26 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg26_create_vld                  ),
@@ -2417,18 +2636,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg27 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg27_create_vld                  ),
@@ -2464,18 +2689,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg28 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg28_create_vld                  ),
@@ -2511,18 +2742,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg29 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg29_create_vld                  ),
@@ -2558,18 +2795,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg30 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg30_create_vld                  ),
@@ -2605,18 +2848,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg31 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg31_create_vld                  ),
@@ -2652,18 +2901,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg32 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg32_create_vld                  ),
@@ -2699,18 +2954,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg33 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg33_create_vld                  ),
@@ -2746,18 +3007,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg34 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg34_create_vld                  ),
@@ -2793,18 +3060,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg35 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg35_create_vld                  ),
@@ -2840,18 +3113,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg36 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg36_create_vld                  ),
@@ -2887,18 +3166,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg37 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg37_create_vld                  ),
@@ -2934,18 +3219,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg38 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg38_create_vld                  ),
@@ -2981,18 +3272,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg39 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg39_create_vld                  ),
@@ -3028,18 +3325,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg40 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg40_create_vld                  ),
@@ -3075,18 +3378,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg41 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg41_create_vld                  ),
@@ -3122,18 +3431,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg42 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg42_create_vld                  ),
@@ -3169,18 +3484,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg43 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg43_create_vld                  ),
@@ -3216,18 +3537,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg44 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg44_create_vld                  ),
@@ -3263,18 +3590,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg45 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg45_create_vld                  ),
@@ -3310,18 +3643,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg46 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg46_create_vld                  ),
@@ -3357,18 +3696,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg47 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg47_create_vld                  ),
@@ -3404,18 +3749,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg48 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg48_create_vld                  ),
@@ -3451,18 +3802,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg49 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg49_create_vld                  ),
@@ -3498,18 +3855,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg50 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg50_create_vld                  ),
@@ -3545,18 +3908,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg51 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg51_create_vld                  ),
@@ -3592,18 +3961,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg52 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg52_create_vld                  ),
@@ -3639,18 +4014,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg53 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg53_create_vld                  ),
@@ -3686,18 +4067,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg54 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg54_create_vld                  ),
@@ -3733,18 +4120,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg55 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg55_create_vld                  ),
@@ -3780,18 +4173,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg56 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg56_create_vld                  ),
@@ -3827,18 +4226,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg57 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg57_create_vld                  ),
@@ -3874,18 +4279,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg58 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg58_create_vld                  ),
@@ -3921,18 +4332,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg59 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg59_create_vld                  ),
@@ -3968,18 +4385,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg60 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg60_create_vld                  ),
@@ -4015,18 +4438,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg61 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg61_create_vld                  ),
@@ -4062,18 +4491,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg62 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg62_create_vld                  ),
@@ -4109,18 +4544,24 @@ ct_rtu_pst_vreg_entry  x_ct_rtu_pst_entry_vreg63 (
   .idu_rtu_pst_dis_inst3_dstv_reg      (idu_rtu_pst_dis_inst3_dstv_reg     ),
   .idu_rtu_pst_dis_inst3_rel_vreg      (idu_rtu_pst_dis_inst3_rel_vreg     ),
   .idu_rtu_pst_dis_inst3_vreg_iid      (idu_rtu_pst_dis_inst3_vreg_iid     ),
+  .idu_rtu_pst_dis_inst4_dstv_reg      (idu_rtu_pst_dis_inst4_dstv_reg     ),
+  .idu_rtu_pst_dis_inst4_rel_vreg      (idu_rtu_pst_dis_inst4_rel_vreg     ),
+  .idu_rtu_pst_dis_inst4_vreg_iid      (idu_rtu_pst_dis_inst4_vreg_iid     ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .pad_yy_icg_scan_en                  (pad_yy_icg_scan_en                 ),
   .retire_pst_async_flush              (retire_pst_async_flush             ),
   .retire_pst_wb_retire_inst0_vreg_vld (retire_pst_wb_retire_inst0_vreg_vld),
   .retire_pst_wb_retire_inst1_vreg_vld (retire_pst_wb_retire_inst1_vreg_vld),
   .retire_pst_wb_retire_inst2_vreg_vld (retire_pst_wb_retire_inst2_vreg_vld),
+  .retire_pst_wb_retire_inst3_vreg_vld (retire_pst_wb_retire_inst3_vreg_vld),
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
+  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
+  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
   .rtu_yy_xx_flush                     (rtu_yy_xx_flush                    ),
   .vreg_top_clk                        (vreg_top_clk                       ),
   .x_create_vld                        (vreg63_create_vld                  ),
@@ -4301,11 +4742,14 @@ ct_rtu_expand_64  x_ct_rtu_expand_64_idu_rtu_pst_dis_inst2_vreg (
   .x_num_expand                      (idu_rtu_pst_dis_inst2_vreg_expand)
 );
 
-// &ConnRule(s/^x_num/idu_rtu_pst_dis_inst3_vreg/); @342
-// &Instance("ct_rtu_expand_64","x_ct_rtu_expand_64_idu_rtu_pst_dis_inst3_vreg"); @343
 ct_rtu_expand_64  x_ct_rtu_expand_64_idu_rtu_pst_dis_inst3_vreg (
   .x_num                             (idu_rtu_pst_dis_inst3_vreg       ),
   .x_num_expand                      (idu_rtu_pst_dis_inst3_vreg_expand)
+);
+//Jermmy ass inst4 vreg expand
+ct_rtu_expand_64  x_ct_rtu_expand_64_idu_rtu_pst_dis_inst4_vreg (
+  .x_num                             (idu_rtu_pst_dis_inst4_vreg       ),
+  .x_num_expand                      (idu_rtu_pst_dis_inst4_vreg_expand)
 );
 
 
@@ -4317,71 +4761,74 @@ assign d2_vreg[63:0] = {64{idu_rtu_pst_dis_inst2_xreg_vld}}
                        & idu_rtu_pst_dis_inst2_vreg_expand[63:0];
 assign d3_vreg[63:0] = {64{idu_rtu_pst_dis_inst3_xreg_vld}}
                        & idu_rtu_pst_dis_inst3_vreg_expand[63:0];
+//Jeremy add this logic
+assign d4_vreg[63:0] = {64{idu_rtu_pst_dis_inst4_xreg_vld}}
+                       & idu_rtu_pst_dis_inst4_vreg_expand[63:0];
 
-assign vreg0_create_vld[3:0]  = {d3_vreg[0], d2_vreg[0], d1_vreg[0], d0_vreg[0]};
-assign vreg1_create_vld[3:0]  = {d3_vreg[1], d2_vreg[1], d1_vreg[1], d0_vreg[1]};
-assign vreg2_create_vld[3:0]  = {d3_vreg[2], d2_vreg[2], d1_vreg[2], d0_vreg[2]};
-assign vreg3_create_vld[3:0]  = {d3_vreg[3], d2_vreg[3], d1_vreg[3], d0_vreg[3]};
-assign vreg4_create_vld[3:0]  = {d3_vreg[4], d2_vreg[4], d1_vreg[4], d0_vreg[4]};
-assign vreg5_create_vld[3:0]  = {d3_vreg[5], d2_vreg[5], d1_vreg[5], d0_vreg[5]};
-assign vreg6_create_vld[3:0]  = {d3_vreg[6], d2_vreg[6], d1_vreg[6], d0_vreg[6]};
-assign vreg7_create_vld[3:0]  = {d3_vreg[7], d2_vreg[7], d1_vreg[7], d0_vreg[7]};
-assign vreg8_create_vld[3:0]  = {d3_vreg[8], d2_vreg[8], d1_vreg[8], d0_vreg[8]};
-assign vreg9_create_vld[3:0]  = {d3_vreg[9], d2_vreg[9], d1_vreg[9], d0_vreg[9]};
-assign vreg10_create_vld[3:0] = {d3_vreg[10],d2_vreg[10],d1_vreg[10],d0_vreg[10]};
-assign vreg11_create_vld[3:0] = {d3_vreg[11],d2_vreg[11],d1_vreg[11],d0_vreg[11]};
-assign vreg12_create_vld[3:0] = {d3_vreg[12],d2_vreg[12],d1_vreg[12],d0_vreg[12]};
-assign vreg13_create_vld[3:0] = {d3_vreg[13],d2_vreg[13],d1_vreg[13],d0_vreg[13]};
-assign vreg14_create_vld[3:0] = {d3_vreg[14],d2_vreg[14],d1_vreg[14],d0_vreg[14]};
-assign vreg15_create_vld[3:0] = {d3_vreg[15],d2_vreg[15],d1_vreg[15],d0_vreg[15]};
-assign vreg16_create_vld[3:0] = {d3_vreg[16],d2_vreg[16],d1_vreg[16],d0_vreg[16]};
-assign vreg17_create_vld[3:0] = {d3_vreg[17],d2_vreg[17],d1_vreg[17],d0_vreg[17]};
-assign vreg18_create_vld[3:0] = {d3_vreg[18],d2_vreg[18],d1_vreg[18],d0_vreg[18]};
-assign vreg19_create_vld[3:0] = {d3_vreg[19],d2_vreg[19],d1_vreg[19],d0_vreg[19]};
-assign vreg20_create_vld[3:0] = {d3_vreg[20],d2_vreg[20],d1_vreg[20],d0_vreg[20]};
-assign vreg21_create_vld[3:0] = {d3_vreg[21],d2_vreg[21],d1_vreg[21],d0_vreg[21]};
-assign vreg22_create_vld[3:0] = {d3_vreg[22],d2_vreg[22],d1_vreg[22],d0_vreg[22]};
-assign vreg23_create_vld[3:0] = {d3_vreg[23],d2_vreg[23],d1_vreg[23],d0_vreg[23]};
-assign vreg24_create_vld[3:0] = {d3_vreg[24],d2_vreg[24],d1_vreg[24],d0_vreg[24]};
-assign vreg25_create_vld[3:0] = {d3_vreg[25],d2_vreg[25],d1_vreg[25],d0_vreg[25]};
-assign vreg26_create_vld[3:0] = {d3_vreg[26],d2_vreg[26],d1_vreg[26],d0_vreg[26]};
-assign vreg27_create_vld[3:0] = {d3_vreg[27],d2_vreg[27],d1_vreg[27],d0_vreg[27]};
-assign vreg28_create_vld[3:0] = {d3_vreg[28],d2_vreg[28],d1_vreg[28],d0_vreg[28]};
-assign vreg29_create_vld[3:0] = {d3_vreg[29],d2_vreg[29],d1_vreg[29],d0_vreg[29]};
-assign vreg30_create_vld[3:0] = {d3_vreg[30],d2_vreg[30],d1_vreg[30],d0_vreg[30]};
-assign vreg31_create_vld[3:0] = {d3_vreg[31],d2_vreg[31],d1_vreg[31],d0_vreg[31]};
-assign vreg32_create_vld[3:0] = {d3_vreg[32],d2_vreg[32],d1_vreg[32],d0_vreg[32]};
-assign vreg33_create_vld[3:0] = {d3_vreg[33],d2_vreg[33],d1_vreg[33],d0_vreg[33]};
-assign vreg34_create_vld[3:0] = {d3_vreg[34],d2_vreg[34],d1_vreg[34],d0_vreg[34]};
-assign vreg35_create_vld[3:0] = {d3_vreg[35],d2_vreg[35],d1_vreg[35],d0_vreg[35]};
-assign vreg36_create_vld[3:0] = {d3_vreg[36],d2_vreg[36],d1_vreg[36],d0_vreg[36]};
-assign vreg37_create_vld[3:0] = {d3_vreg[37],d2_vreg[37],d1_vreg[37],d0_vreg[37]};
-assign vreg38_create_vld[3:0] = {d3_vreg[38],d2_vreg[38],d1_vreg[38],d0_vreg[38]};
-assign vreg39_create_vld[3:0] = {d3_vreg[39],d2_vreg[39],d1_vreg[39],d0_vreg[39]};
-assign vreg40_create_vld[3:0] = {d3_vreg[40],d2_vreg[40],d1_vreg[40],d0_vreg[40]};
-assign vreg41_create_vld[3:0] = {d3_vreg[41],d2_vreg[41],d1_vreg[41],d0_vreg[41]};
-assign vreg42_create_vld[3:0] = {d3_vreg[42],d2_vreg[42],d1_vreg[42],d0_vreg[42]};
-assign vreg43_create_vld[3:0] = {d3_vreg[43],d2_vreg[43],d1_vreg[43],d0_vreg[43]};
-assign vreg44_create_vld[3:0] = {d3_vreg[44],d2_vreg[44],d1_vreg[44],d0_vreg[44]};
-assign vreg45_create_vld[3:0] = {d3_vreg[45],d2_vreg[45],d1_vreg[45],d0_vreg[45]};
-assign vreg46_create_vld[3:0] = {d3_vreg[46],d2_vreg[46],d1_vreg[46],d0_vreg[46]};
-assign vreg47_create_vld[3:0] = {d3_vreg[47],d2_vreg[47],d1_vreg[47],d0_vreg[47]};
-assign vreg48_create_vld[3:0] = {d3_vreg[48],d2_vreg[48],d1_vreg[48],d0_vreg[48]};
-assign vreg49_create_vld[3:0] = {d3_vreg[49],d2_vreg[49],d1_vreg[49],d0_vreg[49]};
-assign vreg50_create_vld[3:0] = {d3_vreg[50],d2_vreg[50],d1_vreg[50],d0_vreg[50]};
-assign vreg51_create_vld[3:0] = {d3_vreg[51],d2_vreg[51],d1_vreg[51],d0_vreg[51]};
-assign vreg52_create_vld[3:0] = {d3_vreg[52],d2_vreg[52],d1_vreg[52],d0_vreg[52]};
-assign vreg53_create_vld[3:0] = {d3_vreg[53],d2_vreg[53],d1_vreg[53],d0_vreg[53]};
-assign vreg54_create_vld[3:0] = {d3_vreg[54],d2_vreg[54],d1_vreg[54],d0_vreg[54]};
-assign vreg55_create_vld[3:0] = {d3_vreg[55],d2_vreg[55],d1_vreg[55],d0_vreg[55]};
-assign vreg56_create_vld[3:0] = {d3_vreg[56],d2_vreg[56],d1_vreg[56],d0_vreg[56]};
-assign vreg57_create_vld[3:0] = {d3_vreg[57],d2_vreg[57],d1_vreg[57],d0_vreg[57]};
-assign vreg58_create_vld[3:0] = {d3_vreg[58],d2_vreg[58],d1_vreg[58],d0_vreg[58]};
-assign vreg59_create_vld[3:0] = {d3_vreg[59],d2_vreg[59],d1_vreg[59],d0_vreg[59]};
-assign vreg60_create_vld[3:0] = {d3_vreg[60],d2_vreg[60],d1_vreg[60],d0_vreg[60]};
-assign vreg61_create_vld[3:0] = {d3_vreg[61],d2_vreg[61],d1_vreg[61],d0_vreg[61]};
-assign vreg62_create_vld[3:0] = {d3_vreg[62],d2_vreg[62],d1_vreg[62],d0_vreg[62]};
-assign vreg63_create_vld[3:0] = {d3_vreg[63],d2_vreg[63],d1_vreg[63],d0_vreg[63]};
+assign vreg0_create_vld[4:0]  = {d4_vreg[0], d3_vreg[0], d2_vreg[0], d1_vreg[0], d0_vreg[0]};
+assign vreg1_create_vld[4:0]  = {d4_vreg[1], d3_vreg[1], d2_vreg[1], d1_vreg[1], d0_vreg[1]};
+assign vreg2_create_vld[4:0]  = {d4_vreg[2], d3_vreg[2], d2_vreg[2], d1_vreg[2], d0_vreg[2]};
+assign vreg3_create_vld[4:0]  = {d4_vreg[3], d3_vreg[3], d2_vreg[3], d1_vreg[3], d0_vreg[3]};
+assign vreg4_create_vld[4:0]  = {d4_vreg[4], d3_vreg[4], d2_vreg[4], d1_vreg[4], d0_vreg[4]};
+assign vreg5_create_vld[4:0]  = {d4_vreg[5], d3_vreg[5], d2_vreg[5], d1_vreg[5], d0_vreg[5]};
+assign vreg6_create_vld[4:0]  = {d4_vreg[6], d3_vreg[6], d2_vreg[6], d1_vreg[6], d0_vreg[6]};
+assign vreg7_create_vld[4:0]  = {d4_vreg[7], d3_vreg[7], d2_vreg[7], d1_vreg[7], d0_vreg[7]};
+assign vreg8_create_vld[4:0]  = {d4_vreg[8], d3_vreg[8], d2_vreg[8], d1_vreg[8], d0_vreg[8]};
+assign vreg9_create_vld[4:0]  = {d4_vreg[9], d3_vreg[9], d2_vreg[9], d1_vreg[9], d0_vreg[9]};
+assign vreg10_create_vld[4:0] = {d4_vreg[10],d3_vreg[10],d2_vreg[10],d1_vreg[10],d0_vreg[10]};
+assign vreg11_create_vld[4:0] = {d4_vreg[11],d3_vreg[11],d2_vreg[11],d1_vreg[11],d0_vreg[11]};
+assign vreg12_create_vld[4:0] = {d4_vreg[12],d3_vreg[12],d2_vreg[12],d1_vreg[12],d0_vreg[12]};
+assign vreg13_create_vld[4:0] = {d4_vreg[13],d3_vreg[13],d2_vreg[13],d1_vreg[13],d0_vreg[13]};
+assign vreg14_create_vld[4:0] = {d4_vreg[14],d3_vreg[14],d2_vreg[14],d1_vreg[14],d0_vreg[14]};
+assign vreg15_create_vld[4:0] = {d4_vreg[15],d3_vreg[15],d2_vreg[15],d1_vreg[15],d0_vreg[15]};
+assign vreg16_create_vld[4:0] = {d4_vreg[16],d3_vreg[16],d2_vreg[16],d1_vreg[16],d0_vreg[16]};
+assign vreg17_create_vld[4:0] = {d4_vreg[17],d3_vreg[17],d2_vreg[17],d1_vreg[17],d0_vreg[17]};
+assign vreg18_create_vld[4:0] = {d4_vreg[18],d3_vreg[18],d2_vreg[18],d1_vreg[18],d0_vreg[18]};
+assign vreg19_create_vld[4:0] = {d4_vreg[19],d3_vreg[19],d2_vreg[19],d1_vreg[19],d0_vreg[19]};
+assign vreg20_create_vld[4:0] = {d4_vreg[20],d3_vreg[20],d2_vreg[20],d1_vreg[20],d0_vreg[20]};
+assign vreg21_create_vld[4:0] = {d4_vreg[21],d3_vreg[21],d2_vreg[21],d1_vreg[21],d0_vreg[21]};
+assign vreg22_create_vld[4:0] = {d4_vreg[22],d3_vreg[22],d2_vreg[22],d1_vreg[22],d0_vreg[22]};
+assign vreg23_create_vld[4:0] = {d4_vreg[23],d3_vreg[23],d2_vreg[23],d1_vreg[23],d0_vreg[23]};
+assign vreg24_create_vld[4:0] = {d4_vreg[24],d3_vreg[24],d2_vreg[24],d1_vreg[24],d0_vreg[24]};
+assign vreg25_create_vld[4:0] = {d4_vreg[25],d3_vreg[25],d2_vreg[25],d1_vreg[25],d0_vreg[25]};
+assign vreg26_create_vld[4:0] = {d4_vreg[26],d3_vreg[26],d2_vreg[26],d1_vreg[26],d0_vreg[26]};
+assign vreg27_create_vld[4:0] = {d4_vreg[27],d3_vreg[27],d2_vreg[27],d1_vreg[27],d0_vreg[27]};
+assign vreg28_create_vld[4:0] = {d4_vreg[28],d3_vreg[28],d2_vreg[28],d1_vreg[28],d0_vreg[28]};
+assign vreg29_create_vld[4:0] = {d4_vreg[29],d3_vreg[29],d2_vreg[29],d1_vreg[29],d0_vreg[29]};
+assign vreg30_create_vld[4:0] = {d4_vreg[30],d3_vreg[30],d2_vreg[30],d1_vreg[30],d0_vreg[30]};
+assign vreg31_create_vld[4:0] = {d4_vreg[31],d3_vreg[31],d2_vreg[31],d1_vreg[31],d0_vreg[31]};
+assign vreg32_create_vld[4:0] = {d4_vreg[32],d3_vreg[32],d2_vreg[32],d1_vreg[32],d0_vreg[32]};
+assign vreg33_create_vld[4:0] = {d4_vreg[33],d3_vreg[33],d2_vreg[33],d1_vreg[33],d0_vreg[33]};
+assign vreg34_create_vld[4:0] = {d4_vreg[34],d3_vreg[34],d2_vreg[34],d1_vreg[34],d0_vreg[34]};
+assign vreg35_create_vld[4:0] = {d4_vreg[35],d3_vreg[35],d2_vreg[35],d1_vreg[35],d0_vreg[35]};
+assign vreg36_create_vld[4:0] = {d4_vreg[36],d3_vreg[36],d2_vreg[36],d1_vreg[36],d0_vreg[36]};
+assign vreg37_create_vld[4:0] = {d4_vreg[37],d3_vreg[37],d2_vreg[37],d1_vreg[37],d0_vreg[37]};
+assign vreg38_create_vld[4:0] = {d4_vreg[38],d3_vreg[38],d2_vreg[38],d1_vreg[38],d0_vreg[38]};
+assign vreg39_create_vld[4:0] = {d4_vreg[39],d3_vreg[39],d2_vreg[39],d1_vreg[39],d0_vreg[39]};
+assign vreg40_create_vld[4:0] = {d4_vreg[40],d3_vreg[40],d2_vreg[40],d1_vreg[40],d0_vreg[40]};
+assign vreg41_create_vld[4:0] = {d4_vreg[41],d3_vreg[41],d2_vreg[41],d1_vreg[41],d0_vreg[41]};
+assign vreg42_create_vld[4:0] = {d4_vreg[42],d3_vreg[42],d2_vreg[42],d1_vreg[42],d0_vreg[42]};
+assign vreg43_create_vld[4:0] = {d4_vreg[43],d3_vreg[43],d2_vreg[43],d1_vreg[43],d0_vreg[43]};
+assign vreg44_create_vld[4:0] = {d4_vreg[44],d3_vreg[44],d2_vreg[44],d1_vreg[44],d0_vreg[44]};
+assign vreg45_create_vld[4:0] = {d4_vreg[45],d3_vreg[45],d2_vreg[45],d1_vreg[45],d0_vreg[45]};
+assign vreg46_create_vld[4:0] = {d4_vreg[46],d3_vreg[46],d2_vreg[46],d1_vreg[46],d0_vreg[46]};
+assign vreg47_create_vld[4:0] = {d4_vreg[47],d3_vreg[47],d2_vreg[47],d1_vreg[47],d0_vreg[47]};
+assign vreg48_create_vld[4:0] = {d4_vreg[48],d3_vreg[48],d2_vreg[48],d1_vreg[48],d0_vreg[48]};
+assign vreg49_create_vld[4:0] = {d4_vreg[49],d3_vreg[49],d2_vreg[49],d1_vreg[49],d0_vreg[49]};
+assign vreg50_create_vld[4:0] = {d4_vreg[50],d3_vreg[50],d2_vreg[50],d1_vreg[50],d0_vreg[50]};
+assign vreg51_create_vld[4:0] = {d4_vreg[51],d3_vreg[51],d2_vreg[51],d1_vreg[51],d0_vreg[51]};
+assign vreg52_create_vld[4:0] = {d4_vreg[52],d3_vreg[52],d2_vreg[52],d1_vreg[52],d0_vreg[52]};
+assign vreg53_create_vld[4:0] = {d4_vreg[53],d3_vreg[53],d2_vreg[53],d1_vreg[53],d0_vreg[53]};
+assign vreg54_create_vld[4:0] = {d4_vreg[54],d3_vreg[54],d2_vreg[54],d1_vreg[54],d0_vreg[54]};
+assign vreg55_create_vld[4:0] = {d4_vreg[55],d3_vreg[55],d2_vreg[55],d1_vreg[55],d0_vreg[55]};
+assign vreg56_create_vld[4:0] = {d4_vreg[56],d3_vreg[56],d2_vreg[56],d1_vreg[56],d0_vreg[56]};
+assign vreg57_create_vld[4:0] = {d4_vreg[57],d3_vreg[57],d2_vreg[57],d1_vreg[57],d0_vreg[57]};
+assign vreg58_create_vld[4:0] = {d4_vreg[58],d3_vreg[58],d2_vreg[58],d1_vreg[58],d0_vreg[58]};
+assign vreg59_create_vld[4:0] = {d4_vreg[59],d3_vreg[59],d2_vreg[59],d1_vreg[59],d0_vreg[59]};
+assign vreg60_create_vld[4:0] = {d4_vreg[60],d3_vreg[60],d2_vreg[60],d1_vreg[60],d0_vreg[60]};
+assign vreg61_create_vld[4:0] = {d4_vreg[61],d3_vreg[61],d2_vreg[61],d1_vreg[61],d0_vreg[61]};
+assign vreg62_create_vld[4:0] = {d4_vreg[62],d3_vreg[62],d2_vreg[62],d1_vreg[62],d0_vreg[62]};
+assign vreg63_create_vld[4:0] = {d4_vreg[63],d3_vreg[63],d2_vreg[63],d1_vreg[63],d0_vreg[63]};
 
 //==========================================================
 //                    Write back signals
@@ -5005,7 +5452,75 @@ assign dealloc3[61] = dealloc_no_1[61] && !(|dealloc_no_1[63:62]);
 assign dealloc3[62] = dealloc_no_1[62] && !dealloc_no_1[63];
 assign dealloc3[63] = dealloc_no_1[63];
 
-//----------------------------------------------------------
+//Jeremy to do delloc4
+assign dealloc_no_2[63:0] = dealloc[63:0] & ~dealloc2[63:0];
+
+assign dealloc4[0]  = dealloc_no_2[0];
+assign dealloc4[1]  = dealloc_no_2[1]  && !dealloc_no_2[0];
+assign dealloc4[2]  = dealloc_no_2[2]  && !(|dealloc_no_2[1:0]);
+assign dealloc4[3]  = dealloc_no_2[3]  && !(|dealloc_no_2[2:0]);
+assign dealloc4[4]  = dealloc_no_2[4]  && !(|dealloc_no_2[3:0]);
+assign dealloc4[5]  = dealloc_no_2[5]  && !(|dealloc_no_2[4:0]);
+assign dealloc4[6]  = dealloc_no_2[6]  && !(|dealloc_no_2[5:0]);
+assign dealloc4[7]  = dealloc_no_2[7]  && !(|dealloc_no_2[6:0]);
+assign dealloc4[8]  = dealloc_no_2[8]  && !(|dealloc_no_2[7:0]);
+assign dealloc4[9]  = dealloc_no_2[9]  && !(|dealloc_no_2[8:0]);
+assign dealloc4[10] = dealloc_no_2[10] && !(|dealloc_no_2[9:0]);
+assign dealloc4[11] = dealloc_no_2[11] && !(|dealloc_no_2[10:0]);
+assign dealloc4[12] = dealloc_no_2[12] && !(|dealloc_no_2[11:0]);
+assign dealloc4[13] = dealloc_no_2[13] && !(|dealloc_no_2[12:0]);
+assign dealloc4[14] = dealloc_no_2[14] && !(|dealloc_no_2[13:0]);
+assign dealloc4[15] = dealloc_no_2[15] && !(|dealloc_no_2[14:0]);
+assign dealloc4[16] = dealloc_no_2[16] && !(|dealloc_no_2[15:0]);
+assign dealloc4[17] = dealloc_no_2[17] && !(|dealloc_no_2[16:0]);
+assign dealloc4[18] = dealloc_no_2[18] && !(|dealloc_no_2[17:0]);
+assign dealloc4[19] = dealloc_no_2[19] && !(|dealloc_no_2[18:0]);
+assign dealloc4[20] = dealloc_no_2[20] && !(|dealloc_no_2[19:0]);
+assign dealloc4[21] = dealloc_no_2[21] && !(|dealloc_no_2[20:0]);
+assign dealloc4[22] = dealloc_no_2[22] && !(|dealloc_no_2[21:0]);
+assign dealloc4[23] = dealloc_no_2[23] && !(|dealloc_no_2[22:0]);
+assign dealloc4[24] = dealloc_no_2[24] && !(|dealloc_no_2[23:0]);
+assign dealloc4[25] = dealloc_no_2[25] && !(|dealloc_no_2[24:0]);
+assign dealloc4[26] = dealloc_no_2[26] && !(|dealloc_no_2[25:0]);
+assign dealloc4[27] = dealloc_no_2[27] && !(|dealloc_no_2[26:0]);
+assign dealloc4[28] = dealloc_no_2[28] && !(|dealloc_no_2[27:0]);
+assign dealloc4[29] = dealloc_no_2[29] && !(|dealloc_no_2[28:0]);
+assign dealloc4[30] = dealloc_no_2[30] && !(|dealloc_no_2[29:0]);
+assign dealloc4[31] = dealloc_no_2[31] && !(|dealloc_no_2[30:0]);
+assign dealloc4[32] = dealloc_no_2[32] && !(|dealloc_no_2[31:0]);
+assign dealloc4[33] = dealloc_no_2[33] && !(|dealloc_no_2[32:0]);
+assign dealloc4[34] = dealloc_no_2[34] && !(|dealloc_no_2[33:0]);
+assign dealloc4[35] = dealloc_no_2[35] && !(|dealloc_no_2[34:0]);
+assign dealloc4[36] = dealloc_no_2[36] && !(|dealloc_no_2[35:0]);
+assign dealloc4[37] = dealloc_no_2[37] && !(|dealloc_no_2[36:0]);
+assign dealloc4[38] = dealloc_no_2[38] && !(|dealloc_no_2[37:0]);
+assign dealloc4[39] = dealloc_no_2[39] && !(|dealloc_no_2[38:0]);
+assign dealloc4[40] = dealloc_no_2[40] && !(|dealloc_no_2[39:0]);
+assign dealloc4[41] = dealloc_no_2[41] && !(|dealloc_no_2[40:0]);
+assign dealloc4[42] = dealloc_no_2[42] && !(|dealloc_no_2[41:0]);
+assign dealloc4[43] = dealloc_no_2[43] && !(|dealloc_no_2[42:0]);
+assign dealloc4[44] = dealloc_no_2[44] && !(|dealloc_no_2[43:0]);
+assign dealloc4[45] = dealloc_no_2[45] && !(|dealloc_no_2[44:0]);
+assign dealloc4[46] = dealloc_no_2[46] && !(|dealloc_no_2[45:0]);
+assign dealloc4[47] = dealloc_no_2[47] && !(|dealloc_no_2[46:0]);
+assign dealloc4[48] = dealloc_no_2[48] && !(|dealloc_no_2[47:0]);
+assign dealloc4[49] = dealloc_no_2[49] && !(|dealloc_no_2[48:0]);
+assign dealloc4[50] = dealloc_no_2[50] && !(|dealloc_no_2[49:0]);
+assign dealloc4[51] = dealloc_no_2[51] && !(|dealloc_no_2[50:0]);
+assign dealloc4[52] = dealloc_no_2[52] && !(|dealloc_no_2[51:0]);
+assign dealloc4[53] = dealloc_no_2[53] && !(|dealloc_no_2[52:0]);
+assign dealloc4[54] = dealloc_no_2[54] && !(|dealloc_no_2[53:0]);
+assign dealloc4[55] = dealloc_no_2[55] && !(|dealloc_no_2[54:0]);
+assign dealloc4[56] = dealloc_no_2[56] && !(|dealloc_no_2[55:0]);
+assign dealloc4[57] = dealloc_no_2[57] && !(|dealloc_no_2[56:0]);
+assign dealloc4[58] = dealloc_no_2[58] && !(|dealloc_no_2[57:0]);
+assign dealloc4[59] = dealloc_no_2[59] && !(|dealloc_no_2[58:0]);
+assign dealloc4[60] = dealloc_no_2[60] && !(|dealloc_no_2[59:0]);
+assign dealloc4[61] = dealloc_no_2[61] && !(|dealloc_no_2[60:0]);
+assign dealloc4[62] = dealloc_no_2[62] && !(|dealloc_no_2[61:0]);
+assign dealloc4[63] = dealloc_no_2[63] && !(|dealloc_no_2[62:0]);
+
+//-------------2--------------------------------------------
 //                deallocate vreg and valid
 //----------------------------------------------------------
 //deallocate vreg valid
@@ -5018,11 +5533,18 @@ assign dealloc_vreg3_vld = |(dealloc[63:0]
                              & ~dealloc0[63:0]
                              & ~dealloc1[63:0]
                              & ~dealloc2[63:0]);
+//Jeremy add delloc vreg4
+assign dealloc_vreg4_vld = |(dealloc[63:0]
+                             & ~dealloc0[63:0]
+                             & ~dealloc1[63:0]
+                             & ~dealloc2[63:0]
+                             & ~dealloc3[63:0]);
 //dealloc_vreg0/1/2/3
 assign dealloc_vreg0_expand[63:0] = dealloc0[63:0];
 assign dealloc_vreg1_expand[63:0] = dealloc1[63:0];
 assign dealloc_vreg2_expand[63:0] = dealloc2[63:0];
 assign dealloc_vreg3_expand[63:0] = dealloc3[63:0];
+assign dealloc_vreg4_expand[63:0] = dealloc4[63:0];//Jeremy add delloc4
 
 // &ConnRule(s/^x_num/dealloc_vreg0/); @1060
 // &Instance("ct_rtu_encode_64","x_ct_rtu_encode_64_dealloc_vreg0"); @1061
@@ -5051,6 +5573,11 @@ ct_rtu_encode_64  x_ct_rtu_encode_64_dealloc_vreg3 (
   .x_num                (dealloc_vreg3       ),
   .x_num_expand         (dealloc_vreg3_expand)
 );
+//Jeremy add vreg4
+ct_rtu_encode_64  x_ct_rtu_encode_64_dealloc_vreg4 (
+  .x_num                (dealloc_vreg4       ),
+  .x_num_expand         (dealloc_vreg4_expand)
+);
 
 
 //----------------------------------------------------------
@@ -5061,7 +5588,8 @@ ct_rtu_encode_64  x_ct_rtu_encode_64_dealloc_vreg3 (
 assign dealloc0_vec[63:0] = dealloc0[63:0];
 assign dealloc1_vec[63:0] = dealloc1[63:0] & ~dealloc0[63:0];
 assign dealloc2_vec[63:0] = dealloc2[63:0] & ~dealloc1[63:0];
-assign dealloc3_vec[63:0] = dealloc3[63:0] & ~dealloc2[63:0] & ~dealloc0[63:0];
+assign dealloc3_vec[63:0] = dealloc3[63:0] & ~dealloc2[63:0];
+assign dealloc4_vec[63:0] = dealloc4[63:0] & ~dealloc3[63:0] & ~dealloc0[63:0];//Jeremy add this logic
 
 //alloc vreg 0/1/2/3 will be allocated to ir inst 0/1/2/3
 assign alloc_vreg0_invalid = (!alloc_vreg0_vld
@@ -5076,16 +5604,22 @@ assign alloc_vreg2_invalid = (!alloc_vreg2_vld
 assign alloc_vreg3_invalid = (!alloc_vreg3_vld
                               || idu_rtu_ir_xreg3_alloc_vld)
                              && !ifu_xx_sync_reset;
+//Jeremy add this logic
+assign alloc_vreg4_invalid = (!alloc_vreg4_vld
+                              || idu_rtu_ir_xreg4_alloc_vld)
+                             && !ifu_xx_sync_reset;
 
 assign dealloc_vld[63:0] = {64{alloc_vreg0_invalid}} & dealloc0_vec[63:0]
                          | {64{alloc_vreg1_invalid}} & dealloc1_vec[63:0]
                          | {64{alloc_vreg2_invalid}} & dealloc2_vec[63:0]
-                         | {64{alloc_vreg3_invalid}} & dealloc3_vec[63:0];
+                         | {64{alloc_vreg3_invalid}} & dealloc3_vec[63:0]
+                         | {64{alloc_vreg4_invalid}} & dealloc4_vec[63:0];//Jeremy add
 
 assign dealloc_vld_for_gateclk = !alloc_vreg0_vld
                               || !alloc_vreg1_vld
                               || !alloc_vreg2_vld
                               || !alloc_vreg3_vld
+                              || !alloc_vreg4_vld
                               || idu_rtu_ir_xreg_alloc_gateclk_vld;
 
 //assign dealloc_gateclk_vld[63:0] = {64{dealloc_vld_for_gateclk}}
@@ -5301,10 +5835,12 @@ assign alloc_vreg_clk_en = rtu_yy_xx_flush
                         || !alloc_vreg1_vld
                         || !alloc_vreg2_vld
                         || !alloc_vreg3_vld
+                        || !alloc_vreg4_vld
                         || idu_rtu_ir_xreg0_alloc_vld
                         || idu_rtu_ir_xreg1_alloc_vld
                         || idu_rtu_ir_xreg2_alloc_vld
-                        || idu_rtu_ir_xreg3_alloc_vld;
+                        || idu_rtu_ir_xreg3_alloc_vld
+                        || idu_rtu_ir_xreg4_alloc_vld;
 // &Instance("gated_clk_cell", "x_alloc_vreg_gated_clk"); @1321
 gated_clk_cell  x_alloc_vreg_gated_clk (
   .clk_in             (forever_cpuclk    ),
@@ -5405,6 +5941,26 @@ begin
     alloc_vreg3[5:0] <= alloc_vreg3[5:0];
   end
 end
+//Jeremy add alloc vreg4
+always @(posedge alloc_vreg_clk or negedge cpurst_b)
+begin
+  if(!cpurst_b) begin
+    alloc_vreg4_vld  <= 1'd0;
+    alloc_vreg4[5:0] <= 6'd0;
+  end
+  else if(rtu_yy_xx_flush) begin
+    alloc_vreg4_vld  <= 1'd0;
+    alloc_vreg4[5:0] <= 6'd0;
+  end
+  else if(alloc_vreg4_invalid) begin
+    alloc_vreg4_vld  <= dealloc_vreg4_vld;
+    alloc_vreg4[5:0] <= dealloc_vreg4[5:0];
+  end
+  else begin
+    alloc_vreg4_vld  <= alloc_vreg4_vld;
+    alloc_vreg4[5:0] <= alloc_vreg4[5:0];
+  end
+end
 
 //rename for output
 //alloc vreg 0/1/2/3 will be allocated to ir inst 0/1/2/3
@@ -5412,10 +5968,12 @@ assign rtu_idu_alloc_xreg0_vld  = alloc_vreg0_vld;
 assign rtu_idu_alloc_xreg1_vld  = alloc_vreg1_vld;
 assign rtu_idu_alloc_xreg2_vld  = alloc_vreg2_vld;
 assign rtu_idu_alloc_xreg3_vld  = alloc_vreg3_vld;
+assign rtu_idu_alloc_xreg4_vld  = alloc_vreg4_vld;//Jeremy add
 assign rtu_idu_alloc_xreg0[5:0] = alloc_vreg0[5:0];
 assign rtu_idu_alloc_xreg1[5:0] = alloc_vreg1[5:0];
 assign rtu_idu_alloc_xreg2[5:0] = alloc_vreg2[5:0];
 assign rtu_idu_alloc_xreg3[5:0] = alloc_vreg3[5:0];
+assign rtu_idu_alloc_xreg4[5:0] = alloc_vreg4[5:0];.//Jeremy add
 
 //==========================================================
 //          Fast Retired Instruction Write Back
