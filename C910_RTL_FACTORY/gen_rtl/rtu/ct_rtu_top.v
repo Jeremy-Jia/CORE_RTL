@@ -1757,6 +1757,7 @@ ct_rtu_pst_vreg  x_ct_rtu_pst_freg (
   .idu_rtu_ir_xreg1_alloc_vld              (idu_rtu_ir_freg1_alloc_vld             ),
   .idu_rtu_ir_xreg2_alloc_vld              (idu_rtu_ir_freg2_alloc_vld             ),
   .idu_rtu_ir_xreg3_alloc_vld              (idu_rtu_ir_freg3_alloc_vld             ),
+  .idu_rtu_ir_xreg4_alloc_vld              (idu_rtu_ir_freg4_alloc_vld             ),//this signal must be add to portlist
   .idu_rtu_ir_xreg_alloc_gateclk_vld       (idu_rtu_ir_freg_alloc_gateclk_vld      ),
   .idu_rtu_pst_dis_inst0_dstv_reg          (idu_rtu_pst_dis_inst0_dstv_reg         ),
   .idu_rtu_pst_dis_inst0_rel_vreg          (idu_rtu_pst_dis_inst0_rel_vreg         ),
@@ -1778,6 +1779,11 @@ ct_rtu_pst_vreg  x_ct_rtu_pst_freg (
   .idu_rtu_pst_dis_inst3_vreg              (idu_rtu_pst_dis_inst3_vreg             ),
   .idu_rtu_pst_dis_inst3_vreg_iid          (idu_rtu_pst_dis_inst3_vreg_iid         ),
   .idu_rtu_pst_dis_inst3_xreg_vld          (idu_rtu_pst_dis_inst3_freg_vld         ),
+  .idu_rtu_pst_dis_inst4_dstv_reg          (idu_rtu_pst_dis_inst4_dstv_reg         ),//these signal must be add to portlist
+  .idu_rtu_pst_dis_inst4_rel_vreg          (idu_rtu_pst_dis_inst4_rel_vreg         ),//these signal must be add to portlist
+  .idu_rtu_pst_dis_inst4_vreg              (idu_rtu_pst_dis_inst4_vreg             ),//these signal must be add to portlist
+  .idu_rtu_pst_dis_inst4_vreg_iid          (idu_rtu_pst_dis_inst4_vreg_iid         ),//these signal must be add to portlist
+  .idu_rtu_pst_dis_inst4_xreg_vld          (idu_rtu_pst_dis_inst4_freg_vld         ),//these signal must be add to portlist
   .idu_rtu_pst_xreg_dealloc_mask           (idu_rtu_pst_freg_dealloc_mask          ),
   .ifu_xx_sync_reset                       (ifu_xx_sync_reset                      ),
   .lsu_rtu_wb_pipe3_wb_vreg_expand         (lsu_rtu_wb_pipe3_wb_vreg_expand[63:0]  ),
@@ -1788,12 +1794,15 @@ ct_rtu_pst_vreg  x_ct_rtu_pst_freg (
   .retire_pst_wb_retire_inst0_vreg_vld     (retire_pst_wb_retire_inst0_vreg_vld    ),
   .retire_pst_wb_retire_inst1_vreg_vld     (retire_pst_wb_retire_inst1_vreg_vld    ),
   .retire_pst_wb_retire_inst2_vreg_vld     (retire_pst_wb_retire_inst2_vreg_vld    ),
+  .retire_pst_wb_retire_inst3_vreg_vld     (retire_pst_wb_retire_inst3_vreg_vld    ),//the signal must be add to portlist
   .rob_pst_retire_inst0_gateclk_vld        (rob_pst_retire_inst0_gateclk_vld       ),
   .rob_pst_retire_inst0_iid_updt_val       (rob_pst_retire_inst0_iid_updt_val      ),
   .rob_pst_retire_inst1_gateclk_vld        (rob_pst_retire_inst1_gateclk_vld       ),
   .rob_pst_retire_inst1_iid_updt_val       (rob_pst_retire_inst1_iid_updt_val      ),
   .rob_pst_retire_inst2_gateclk_vld        (rob_pst_retire_inst2_gateclk_vld       ),
   .rob_pst_retire_inst2_iid_updt_val       (rob_pst_retire_inst2_iid_updt_val      ),
+  .rob_pst_retire_inst3_gateclk_vld        (rob_pst_retire_inst3_gateclk_vld       ),//these signal must be add to portlist
+  .rob_pst_retire_inst3_iid_updt_val       (rob_pst_retire_inst3_iid_updt_val      ),//these signal must be add to portlist
   .rtu_idu_alloc_xreg0                     (rtu_idu_alloc_freg0                    ),
   .rtu_idu_alloc_xreg0_vld                 (rtu_idu_alloc_freg0_vld                ),
   .rtu_idu_alloc_xreg1                     (rtu_idu_alloc_freg1                    ),
@@ -1802,6 +1811,8 @@ ct_rtu_pst_vreg  x_ct_rtu_pst_freg (
   .rtu_idu_alloc_xreg2_vld                 (rtu_idu_alloc_freg2_vld                ),
   .rtu_idu_alloc_xreg3                     (rtu_idu_alloc_freg3                    ),
   .rtu_idu_alloc_xreg3_vld                 (rtu_idu_alloc_freg3_vld                ),
+  .rtu_idu_alloc_xreg4                     (rtu_idu_alloc_freg4                    ),//these signal must be add to portlist 
+  .rtu_idu_alloc_xreg4_vld                 (rtu_idu_alloc_freg4_vld                ),//these signal must be add to portlist 
   .rtu_idu_rt_recover_xreg                 (rtu_idu_rt_recover_freg                ),
   .rtu_yy_xx_flush                         (rtu_yy_xx_flush                        ),
   .vfpu_rtu_ex5_pipe6_wb_vreg_expand       (vfpu_rtu_ex5_pipe6_wb_vreg_expand[63:0]),
