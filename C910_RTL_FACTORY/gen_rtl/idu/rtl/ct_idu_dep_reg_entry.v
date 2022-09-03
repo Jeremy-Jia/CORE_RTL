@@ -232,7 +232,7 @@ assign x_create_rdy                 = x_create_data[0];
 assign x_read_data[11]              = x_read_lsu_match;
 assign x_read_data[10]              = x_read_rdy_for_bypass;
 assign x_read_data[9]               = x_read_rdy_for_issue;
-assign x_read_data[8:2]             = x_read_preg[6:0];
+assign x_read_data[8:2]             = x_read_preg[6:0];//Jeremy : preg number
 assign x_read_data[1]               = x_read_wb;
 assign x_read_data[0]               = x_read_rdy;
 

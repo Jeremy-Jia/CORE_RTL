@@ -249,6 +249,7 @@ module ct_idu_ir_dp(
   rt_dp_inst3_src0_data,
   rt_dp_inst3_src1_data,
   rt_dp_inst3_src2_data,
+  //Jeremy preg allocate
   rtu_idu_alloc_ereg0,
   rtu_idu_alloc_ereg1,
   rtu_idu_alloc_ereg2,
