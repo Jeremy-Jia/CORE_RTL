@@ -50,6 +50,10 @@ module ct_rtu_retire(
   retire_pst_wb_retire_inst2_ereg_vld,
   retire_pst_wb_retire_inst2_preg_vld,
   retire_pst_wb_retire_inst2_vreg_vld,
+  //Jeremy add inst3 wb
+  retire_pst_wb_retire_inst3_ereg_vld,
+  retire_pst_wb_retire_inst3_preg_vld,
+  retire_pst_wb_retire_inst3_vreg_vld,
   retire_rob_async_expt_commit_mask,
   retire_rob_ctc_flush_req,
   retire_rob_dbg_inst0_ack_int,
@@ -63,6 +67,8 @@ module ct_rtu_retire(
   retire_rob_inst0_jmp,
   retire_rob_inst1_jmp,
   retire_rob_inst2_jmp,
+  //Jeremy add int3 jmp
+  retire_rob_inst3_jmp,
   retire_rob_inst_flush,
   retire_rob_retire_empty,
   retire_rob_rt_mask,
@@ -72,6 +78,8 @@ module ct_rtu_retire(
   rob_retire_commit0,
   rob_retire_commit1,
   rob_retire_commit2,
+  //Jeremy add inst3 commit
+  rob_retire_commit3,
   rob_retire_ctc_flush_srt_en,
   rob_retire_inst0_bht_mispred,
   rob_retire_inst0_bju,
@@ -179,6 +187,33 @@ module ct_rtu_retire(
   rob_retire_inst2_vlmul,
   rob_retire_inst2_vsetvli,
   rob_retire_inst2_vsew,
+  //Jeremy add inst3 rob info
+  rob_retire_inst3_bju,
+  rob_retire_inst3_chk_idx,
+  rob_retire_inst3_condbr,
+  rob_retire_inst3_condbr_taken,
+  rob_retire_inst3_cur_pc,
+  rob_retire_inst3_fp_dirty,
+  rob_retire_inst3_jmp,
+  rob_retire_inst3_load,
+  rob_retire_inst3_next_pc,
+  rob_retire_inst3_no_spec_hit,
+  rob_retire_inst3_no_spec_mispred,
+  rob_retire_inst3_no_spec_miss,
+  rob_retire_inst3_num,
+  rob_retire_inst3_pc_offset,
+  rob_retire_inst3_pst_ereg_vld,
+  rob_retire_inst3_pst_preg_vld,
+  rob_retire_inst3_pst_vreg_vld,
+  rob_retire_inst3_split,
+  rob_retire_inst3_store,
+  rob_retire_inst3_vec_dirty,
+  rob_retire_inst3_vl,
+  rob_retire_inst3_vl_pred,
+  rob_retire_inst3_vld,
+  rob_retire_inst3_vlmul,
+  rob_retire_inst3_vsetvli,
+  rob_retire_inst3_vsew,
   rob_retire_int_srt_en,
   rob_retire_rob_cur_pc,
   rob_retire_split_spec_fail_srt,
@@ -227,6 +262,14 @@ module ct_rtu_retire(
   rtu_had_xx_pcfifo_inst2_next_pc,
   rtu_had_xx_pcfifo_inst2_pcall,
   rtu_had_xx_pcfifo_inst2_preturn,
+  //Jeremy add  inst3 had info
+  rtu_had_xx_pcfifo_inst3_chgflow,
+  rtu_had_xx_pcfifo_inst3_condbr,
+  rtu_had_xx_pcfifo_inst3_condbr_taken,
+  rtu_had_xx_pcfifo_inst3_jmp,
+  rtu_had_xx_pcfifo_inst3_next_pc,
+  rtu_had_xx_pcfifo_inst3_pcall,
+  rtu_had_xx_pcfifo_inst3_preturn,
   rtu_had_xx_split_inst,
   rtu_hpcp_inst0_ack_int,
   rtu_hpcp_inst0_bht_mispred,
@@ -253,12 +296,23 @@ module ct_rtu_retire(
   rtu_hpcp_inst2_split,
   rtu_hpcp_inst2_store,
   rtu_hpcp_inst2_vld,
+  //Jeremy add inst3 hpcp info
+  rtu_hpcp_inst3_condbr,
+  rtu_hpcp_inst3_jmp,
+  rtu_hpcp_inst3_num,
+  rtu_hpcp_inst3_pc_offset,
+  rtu_hpcp_inst3_split,
+  rtu_hpcp_inst3_store,
+  rtu_hpcp_inst3_vld,
   rtu_hpcp_trace_inst0_chgflow,
   rtu_hpcp_trace_inst0_next_pc,
   rtu_hpcp_trace_inst1_chgflow,
   rtu_hpcp_trace_inst1_next_pc,
   rtu_hpcp_trace_inst2_chgflow,
   rtu_hpcp_trace_inst2_next_pc,
+  //Jeremy add inst3
+  rtu_hpcp_trace_inst3_chgflow,
+  rtu_hpcp_trace_inst3_next_pc,
   rtu_idu_flush_fe,
   rtu_idu_flush_is,
   rtu_idu_flush_stall,
@@ -285,6 +339,11 @@ module ct_rtu_retire(
   rtu_ifu_retire2_condbr,
   rtu_ifu_retire2_condbr_taken,
   rtu_ifu_retire2_jmp,
+  //Jeremy add inst3
+  rtu_ifu_retire3_chk_idx,
+  rtu_ifu_retire3_condbr,
+  rtu_ifu_retire3_condbr_taken,
+  rtu_ifu_retire3_jmp,
   rtu_ifu_retire_inst0_cur_pc,
   rtu_ifu_retire_inst0_load,
   rtu_ifu_retire_inst0_no_spec_hit,
@@ -309,6 +368,14 @@ module ct_rtu_retire(
   rtu_ifu_retire_inst2_no_spec_miss,
   rtu_ifu_retire_inst2_store,
   rtu_ifu_retire_inst2_vl_pred,
+  //Jeremy add inst3
+  rtu_ifu_retire_inst3_cur_pc,
+  rtu_ifu_retire_inst3_load,
+  rtu_ifu_retire_inst3_no_spec_hit,
+  rtu_ifu_retire_inst3_no_spec_mispred,
+  rtu_ifu_retire_inst3_no_spec_miss,
+  rtu_ifu_retire_inst3_store,
+  rtu_ifu_retire_inst3_vl_pred,
   rtu_ifu_xx_dbgon,
   rtu_ifu_xx_expt_vec,
   rtu_ifu_xx_expt_vld,
@@ -356,6 +423,7 @@ input           pst_retire_retired_reg_wb;
 input           rob_retire_commit0;                  
 input           rob_retire_commit1;                  
 input           rob_retire_commit2;                  
+input           rob_retire_commit3;                  
 input           rob_retire_ctc_flush_srt_en;         
 input           rob_retire_inst0_bht_mispred;        
 input           rob_retire_inst0_bju;                
@@ -463,6 +531,32 @@ input           rob_retire_inst2_vld;
 input   [1 :0]  rob_retire_inst2_vlmul;              
 input           rob_retire_inst2_vsetvli;            
 input   [2 :0]  rob_retire_inst2_vsew;               
+input           rob_retire_inst3_bju;                
+input   [7 :0]  rob_retire_inst3_chk_idx;            
+input           rob_retire_inst3_condbr;             
+input           rob_retire_inst3_condbr_taken;       
+input   [38:0]  rob_retire_inst3_cur_pc;             
+input           rob_retire_inst3_fp_dirty;           
+input           rob_retire_inst3_jmp;                
+input           rob_retire_inst3_load;               
+input   [38:0]  rob_retire_inst3_next_pc;            
+input           rob_retire_inst3_no_spec_hit;        
+input           rob_retire_inst3_no_spec_mispred;    
+input           rob_retire_inst3_no_spec_miss;       
+input   [1 :0]  rob_retire_inst3_num;                
+input   [2 :0]  rob_retire_inst3_pc_offset;          
+input           rob_retire_inst3_pst_ereg_vld;       
+input           rob_retire_inst3_pst_preg_vld;       
+input           rob_retire_inst3_pst_vreg_vld;       
+input           rob_retire_inst3_split;              
+input           rob_retire_inst3_store;              
+input           rob_retire_inst3_vec_dirty;          
+input   [7 :0]  rob_retire_inst3_vl;                 
+input           rob_retire_inst3_vl_pred;            
+input           rob_retire_inst3_vld;                
+input   [1 :0]  rob_retire_inst3_vlmul;              
+input           rob_retire_inst3_vsetvli;            
+input   [2 :0]  rob_retire_inst3_vsew;               
 input           rob_retire_int_srt_en;               
 input   [38:0]  rob_retire_rob_cur_pc;               
 input           rob_retire_split_spec_fail_srt;      
@@ -477,6 +571,9 @@ output          retire_pst_wb_retire_inst1_vreg_vld;
 output          retire_pst_wb_retire_inst2_ereg_vld; 
 output          retire_pst_wb_retire_inst2_preg_vld; 
 output          retire_pst_wb_retire_inst2_vreg_vld; 
+output          retire_pst_wb_retire_inst3_ereg_vld; 
+output          retire_pst_wb_retire_inst3_preg_vld; 
+output          retire_pst_wb_retire_inst3_vreg_vld; 
 output          retire_rob_async_expt_commit_mask;   
 output          retire_rob_ctc_flush_req;            
 output          retire_rob_dbg_inst0_ack_int;        
@@ -490,6 +587,7 @@ output          retire_rob_flush_gateclk;
 output          retire_rob_inst0_jmp;                
 output          retire_rob_inst1_jmp;                
 output          retire_rob_inst2_jmp;                
+output          retire_rob_inst3_jmp;                
 output          retire_rob_inst_flush;               
 output          retire_rob_retire_empty;             
 output          retire_rob_rt_mask;                  
@@ -540,6 +638,13 @@ output          rtu_had_xx_pcfifo_inst2_jmp;
 output  [38:0]  rtu_had_xx_pcfifo_inst2_next_pc;     
 output          rtu_had_xx_pcfifo_inst2_pcall;       
 output          rtu_had_xx_pcfifo_inst2_preturn;     
+output          rtu_had_xx_pcfifo_inst3_chgflow;     
+output          rtu_had_xx_pcfifo_inst3_condbr;      
+output          rtu_had_xx_pcfifo_inst3_condbr_taken; 
+output          rtu_had_xx_pcfifo_inst3_jmp;         
+output  [38:0]  rtu_had_xx_pcfifo_inst3_next_pc;     
+output          rtu_had_xx_pcfifo_inst3_pcall;       
+output          rtu_had_xx_pcfifo_inst3_preturn;     
 output          rtu_had_xx_split_inst;               
 output          rtu_hpcp_inst0_ack_int;              
 output          rtu_hpcp_inst0_bht_mispred;          
@@ -566,12 +671,21 @@ output  [2 :0]  rtu_hpcp_inst2_pc_offset;
 output          rtu_hpcp_inst2_split;                
 output          rtu_hpcp_inst2_store;                
 output          rtu_hpcp_inst2_vld;                  
+output          rtu_hpcp_inst3_condbr;               
+output          rtu_hpcp_inst3_jmp;                  
+output  [1 :0]  rtu_hpcp_inst3_num;                  
+output  [2 :0]  rtu_hpcp_inst3_pc_offset;            
+output          rtu_hpcp_inst3_split;                
+output          rtu_hpcp_inst3_store;                
+output          rtu_hpcp_inst3_vld;                  
 output          rtu_hpcp_trace_inst0_chgflow;        
 output  [38:0]  rtu_hpcp_trace_inst0_next_pc;        
 output          rtu_hpcp_trace_inst1_chgflow;        
 output  [38:0]  rtu_hpcp_trace_inst1_next_pc;        
 output          rtu_hpcp_trace_inst2_chgflow;        
 output  [38:0]  rtu_hpcp_trace_inst2_next_pc;        
+output          rtu_hpcp_trace_inst3_chgflow;        
+output  [38:0]  rtu_hpcp_trace_inst3_next_pc;        
 output          rtu_idu_flush_fe;                    
 output          rtu_idu_flush_is;                    
 output          rtu_idu_flush_stall;                 
@@ -598,6 +712,10 @@ output  [7 :0]  rtu_ifu_retire2_chk_idx;
 output          rtu_ifu_retire2_condbr;              
 output          rtu_ifu_retire2_condbr_taken;        
 output          rtu_ifu_retire2_jmp;                 
+output  [7 :0]  rtu_ifu_retire3_chk_idx;             
+output          rtu_ifu_retire3_condbr;              
+output          rtu_ifu_retire3_condbr_taken;        
+output          rtu_ifu_retire3_jmp;                 
 output  [38:0]  rtu_ifu_retire_inst0_cur_pc;         
 output          rtu_ifu_retire_inst0_load;           
 output          rtu_ifu_retire_inst0_no_spec_hit;    
@@ -622,6 +740,13 @@ output          rtu_ifu_retire_inst2_no_spec_mispred;
 output          rtu_ifu_retire_inst2_no_spec_miss;   
 output          rtu_ifu_retire_inst2_store;          
 output          rtu_ifu_retire_inst2_vl_pred;        
+output  [38:0]  rtu_ifu_retire_inst3_cur_pc;         
+output          rtu_ifu_retire_inst3_load;           
+output          rtu_ifu_retire_inst3_no_spec_hit;    
+output          rtu_ifu_retire_inst3_no_spec_mispred; 
+output          rtu_ifu_retire_inst3_no_spec_miss;   
+output          rtu_ifu_retire_inst3_store;          
+output          rtu_ifu_retire_inst3_vl_pred;        
 output          rtu_ifu_xx_dbgon;                    
 output  [5 :0]  rtu_ifu_xx_expt_vec;                 
 output          rtu_ifu_xx_expt_vld;                 
@@ -675,10 +800,17 @@ reg     [1 :0]  retire_hpcp_inst2_num;
 reg     [2 :0]  retire_hpcp_inst2_pc_offset;         
 reg             retire_hpcp_inst2_split;             
 reg             retire_hpcp_inst2_store;             
+reg             retire_hpcp_inst3_condbr;            
+reg             retire_hpcp_inst3_jmp;               
+reg     [1 :0]  retire_hpcp_inst3_num;               
+reg     [2 :0]  retire_hpcp_inst3_pc_offset;         
+reg             retire_hpcp_inst3_split;             
+reg             retire_hpcp_inst3_store;             
 reg             retire_ifu_chgflw_vld;               
 reg             retire_retire_hpcp_inst0_vld;        
 reg             retire_retire_hpcp_inst1_vld;        
 reg             retire_retire_hpcp_inst2_vld;        
+reg             retire_retire_hpcp_inst3_vld;        
 reg     [7 :0]  rtu_cp0_vsetvl_vl;                   
 reg     [1 :0]  rtu_cp0_vsetvl_vlmul;                
 reg     [2 :0]  rtu_cp0_vsetvl_vsew;                 
@@ -773,6 +905,10 @@ wire            retire_inst2_condbr;
 wire            retire_inst2_jmp;                    
 wire            retire_inst2_normal_retire;          
 wire            retire_inst2_vsetvli;                
+wire            retire_inst3_condbr;                 
+wire            retire_inst3_jmp;                    
+wire            retire_inst3_normal_retire;          
+wire            retire_inst3_vsetvli;                
 wire            retire_pst_async_flush;              
 wire            retire_pst_wb_retire_inst0_ereg_vld; 
 wire            retire_pst_wb_retire_inst0_preg_vld; 
@@ -783,6 +919,9 @@ wire            retire_pst_wb_retire_inst1_vreg_vld;
 wire            retire_pst_wb_retire_inst2_ereg_vld; 
 wire            retire_pst_wb_retire_inst2_preg_vld; 
 wire            retire_pst_wb_retire_inst2_vreg_vld; 
+wire            retire_pst_wb_retire_inst3_ereg_vld; 
+wire            retire_pst_wb_retire_inst3_preg_vld; 
+wire            retire_pst_wb_retire_inst3_vreg_vld; 
 wire            retire_rob_async_expt_commit_mask;   
 wire            retire_rob_ctc_flush_req;            
 wire            retire_rob_dbg_inst0_ack_int;        
@@ -796,6 +935,7 @@ wire            retire_rob_flush_gateclk;
 wire            retire_rob_inst0_jmp;                
 wire            retire_rob_inst1_jmp;                
 wire            retire_rob_inst2_jmp;                
+wire            retire_rob_inst3_jmp;                
 wire            retire_rob_inst_flush;               
 wire            retire_rob_retire_empty;             
 wire            retire_rob_rt_mask;                  
@@ -806,6 +946,7 @@ wire    [1 :0]  retire_top_ae_cur_state;
 wire            rob_retire_commit0;                  
 wire            rob_retire_commit1;                  
 wire            rob_retire_commit2;                  
+wire            rob_retire_commit3;                  
 wire            rob_retire_ctc_flush_srt_en;         
 wire            rob_retire_inst0_bht_mispred;        
 wire            rob_retire_inst0_bju;                
@@ -913,6 +1054,32 @@ wire            rob_retire_inst2_vld;
 wire    [1 :0]  rob_retire_inst2_vlmul;              
 wire            rob_retire_inst2_vsetvli;            
 wire    [2 :0]  rob_retire_inst2_vsew;               
+wire            rob_retire_inst3_bju;                
+wire    [7 :0]  rob_retire_inst3_chk_idx;            
+wire            rob_retire_inst3_condbr;             
+wire            rob_retire_inst3_condbr_taken;       
+wire    [38:0]  rob_retire_inst3_cur_pc;             
+wire            rob_retire_inst3_fp_dirty;           
+wire            rob_retire_inst3_jmp;                
+wire            rob_retire_inst3_load;               
+wire    [38:0]  rob_retire_inst3_next_pc;            
+wire            rob_retire_inst3_no_spec_hit;        
+wire            rob_retire_inst3_no_spec_mispred;    
+wire            rob_retire_inst3_no_spec_miss;       
+wire    [1 :0]  rob_retire_inst3_num;                
+wire    [2 :0]  rob_retire_inst3_pc_offset;          
+wire            rob_retire_inst3_pst_ereg_vld;       
+wire            rob_retire_inst3_pst_preg_vld;       
+wire            rob_retire_inst3_pst_vreg_vld;       
+wire            rob_retire_inst3_split;              
+wire            rob_retire_inst3_store;              
+wire            rob_retire_inst3_vec_dirty;          
+wire    [7 :0]  rob_retire_inst3_vl;                 
+wire            rob_retire_inst3_vl_pred;            
+wire            rob_retire_inst3_vld;                
+wire    [1 :0]  rob_retire_inst3_vlmul;              
+wire            rob_retire_inst3_vsetvli;            
+wire    [2 :0]  rob_retire_inst3_vsew;               
 wire            rob_retire_int_srt_en;               
 wire    [38:0]  rob_retire_rob_cur_pc;               
 wire            rob_retire_split_spec_fail_srt;      
@@ -958,6 +1125,13 @@ wire            rtu_had_xx_pcfifo_inst2_jmp;
 wire    [38:0]  rtu_had_xx_pcfifo_inst2_next_pc;     
 wire            rtu_had_xx_pcfifo_inst2_pcall;       
 wire            rtu_had_xx_pcfifo_inst2_preturn;     
+wire            rtu_had_xx_pcfifo_inst3_chgflow;     
+wire            rtu_had_xx_pcfifo_inst3_condbr;      
+wire            rtu_had_xx_pcfifo_inst3_condbr_taken; 
+wire            rtu_had_xx_pcfifo_inst3_jmp;         
+wire    [38:0]  rtu_had_xx_pcfifo_inst3_next_pc;     
+wire            rtu_had_xx_pcfifo_inst3_pcall;       
+wire            rtu_had_xx_pcfifo_inst3_preturn;     
 wire            rtu_had_xx_split_inst;               
 wire            rtu_hpcp_inst0_ack_int;              
 wire            rtu_hpcp_inst0_bht_mispred;          
@@ -984,12 +1158,21 @@ wire    [2 :0]  rtu_hpcp_inst2_pc_offset;
 wire            rtu_hpcp_inst2_split;                
 wire            rtu_hpcp_inst2_store;                
 wire            rtu_hpcp_inst2_vld;                  
+wire            rtu_hpcp_inst3_condbr;               
+wire            rtu_hpcp_inst3_jmp;                  
+wire    [1 :0]  rtu_hpcp_inst3_num;                  
+wire    [2 :0]  rtu_hpcp_inst3_pc_offset;            
+wire            rtu_hpcp_inst3_split;                
+wire            rtu_hpcp_inst3_store;                
+wire            rtu_hpcp_inst3_vld;                  
 wire            rtu_hpcp_trace_inst0_chgflow;        
 wire    [38:0]  rtu_hpcp_trace_inst0_next_pc;        
 wire            rtu_hpcp_trace_inst1_chgflow;        
 wire    [38:0]  rtu_hpcp_trace_inst1_next_pc;        
 wire            rtu_hpcp_trace_inst2_chgflow;        
 wire    [38:0]  rtu_hpcp_trace_inst2_next_pc;        
+wire            rtu_hpcp_trace_inst3_chgflow;        
+wire    [38:0]  rtu_hpcp_trace_inst3_next_pc;        
 wire            rtu_idu_flush_fe;                    
 wire            rtu_idu_flush_is;                    
 wire            rtu_idu_flush_stall;                 
@@ -1016,6 +1199,10 @@ wire    [7 :0]  rtu_ifu_retire2_chk_idx;
 wire            rtu_ifu_retire2_condbr;              
 wire            rtu_ifu_retire2_condbr_taken;        
 wire            rtu_ifu_retire2_jmp;                 
+wire    [7 :0]  rtu_ifu_retire3_chk_idx;             
+wire            rtu_ifu_retire3_condbr;              
+wire            rtu_ifu_retire3_condbr_taken;        
+wire            rtu_ifu_retire3_jmp;                 
 wire    [38:0]  rtu_ifu_retire_inst0_cur_pc;         
 wire            rtu_ifu_retire_inst0_load;           
 wire            rtu_ifu_retire_inst0_no_spec_hit;    
@@ -1043,6 +1230,14 @@ wire            rtu_ifu_retire_inst2_no_spec_miss;
 wire            rtu_ifu_retire_inst2_store;          
 wire    [7 :0]  rtu_ifu_retire_inst2_vl;             
 wire            rtu_ifu_retire_inst2_vl_pred;        
+wire    [38:0]  rtu_ifu_retire_inst3_cur_pc;         
+wire            rtu_ifu_retire_inst3_load;           
+wire            rtu_ifu_retire_inst3_no_spec_hit;    
+wire            rtu_ifu_retire_inst3_no_spec_mispred; 
+wire            rtu_ifu_retire_inst3_no_spec_miss;   
+wire            rtu_ifu_retire_inst3_store;          
+wire    [7 :0]  rtu_ifu_retire_inst3_vl;             
+wire            rtu_ifu_retire_inst3_vl_pred;        
 wire            rtu_ifu_xx_dbgon;                    
 wire            rtu_iu_flush_chgflw_mask;            
 wire            rtu_iu_flush_fe;                     
@@ -1120,7 +1315,8 @@ assign hpcp_clk_en = hpcp_rtu_cnt_en
                      && rob_retire_inst0_vld
                      || retire_retire_hpcp_inst0_vld
                      || retire_retire_hpcp_inst1_vld
-                     || retire_retire_hpcp_inst2_vld;
+                     || retire_retire_hpcp_inst2_vld
+                     || retire_retire_hpcp_inst3_vld;//Jeremy add
 // &Instance("gated_clk_cell", "x_hpcp_gated_clk"); @75
 gated_clk_cell  x_hpcp_gated_clk (
   .clk_in             (forever_cpuclk    ),
@@ -1162,6 +1358,7 @@ assign retire_inst0_normal_retire     = rob_retire_inst0_vld
                                         && !rob_retire_inst0_expt_vld;
 assign retire_inst1_normal_retire     = rob_retire_inst1_vld;
 assign retire_inst2_normal_retire     = rob_retire_inst2_vld;
+assign retire_inst3_normal_retire     = rob_retire_inst3_vld;//Jeremy add
 
 //rename for output
 assign rtu_idu_retire0_inst_vld       = rob_retire_inst0_vld;
@@ -1171,14 +1368,17 @@ assign rtu_yy_xx_retire0_normal       = retire_inst0_normal_retire;
 assign retire_pst_wb_retire_inst0_preg_vld = rob_retire_inst0_pst_preg_vld; 
 assign retire_pst_wb_retire_inst1_preg_vld = rob_retire_inst1_pst_preg_vld; 
 assign retire_pst_wb_retire_inst2_preg_vld = rob_retire_inst2_pst_preg_vld; 
+assign retire_pst_wb_retire_inst3_preg_vld = rob_retire_inst3_pst_preg_vld;//Jeremy add 
 //if inst bkpt or expt vld, retire inst0 cannot write back
 assign retire_pst_wb_retire_inst0_vreg_vld = rob_retire_inst0_pst_vreg_vld; 
 assign retire_pst_wb_retire_inst1_vreg_vld = rob_retire_inst1_pst_vreg_vld; 
 assign retire_pst_wb_retire_inst2_vreg_vld = rob_retire_inst2_pst_vreg_vld; 
+assign retire_pst_wb_retire_inst3_vreg_vld = rob_retire_inst3_pst_vreg_vld;//Jeremy add 
 //expt instruction should write back ereg value, and ereg value should be RETIRE
 assign retire_pst_wb_retire_inst0_ereg_vld = rob_retire_inst0_pst_ereg_vld; 
 assign retire_pst_wb_retire_inst1_ereg_vld = rob_retire_inst1_pst_ereg_vld; 
 assign retire_pst_wb_retire_inst2_ereg_vld = rob_retire_inst2_pst_ereg_vld; 
+assign retire_pst_wb_retire_inst3_ereg_vld = rob_retire_inst3_pst_ereg_vld;//Jeremy add 
 
 //==========================================================
 //             Retire (Inst 0) Exception Process
@@ -1337,14 +1537,18 @@ assign rtu_cp0_fp_dirty_vld    = rob_retire_inst0_pst_vreg_vld
                               || rob_retire_inst1_pst_vreg_vld
                                  && rob_retire_inst1_fp_dirty
                               || rob_retire_inst2_pst_vreg_vld
-                                 && rob_retire_inst2_fp_dirty;
+                                 && rob_retire_inst2_fp_dirty
+                              || rob_retire_inst3_pst_vreg_vld//Jeremy add
+                                 && rob_retire_inst3_fp_dirty;//Jeremy add
 
 assign rtu_cp0_vec_dirty_vld   = rob_retire_inst0_pst_vreg_vld
                                  && rob_retire_inst0_vec_dirty
                               || rob_retire_inst1_pst_vreg_vld
                                  && rob_retire_inst1_vec_dirty
                               || rob_retire_inst2_pst_vreg_vld
-                                 && rob_retire_inst2_vec_dirty;
+                                 && rob_retire_inst2_vec_dirty
+                              || rob_retire_inst3_pst_vreg_vld//Jeremy add
+                                 && rob_retire_inst3_vec_dirty;//Jeremy add
 
 //----------------------------------------------------------
 //                  CP0 Vector Values
@@ -1355,6 +1559,8 @@ assign retire_inst1_vsetvli           = retire_inst1_normal_retire
                                         && rob_retire_inst1_vsetvli;
 assign retire_inst2_vsetvli           = retire_inst2_normal_retire
                                         && rob_retire_inst2_vsetvli;
+assign retire_inst3_vsetvli           = retire_inst3_normal_retire//Jeremy add
+                                        && rob_retire_inst3_vsetvli;//Jeremy add
 assign retire_inst0_vsetvlx           = retire_inst0_normal_retire
                                         && rob_retire_inst0_vsetvl;
 
@@ -1373,6 +1579,7 @@ assign rtu_cp0_vsetvl_vill            = retire_inst0_vsetvl_illegal;
 assign rtu_cp0_vsetvl_vl_vld          = retire_inst0_vsetvli
                                      || retire_inst1_vsetvli
                                      || retire_inst2_vsetvli
+                                     || retire_inst3_vsetvli//Jeremy add
                                      || retire_inst0_vsetvl_vl_mispred
                                      || retire_inst0_vsetvl_vl_fof
                                      || retire_inst0_vsetvl_illegal;
@@ -1380,6 +1587,7 @@ assign rtu_cp0_vsetvl_vl_vld          = retire_inst0_vsetvli
 assign rtu_cp0_vsetvl_vtype_vld       = retire_inst0_vsetvli
                                      || retire_inst1_vsetvli
                                      || retire_inst2_vsetvli
+                                     || retire_inst3_vsetvli//Jeremy add
                                      || retire_inst0_vsetvlx
                                         && !retire_inst0_vsetvl_vl_fof;
 
@@ -1388,11 +1596,15 @@ always @( rob_retire_inst0_vsew[2:0]
        or rob_retire_inst0_vl[7:0]
        or rob_retire_inst0_vlmul[1:0]
        or rob_retire_inst2_vsew[2:0]
+       or rob_retire_inst3_vsew[2:0]
        or retire_inst2_vsetvli
+       or retire_inst3_vsetvli
        or rob_retire_inst1_vl[7:0]
+       or rob_retire_inst3_vl[7:0]
        or rob_retire_inst1_vlmul[1:0]
        or retire_inst0_vsetvlx
        or rob_retire_inst2_vlmul[1:0]
+       or rob_retire_inst3_vlmul[1:0]
        or retire_inst1_vsetvli
        or rob_retire_inst1_vsew[2:0]
        or rob_retire_inst0_mtval[12:0]
@@ -1402,6 +1614,12 @@ begin
     rtu_cp0_vsetvl_vlmul[1:0] = rob_retire_inst0_mtval[1:0];
     rtu_cp0_vsetvl_vsew[2:0]  = rob_retire_inst0_mtval[4:2];
     rtu_cp0_vsetvl_vl[7:0]    = rob_retire_inst0_mtval[12:5];
+  end
+  //Jeremy add
+  else if(retire_inst3_vsetvli) begin
+    rtu_cp0_vsetvl_vlmul[1:0] = rob_retire_inst3_vlmul[1:0];
+    rtu_cp0_vsetvl_vsew[2:0]  = rob_retire_inst3_vsew[2:0];
+    rtu_cp0_vsetvl_vl[7:0]    = rob_retire_inst3_vl[7:0];
   end
   else if(retire_inst2_vsetvli) begin
     rtu_cp0_vsetvl_vlmul[1:0] = rob_retire_inst2_vlmul[1:0];
@@ -1445,10 +1663,13 @@ assign retire_inst1_condbr               = retire_inst1_normal_retire
                                            && rob_retire_inst1_condbr;
 assign retire_inst2_condbr               = retire_inst2_normal_retire
                                            && rob_retire_inst2_condbr;
+assign retire_inst3_condbr               = retire_inst3_normal_retire//Jeremy add
+                                           && rob_retire_inst3_condbr;//Jeremy add
 
 assign rtu_ifu_retire0_condbr            = retire_inst0_condbr;
 assign rtu_ifu_retire1_condbr            = retire_inst1_condbr;
 assign rtu_ifu_retire2_condbr            = retire_inst2_condbr;
+assign rtu_ifu_retire3_condbr            = retire_inst3_condbr;//Jeremy add
 
 assign rtu_ifu_retire0_condbr_taken      = retire_inst0_normal_retire
                                            && rob_retire_inst0_condbr_taken;
@@ -1456,6 +1677,8 @@ assign rtu_ifu_retire1_condbr_taken      = retire_inst1_normal_retire
                                            && rob_retire_inst1_condbr_taken;
 assign rtu_ifu_retire2_condbr_taken      = retire_inst2_normal_retire
                                            && rob_retire_inst2_condbr_taken;
+assign rtu_ifu_retire3_condbr_taken      = retire_inst3_normal_retire//Jeremy add
+                                           && rob_retire_inst3_condbr_taken;//Jeremy add
 
 //----------------------------------------------------------
 //                      Return Stack
@@ -1482,14 +1705,18 @@ assign retire_inst1_jmp                  = retire_inst1_normal_retire
                                            && rob_retire_inst1_jmp;
 assign retire_inst2_jmp                  = retire_inst2_normal_retire
                                            && rob_retire_inst2_jmp;
+assign retire_inst3_jmp                  = retire_inst3_normal_retire//Jeremy add
+                                           && rob_retire_inst3_jmp;//Jeremy add
 
 assign rtu_ifu_retire0_jmp               = retire_inst0_jmp;
 assign rtu_ifu_retire1_jmp               = retire_inst1_jmp;
 assign rtu_ifu_retire2_jmp               = retire_inst2_jmp;
+assign rtu_ifu_retire3_jmp               = retire_inst3_jmp;//Jeremy add
 
 assign rtu_ifu_retire0_chk_idx[7:0]      = rob_retire_inst0_chk_idx[7:0];
 assign rtu_ifu_retire1_chk_idx[7:0]      = rob_retire_inst1_chk_idx[7:0];
 assign rtu_ifu_retire2_chk_idx[7:0]      = rob_retire_inst2_chk_idx[7:0];
+assign rtu_ifu_retire3_chk_idx[7:0]      = rob_retire_inst3_chk_idx[7:0];//Jeremy add
 assign rtu_ifu_retire0_next_pc[38:0]     = rob_retire_inst0_next_pc[38:0];
 
 //----------------------------------------------------------
@@ -1501,6 +1728,8 @@ assign rtu_ifu_retire_inst1_load         = retire_inst1_normal_retire
                                            && rob_retire_inst1_load;
 assign rtu_ifu_retire_inst2_load         = retire_inst2_normal_retire
                                            && rob_retire_inst2_load;
+assign rtu_ifu_retire_inst3_load         = retire_inst3_normal_retire//Jeremy add
+                                           && rob_retire_inst3_load;//Jeremy add
 
 assign rtu_ifu_retire_inst0_store        = retire_inst0_normal_retire
                                            && rob_retire_inst0_store;
@@ -1508,22 +1737,28 @@ assign rtu_ifu_retire_inst1_store        = retire_inst1_normal_retire
                                            && rob_retire_inst1_store;
 assign rtu_ifu_retire_inst2_store        = retire_inst2_normal_retire
                                            && rob_retire_inst2_store;
+assign rtu_ifu_retire_inst3_store        = retire_inst3_normal_retire//Jeremy add
+                                           && rob_retire_inst3_store;//Jeremy add
 
 assign rtu_ifu_retire_inst0_no_spec_hit     = rob_retire_inst0_no_spec_hit;
 assign rtu_ifu_retire_inst1_no_spec_hit     = rob_retire_inst1_no_spec_hit;
 assign rtu_ifu_retire_inst2_no_spec_hit     = rob_retire_inst2_no_spec_hit;
+assign rtu_ifu_retire_inst3_no_spec_hit     = rob_retire_inst3_no_spec_hit;//Jeremy add
 
 assign rtu_ifu_retire_inst0_no_spec_miss    = rob_retire_inst0_no_spec_miss;
 assign rtu_ifu_retire_inst1_no_spec_miss    = rob_retire_inst1_no_spec_miss;
 assign rtu_ifu_retire_inst2_no_spec_miss    = rob_retire_inst2_no_spec_miss;
+assign rtu_ifu_retire_inst3_no_spec_miss    = rob_retire_inst3_no_spec_miss;//Jeremy add
 
 assign rtu_ifu_retire_inst0_no_spec_mispred = rob_retire_inst0_no_spec_mispred;
 assign rtu_ifu_retire_inst1_no_spec_mispred = rob_retire_inst1_no_spec_mispred;
 assign rtu_ifu_retire_inst2_no_spec_mispred = rob_retire_inst2_no_spec_mispred;
+assign rtu_ifu_retire_inst3_no_spec_mispred = rob_retire_inst3_no_spec_mispred;//Jeremy add
 
 assign rtu_ifu_retire_inst0_cur_pc[38:0]    = rob_retire_inst0_cur_pc[38:0];
 assign rtu_ifu_retire_inst1_cur_pc[38:0]    = rob_retire_inst1_cur_pc[38:0];
 assign rtu_ifu_retire_inst2_cur_pc[38:0]    = rob_retire_inst2_cur_pc[38:0];
+assign rtu_ifu_retire_inst3_cur_pc[38:0]    = rob_retire_inst3_cur_pc[38:0];//Jeremy add
 
 //----------------------------------------------------------
 //                          Vl
@@ -1534,12 +1769,15 @@ assign rtu_ifu_retire_inst1_vl_pred      = retire_inst1_vsetvli
                                            && rob_retire_inst1_vl_pred;
 assign rtu_ifu_retire_inst2_vl_pred      = retire_inst2_vsetvli
                                            && rob_retire_inst2_vl_pred;
+assign rtu_ifu_retire_inst3_vl_pred      = retire_inst3_vsetvli//Jeremy add
+                                           && rob_retire_inst3_vl_pred;//Jeremy add
 
 assign rtu_ifu_retire_inst0_vl[7:0]      = retire_inst0_vsetvlx
                                            ? rob_retire_inst0_mtval[12:5]
                                            : rob_retire_inst0_vl[7:0];
 assign rtu_ifu_retire_inst1_vl[7:0]      = rob_retire_inst1_vl[7:0];
 assign rtu_ifu_retire_inst2_vl[7:0]      = rob_retire_inst2_vl[7:0];
+assign rtu_ifu_retire_inst3_vl[7:0]      = rob_retire_inst3_vl[7:0];//Jeremy add
 
 assign rtu_ifu_retire_inst0_vl_mispred   = retire_inst0_vsetvl_vl_mispred
                                            && retire_inst0_vsetvli
@@ -1688,27 +1926,36 @@ assign rtu_had_xx_pcfifo_inst1_chgflow       = retire_inst1_normal_retire
                                                && rob_retire_inst1_bju;
 assign rtu_had_xx_pcfifo_inst2_chgflow       = retire_inst2_normal_retire
                                                && rob_retire_inst2_bju;
+//Jeremy add inst3
+assign rtu_had_xx_pcfifo_inst3_chgflow       = retire_inst3_normal_retire//Jeremy add
+                                               && rob_retire_inst3_bju;//Jeremy add
 assign rtu_had_xx_pcfifo_inst0_condbr        = rob_retire_inst0_condbr;
 assign rtu_had_xx_pcfifo_inst1_condbr        = rob_retire_inst1_condbr;
 assign rtu_had_xx_pcfifo_inst2_condbr        = rob_retire_inst2_condbr;
+assign rtu_had_xx_pcfifo_inst3_condbr        = rob_retire_inst3_condbr;//Jeremy add
 assign rtu_had_xx_pcfifo_inst0_condbr_taken  = rob_retire_inst0_condbr_taken;
 assign rtu_had_xx_pcfifo_inst1_condbr_taken  = rob_retire_inst1_condbr_taken;
 assign rtu_had_xx_pcfifo_inst2_condbr_taken  = rob_retire_inst2_condbr_taken;
+assign rtu_had_xx_pcfifo_inst3_condbr_taken  = rob_retire_inst3_condbr_taken;//Jeremy add
 assign rtu_had_xx_pcfifo_inst0_pcall         = rob_retire_inst0_pcal;
 assign rtu_had_xx_pcfifo_inst1_pcall         = 1'b0;
 assign rtu_had_xx_pcfifo_inst2_pcall         = 1'b0;
+assign rtu_had_xx_pcfifo_inst3_pcall         = 1'b0;//Jeremy add
 assign rtu_had_xx_pcfifo_inst0_preturn       = rob_retire_inst0_ras;
 assign rtu_had_xx_pcfifo_inst1_preturn       = 1'b0;
 assign rtu_had_xx_pcfifo_inst2_preturn       = 1'b0;
+assign rtu_had_xx_pcfifo_inst3_preturn       = 1'b0;//Jeremy add
 assign rtu_had_xx_pcfifo_inst0_jmp           = rob_retire_inst0_jmp
                                                && !rob_retire_inst0_pcal
                                                && !rob_retire_inst0_ras;
 assign rtu_had_xx_pcfifo_inst1_jmp           = rob_retire_inst1_jmp;
 assign rtu_had_xx_pcfifo_inst2_jmp           = rob_retire_inst2_jmp;
+assign rtu_had_xx_pcfifo_inst3_jmp           = rob_retire_inst3_jmp;//Jeremy add
 
 assign rtu_had_xx_pcfifo_inst0_next_pc[38:0] = rob_retire_inst0_next_pc[38:0];
 assign rtu_had_xx_pcfifo_inst1_next_pc[38:0] = rob_retire_inst1_next_pc[38:0];
 assign rtu_had_xx_pcfifo_inst2_next_pc[38:0] = rob_retire_inst2_next_pc[38:0];
+assign rtu_had_xx_pcfifo_inst3_next_pc[38:0] = rob_retire_inst3_next_pc[38:0];//Jeremy add
 
 assign rtu_had_xx_pcfifo_inst0_iid[6:0]      = rob_retire_inst0_iid[6:0];
 
@@ -1728,9 +1975,12 @@ assign rtu_hpcp_trace_inst1_chgflow          = retire_inst1_normal_retire
                                                && rob_retire_inst1_bju;
 assign rtu_hpcp_trace_inst2_chgflow          = retire_inst2_normal_retire
                                                && rob_retire_inst2_bju;
+assign rtu_hpcp_trace_inst3_chgflow          = retire_inst3_normal_retire//Jeremy add
+                                               && rob_retire_inst3_bju;//Jeremy add
 assign rtu_hpcp_trace_inst0_next_pc[38:0]    = rob_retire_inst0_next_pc[38:0];
 assign rtu_hpcp_trace_inst1_next_pc[38:0]    = rob_retire_inst1_next_pc[38:0];
 assign rtu_hpcp_trace_inst2_next_pc[38:0]    = rob_retire_inst2_next_pc[38:0];
+assign rtu_hpcp_trace_inst3_next_pc[38:0]    = rob_retire_inst3_next_pc[38:0];//Jeremy add
 
 //----------------------------------------------------------
 //                 Performance Monitor
@@ -1741,25 +1991,32 @@ begin
     retire_retire_hpcp_inst0_vld     <= 1'b0;
     retire_retire_hpcp_inst1_vld     <= 1'b0;
     retire_retire_hpcp_inst2_vld     <= 1'b0;
+    retire_retire_hpcp_inst3_vld     <= 1'b0;//Jeremy add
 
     retire_hpcp_inst0_split          <= 1'b0;
     retire_hpcp_inst1_split          <= 1'b0;
     retire_hpcp_inst2_split          <= 1'b0;
+    retire_hpcp_inst3_split          <= 1'b0;//Jeremy add
     retire_hpcp_inst0_num[1:0]       <= 2'b0;
     retire_hpcp_inst1_num[1:0]       <= 2'b0;
     retire_hpcp_inst2_num[1:0]       <= 2'b0;
+    retire_hpcp_inst3_num[1:0]       <= 2'b0;//Jeremy add
     retire_hpcp_inst0_pc_offset[2:0] <= 3'b0;
     retire_hpcp_inst1_pc_offset[2:0] <= 3'b0;
     retire_hpcp_inst2_pc_offset[2:0] <= 3'b0;
+    retire_hpcp_inst3_pc_offset[2:0] <= 3'b0;//Jeremy add
     retire_hpcp_inst0_condbr         <= 1'b0;
     retire_hpcp_inst1_condbr         <= 1'b0;
     retire_hpcp_inst2_condbr         <= 1'b0;
+    retire_hpcp_inst3_condbr         <= 1'b0;//Jeremy add
     retire_hpcp_inst0_jmp            <= 1'b0;
     retire_hpcp_inst1_jmp            <= 1'b0;
     retire_hpcp_inst2_jmp            <= 1'b0;
+    retire_hpcp_inst3_jmp            <= 1'b0;//Jeremy add
     retire_hpcp_inst0_store          <= 1'b0;
     retire_hpcp_inst1_store          <= 1'b0;
     retire_hpcp_inst2_store          <= 1'b0;
+    retire_hpcp_inst3_store          <= 1'b0;//Jeremy add
     retire_hpcp_inst0_bht_mispred    <= 1'b0;
     retire_hpcp_inst0_jmp_mispred    <= 1'b0;
     retire_hpcp_inst0_spec_fail      <= 1'b0;
@@ -1769,28 +2026,35 @@ begin
     retire_retire_hpcp_inst0_vld     <= rob_retire_inst0_vld;
     retire_retire_hpcp_inst1_vld     <= rob_retire_inst1_vld;
     retire_retire_hpcp_inst2_vld     <= rob_retire_inst2_vld;
+    retire_retire_hpcp_inst3_vld     <= rob_retire_inst3_vld;//Jeremy add
 
     retire_hpcp_inst0_split          <= rob_retire_inst0_split;
     retire_hpcp_inst1_split          <= rob_retire_inst1_split;
     retire_hpcp_inst2_split          <= rob_retire_inst2_split;
+    retire_hpcp_inst3_split          <= rob_retire_inst3_split;//Jeremy add
     retire_hpcp_inst0_num[1:0]       <= rob_retire_inst0_num[1:0];
     retire_hpcp_inst1_num[1:0]       <= rob_retire_inst1_num[1:0];
     retire_hpcp_inst2_num[1:0]       <= rob_retire_inst2_num[1:0];
+    retire_hpcp_inst3_num[1:0]       <= rob_retire_inst3_num[1:0];//Jeremy add
     retire_hpcp_inst0_pc_offset[2:0] <= rob_retire_inst0_pc_offset[2:0];
     retire_hpcp_inst1_pc_offset[2:0] <= rob_retire_inst1_pc_offset[2:0];
     retire_hpcp_inst2_pc_offset[2:0] <= rob_retire_inst2_pc_offset[2:0];    
+    retire_hpcp_inst3_pc_offset[2:0] <= rob_retire_inst3_pc_offset[2:0];//Jeremy add    
     retire_hpcp_inst0_condbr         <= retire_inst0_condbr;
     retire_hpcp_inst1_condbr         <= retire_inst1_condbr;
     retire_hpcp_inst2_condbr         <= retire_inst2_condbr;
+    retire_hpcp_inst3_condbr         <= retire_inst3_condbr;//Jeremy add
     retire_hpcp_inst0_jmp            <= retire_inst0_jmp;
     retire_hpcp_inst1_jmp            <= retire_inst1_jmp;
     retire_hpcp_inst2_jmp            <= retire_inst2_jmp;
+    retire_hpcp_inst3_jmp            <= retire_inst3_jmp;//Jeremy add
     retire_hpcp_inst0_bht_mispred    <= retire_inst0_normal_retire
                                         && rob_retire_inst0_bht_mispred;
     retire_hpcp_inst0_jmp_mispred    <= retire_inst0_jmp_mispred;
     retire_hpcp_inst0_store          <= rob_retire_inst0_store;
     retire_hpcp_inst1_store          <= rob_retire_inst1_store;
     retire_hpcp_inst2_store          <= rob_retire_inst2_store;
+    retire_hpcp_inst3_store          <= rob_retire_inst3_store;//Jeremy add
     retire_hpcp_inst0_spec_fail      <= rob_retire_inst0_spec_fail;
     //ignore int when debug ack for timing
     retire_hpcp_inst0_ack_int        <= !dbg_mode_on && retire_ack_int;
@@ -1799,27 +2063,34 @@ begin
     retire_retire_hpcp_inst0_vld     <= 1'b0;
     retire_retire_hpcp_inst1_vld     <= 1'b0;
     retire_retire_hpcp_inst2_vld     <= 1'b0;
+    retire_retire_hpcp_inst3_vld     <= 1'b0;//Jeremy add
 
     retire_hpcp_inst0_split          <= retire_hpcp_inst0_split;
     retire_hpcp_inst1_split          <= retire_hpcp_inst1_split;
     retire_hpcp_inst2_split          <= retire_hpcp_inst2_split;
+    retire_hpcp_inst3_split          <= retire_hpcp_inst3_split;//Jeremy add
     retire_hpcp_inst0_num[1:0]       <= retire_hpcp_inst0_num[1:0];
     retire_hpcp_inst1_num[1:0]       <= retire_hpcp_inst1_num[1:0];
     retire_hpcp_inst2_num[1:0]       <= retire_hpcp_inst2_num[1:0];
+    retire_hpcp_inst3_num[1:0]       <= retire_hpcp_inst3_num[1:0];//Jeremy add
     retire_hpcp_inst0_pc_offset[2:0] <= retire_hpcp_inst0_pc_offset[2:0];
     retire_hpcp_inst1_pc_offset[2:0] <= retire_hpcp_inst1_pc_offset[2:0];
     retire_hpcp_inst2_pc_offset[2:0] <= retire_hpcp_inst2_pc_offset[2:0];
+    retire_hpcp_inst3_pc_offset[2:0] <= retire_hpcp_inst3_pc_offset[2:0];//Jeremy add
     retire_hpcp_inst0_condbr         <= retire_hpcp_inst0_condbr;
     retire_hpcp_inst1_condbr         <= retire_hpcp_inst1_condbr;
     retire_hpcp_inst2_condbr         <= retire_hpcp_inst2_condbr;
+    retire_hpcp_inst3_condbr         <= retire_hpcp_inst3_condbr;//Jeremy add
     retire_hpcp_inst0_jmp            <= retire_hpcp_inst0_jmp;
     retire_hpcp_inst1_jmp            <= retire_hpcp_inst1_jmp;
     retire_hpcp_inst2_jmp            <= retire_hpcp_inst2_jmp;
+    retire_hpcp_inst3_jmp            <= retire_hpcp_inst3_jmp;//Jeremy add
     retire_hpcp_inst0_bht_mispred    <= retire_hpcp_inst0_bht_mispred;
     retire_hpcp_inst0_jmp_mispred    <= retire_hpcp_inst0_jmp_mispred;
     retire_hpcp_inst0_store          <= retire_hpcp_inst0_store;
     retire_hpcp_inst1_store          <= retire_hpcp_inst1_store;
     retire_hpcp_inst2_store          <= retire_hpcp_inst2_store;
+    retire_hpcp_inst3_store          <= retire_hpcp_inst3_store;//Jeremy add
     retire_hpcp_inst0_spec_fail      <= retire_hpcp_inst0_spec_fail;
     retire_hpcp_inst0_ack_int        <= retire_hpcp_inst0_ack_int;
   end
@@ -1828,33 +2099,41 @@ end
 assign rtu_hpcp_inst0_vld                   = retire_retire_hpcp_inst0_vld;
 assign rtu_hpcp_inst1_vld                   = retire_retire_hpcp_inst1_vld;
 assign rtu_hpcp_inst2_vld                   = retire_retire_hpcp_inst2_vld;
+assign rtu_hpcp_inst3_vld                   = retire_retire_hpcp_inst3_vld;//Jeremy add
 
 assign rtu_hpcp_inst0_split                 = retire_hpcp_inst0_split;
 assign rtu_hpcp_inst1_split                 = retire_hpcp_inst1_split;
 assign rtu_hpcp_inst2_split                 = retire_hpcp_inst2_split;
+assign rtu_hpcp_inst3_split                 = retire_hpcp_inst3_split;//Jeremy add
 assign rtu_hpcp_inst0_num[1:0]              = retire_hpcp_inst0_num[1:0];
 assign rtu_hpcp_inst1_num[1:0]              = retire_hpcp_inst1_num[1:0];
 assign rtu_hpcp_inst2_num[1:0]              = retire_hpcp_inst2_num[1:0];
+assign rtu_hpcp_inst3_num[1:0]              = retire_hpcp_inst3_num[1:0];//Jeremy add
 assign rtu_hpcp_inst0_pc_offset[2:0]        = retire_hpcp_inst0_pc_offset[2:0];
 assign rtu_hpcp_inst1_pc_offset[2:0]        = retire_hpcp_inst1_pc_offset[2:0];
 assign rtu_hpcp_inst2_pc_offset[2:0]        = retire_hpcp_inst2_pc_offset[2:0];
+assign rtu_hpcp_inst3_pc_offset[2:0]        = retire_hpcp_inst3_pc_offset[2:0];//Jeremy add
 assign rtu_hpcp_inst0_condbr                = retire_hpcp_inst0_condbr;
 assign rtu_hpcp_inst1_condbr                = retire_hpcp_inst1_condbr;
 assign rtu_hpcp_inst2_condbr                = retire_hpcp_inst2_condbr;
+assign rtu_hpcp_inst3_condbr                = retire_hpcp_inst3_condbr;//Jeremy add
 assign rtu_hpcp_inst0_jmp                   = retire_hpcp_inst0_jmp;
 assign rtu_hpcp_inst1_jmp                   = retire_hpcp_inst1_jmp;
 assign rtu_hpcp_inst2_jmp                   = retire_hpcp_inst2_jmp;
+assign rtu_hpcp_inst3_jmp                   = retire_hpcp_inst3_jmp;//Jeremy add
 assign rtu_hpcp_inst0_bht_mispred           = retire_hpcp_inst0_bht_mispred;
 assign rtu_hpcp_inst0_jmp_mispred           = retire_hpcp_inst0_jmp_mispred;
 assign rtu_hpcp_inst0_store                 = retire_hpcp_inst0_store;
 assign rtu_hpcp_inst1_store                 = retire_hpcp_inst1_store;
 assign rtu_hpcp_inst2_store                 = retire_hpcp_inst2_store;
+assign rtu_hpcp_inst3_store                 = retire_hpcp_inst3_store;//Jeremy add
 assign rtu_hpcp_inst0_spec_fail             = retire_hpcp_inst0_spec_fail;
 assign rtu_hpcp_inst0_ack_int               = retire_hpcp_inst0_ack_int;
 
 assign retire_rob_inst0_jmp                 = retire_hpcp_inst0_jmp;
 assign retire_rob_inst1_jmp                 = retire_hpcp_inst1_jmp;
 assign retire_rob_inst2_jmp                 = retire_hpcp_inst2_jmp;
+assign retire_rob_inst3_jmp                 = retire_hpcp_inst3_jmp;//Jeremy add
 
 //==========================================================
 //                    Flush Control
@@ -2085,10 +2364,12 @@ assign retire_async_expt           = lsu_rtu_async_expt_vld
                                      && !dbg_mode_on;
 assign retire_async_expt_no_commit = !(rob_retire_commit0
                                      || rob_retire_commit1
-                                     || rob_retire_commit2);
+                                     || rob_retire_commit2
+                                     || rob_retire_commit3);//Jeremy add
 assign retire_async_expt_no_retire = !(rob_retire_inst0_vld
                                      || rob_retire_inst1_vld
                                      || rob_retire_inst2_vld
+                                     || rob_retire_inst3_vld//Jeremy add
                                      || retire_flush_sm_no_idle
                                      || !pst_retire_retired_reg_wb);
 //                                     || ifu_rtu_vec_addr_not_fetched);

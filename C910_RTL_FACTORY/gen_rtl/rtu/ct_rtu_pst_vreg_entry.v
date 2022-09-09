@@ -420,7 +420,7 @@ assign wb_cur_state_wb_masked = (wb_cur_state == WB) && !x_dealloc_mask;
 //----------------------------------------------------------
 //              Prepare allocate create data
 //----------------------------------------------------------
-assign create_vld = |x_create_vld[3:0];
+assign create_vld = |x_create_vld[4:0];
 // &CombBeg; @206
 always @( idu_rtu_pst_dis_inst2_dstv_reg[4:0]
        or idu_rtu_pst_dis_inst0_dstv_reg[4:0]
@@ -431,7 +431,7 @@ always @( idu_rtu_pst_dis_inst2_dstv_reg[4:0]
        or idu_rtu_pst_dis_inst2_vreg_iid[6:0]
        or idu_rtu_pst_dis_inst2_rel_vreg[5:0]
        or idu_rtu_pst_dis_inst3_vreg_iid[6:0]
-       or x_create_vld[3:0]
+       or x_create_vld[4:0]
        or idu_rtu_pst_dis_inst1_dstv_reg[4:0]
        or idu_rtu_pst_dis_inst3_rel_vreg[5:0]
        or idu_rtu_pst_dis_inst1_rel_vreg[5:0]
@@ -439,7 +439,7 @@ always @( idu_rtu_pst_dis_inst2_dstv_reg[4:0]
        or idu_rtu_pst_dis_inst4_dstv_reg[4:0]
        or idu_rtu_pst_dis_inst4_rel_vreg[5:0])
 begin
-  case (x_create_vld[3:0])
+  case (x_create_vld[4:0])
     5'h1   : begin
                create_iid[6:0]      = idu_rtu_pst_dis_inst0_vreg_iid[6:0];
                create_dstv_reg[4:0] = idu_rtu_pst_dis_inst0_dstv_reg[4:0];
@@ -572,7 +572,6 @@ begin
   else
     retire_inst3_iid_match <= retire_inst3_iid_match;
 end
-
 //==========================================================
 //                       Retire signal
 //==========================================================
