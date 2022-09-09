@@ -2468,7 +2468,7 @@ begin
   else
     retire_ctc_flush_req <= retire_ctc_flush_req;
 end
-
+//Jeremy 
 assign retire_rob_ctc_flush_req = retire_ctc_flush_req;
 
 //==========================================================
