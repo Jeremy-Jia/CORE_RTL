@@ -69,6 +69,7 @@ module ct_iu_bju(
   iu_idu_pcfifo_dis_inst1_pid,
   iu_idu_pcfifo_dis_inst2_pid,
   iu_idu_pcfifo_dis_inst3_pid,
+  iu_idu_pcfifo_dis_inst4_pid,//Jeremy add
   iu_ifu_bht_check_vld,
   iu_ifu_bht_condbr_taken,
   iu_ifu_bht_pred,
@@ -84,6 +85,7 @@ module ct_iu_bju(
   iu_rtu_pcfifo_pop0_data,
   iu_rtu_pcfifo_pop1_data,
   iu_rtu_pcfifo_pop2_data,
+  iu_rtu_pcfifo_pop3_data,//Jeremy add
   iu_yy_xx_cancel,
   mmu_xx_mmu_en,
   pad_yy_icg_scan_en,
@@ -92,6 +94,7 @@ module ct_iu_bju(
   rtu_iu_rob_read0_pcfifo_vld,
   rtu_iu_rob_read1_pcfifo_vld,
   rtu_iu_rob_read2_pcfifo_vld,
+  rtu_iu_rob_read3_pcfifo_vld,//Jeremy add
   rtu_iu_rob_read_pcfifo_gateclk_vld,
   rtu_yy_xx_flush
 );
@@ -145,6 +148,7 @@ input           rtu_iu_flush_fe;
 input           rtu_iu_rob_read0_pcfifo_vld;       
 input           rtu_iu_rob_read1_pcfifo_vld;       
 input           rtu_iu_rob_read2_pcfifo_vld;       
+input           rtu_iu_rob_read3_pcfifo_vld; //Jeremy add      
 input           rtu_iu_rob_read_pcfifo_gateclk_vld; 
 input           rtu_yy_xx_flush;                   
 output          bju_cbus_ex2_pipe2_abnormal;       
@@ -160,6 +164,7 @@ output  [4 :0]  iu_idu_pcfifo_dis_inst0_pid;
 output  [4 :0]  iu_idu_pcfifo_dis_inst1_pid;       
 output  [4 :0]  iu_idu_pcfifo_dis_inst2_pid;       
 output  [4 :0]  iu_idu_pcfifo_dis_inst3_pid;       
+output  [4 :0]  iu_idu_pcfifo_dis_inst4_pid;//Jeremy add       
 output          iu_ifu_bht_check_vld;              
 output          iu_ifu_bht_condbr_taken;           
 output          iu_ifu_bht_pred;                   
@@ -175,6 +180,7 @@ output          iu_ifu_pcfifo_full;
 output  [47:0]  iu_rtu_pcfifo_pop0_data;           
 output  [47:0]  iu_rtu_pcfifo_pop1_data;           
 output  [47:0]  iu_rtu_pcfifo_pop2_data;           
+output  [47:0]  iu_rtu_pcfifo_pop3_data;//Jeremy add            
 output          iu_yy_xx_cancel;                   
 
 // &Regs; @33
@@ -357,6 +363,7 @@ wire    [4 :0]  iu_idu_pcfifo_dis_inst0_pid;
 wire    [4 :0]  iu_idu_pcfifo_dis_inst1_pid;       
 wire    [4 :0]  iu_idu_pcfifo_dis_inst2_pid;       
 wire    [4 :0]  iu_idu_pcfifo_dis_inst3_pid;       
+wire    [4 :0]  iu_idu_pcfifo_dis_inst4_pid;//Jeremy add              
 wire            iu_ifu_bht_check_vld;              
 wire            iu_ifu_bht_condbr_taken;           
 wire            iu_ifu_bht_pred;                   
@@ -372,6 +379,7 @@ wire            iu_ifu_pcfifo_full;
 wire    [47:0]  iu_rtu_pcfifo_pop0_data;           
 wire    [47:0]  iu_rtu_pcfifo_pop1_data;           
 wire    [47:0]  iu_rtu_pcfifo_pop2_data;           
+wire    [47:0]  iu_rtu_pcfifo_pop3_data;//Jeremy add            
 wire            iu_yy_xx_cancel;                   
 wire            mispred_clk;                       
 wire            mispred_clk_en;                    
@@ -386,6 +394,7 @@ wire            rtu_iu_flush_fe;
 wire            rtu_iu_rob_read0_pcfifo_vld;       
 wire            rtu_iu_rob_read1_pcfifo_vld;       
 wire            rtu_iu_rob_read2_pcfifo_vld;       
+wire            rtu_iu_rob_read3_pcfifo_vld;//Jeremy add               
 wire            rtu_iu_rob_read_pcfifo_gateclk_vld; 
 wire            rtu_yy_xx_flush;                   
 
@@ -451,10 +460,12 @@ ct_iu_bju_pcfifo  x_ct_iu_bju_pcfifo (
   .iu_idu_pcfifo_dis_inst1_pid        (iu_idu_pcfifo_dis_inst1_pid       ),
   .iu_idu_pcfifo_dis_inst2_pid        (iu_idu_pcfifo_dis_inst2_pid       ),
   .iu_idu_pcfifo_dis_inst3_pid        (iu_idu_pcfifo_dis_inst3_pid       ),
+  .iu_idu_pcfifo_dis_inst4_pid        (iu_idu_pcfifo_dis_inst4_pid       ),//Jeremy add
   .iu_ifu_pcfifo_full                 (iu_ifu_pcfifo_full                ),
   .iu_rtu_pcfifo_pop0_data            (iu_rtu_pcfifo_pop0_data           ),
   .iu_rtu_pcfifo_pop1_data            (iu_rtu_pcfifo_pop1_data           ),
   .iu_rtu_pcfifo_pop2_data            (iu_rtu_pcfifo_pop2_data           ),
+  .iu_rtu_pcfifo_pop3_data            (iu_rtu_pcfifo_pop3_data           ),//Jeremy add
   .iu_yy_xx_cancel                    (iu_yy_xx_cancel                   ),
   .pad_yy_icg_scan_en                 (pad_yy_icg_scan_en                ),
   .pcfifo_bju_bht_pred                (pcfifo_bju_bht_pred               ),
@@ -465,6 +476,7 @@ ct_iu_bju_pcfifo  x_ct_iu_bju_pcfifo (
   .rtu_iu_rob_read0_pcfifo_vld        (rtu_iu_rob_read0_pcfifo_vld       ),
   .rtu_iu_rob_read1_pcfifo_vld        (rtu_iu_rob_read1_pcfifo_vld       ),
   .rtu_iu_rob_read2_pcfifo_vld        (rtu_iu_rob_read2_pcfifo_vld       ),
+  .rtu_iu_rob_read3_pcfifo_vld        (rtu_iu_rob_read3_pcfifo_vld       ),//Jeremy add
   .rtu_iu_rob_read_pcfifo_gateclk_vld (rtu_iu_rob_read_pcfifo_gateclk_vld),
   .rtu_yy_xx_flush                    (rtu_yy_xx_flush                   )
 );

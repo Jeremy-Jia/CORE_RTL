@@ -70,10 +70,12 @@ module ct_iu_bju_pcfifo(
   iu_idu_pcfifo_dis_inst1_pid,
   iu_idu_pcfifo_dis_inst2_pid,
   iu_idu_pcfifo_dis_inst3_pid,
+  iu_idu_pcfifo_dis_inst4_pid,//Jeremy add this
   iu_ifu_pcfifo_full,
   iu_rtu_pcfifo_pop0_data,
   iu_rtu_pcfifo_pop1_data,
   iu_rtu_pcfifo_pop2_data,
+  iu_rtu_pcfifo_pop3_data,//Jeremy add this for inst rt
   iu_yy_xx_cancel,
   pad_yy_icg_scan_en,
   pcfifo_bju_bht_pred,
@@ -84,6 +86,7 @@ module ct_iu_bju_pcfifo(
   rtu_iu_rob_read0_pcfifo_vld,
   rtu_iu_rob_read1_pcfifo_vld,
   rtu_iu_rob_read2_pcfifo_vld,
+  rtu_iu_rob_read3_pcfifo_vld,//Jeremy add this for inst rt
   rtu_iu_rob_read_pcfifo_gateclk_vld,
   rtu_yy_xx_flush
 );
@@ -144,6 +147,7 @@ input            rtu_iu_flush_fe;
 input            rtu_iu_rob_read0_pcfifo_vld;            
 input            rtu_iu_rob_read1_pcfifo_vld;            
 input            rtu_iu_rob_read2_pcfifo_vld;            
+input            rtu_iu_rob_read3_pcfifo_vld;  //Jeremy add          
 input            rtu_iu_rob_read_pcfifo_gateclk_vld;     
 input            rtu_yy_xx_flush;                        
 output  [39 :0]  bju_special_pc;                         
@@ -152,10 +156,12 @@ output  [4  :0]  iu_idu_pcfifo_dis_inst0_pid;
 output  [4  :0]  iu_idu_pcfifo_dis_inst1_pid;            
 output  [4  :0]  iu_idu_pcfifo_dis_inst2_pid;            
 output  [4  :0]  iu_idu_pcfifo_dis_inst3_pid;            
+output  [4  :0]  iu_idu_pcfifo_dis_inst4_pid;//Jeremy add              
 output           iu_ifu_pcfifo_full;                     
 output  [47 :0]  iu_rtu_pcfifo_pop0_data;                
 output  [47 :0]  iu_rtu_pcfifo_pop1_data;                
-output  [47 :0]  iu_rtu_pcfifo_pop2_data;                
+output  [47 :0]  iu_rtu_pcfifo_pop2_data;//Jeremy : need todo                
+output  [47 :0]  iu_rtu_pcfifo_pop3_data;//Jeremy add                 
 output           pcfifo_bju_bht_pred;                    
 output  [24 :0]  pcfifo_bju_chk_idx;                     
 output           pcfifo_bju_jmp_mispred;                 
@@ -169,10 +175,12 @@ reg              create_entry1_vld;
 reg     [47 :0]  iu_rtu_pcfifo_pop0_data;                
 reg     [47 :0]  iu_rtu_pcfifo_pop1_data;                
 reg     [47 :0]  iu_rtu_pcfifo_pop2_data;                
+reg     [47 :0]  iu_rtu_pcfifo_pop3_data;//Jeremy add                  
 reg     [4  :0]  pcfifo_assign0_ptr;                     
 reg     [4  :0]  pcfifo_assign1_ptr;                     
 reg     [4  :0]  pcfifo_assign2_ptr;                     
 reg     [4  :0]  pcfifo_assign3_ptr;                     
+reg     [4  :0]  pcfifo_assign4_ptr;//Jeremy add                       
 reg     [66 :0]  pcfifo_bju_data;                        
 reg     [31 :0]  pcfifo_create0_ptr;                     
 reg     [39 :0]  pcfifo_create1_data_lsb;                
@@ -191,6 +199,7 @@ reg     [66 :0]  pcfifo_special_data;
 reg     [50 :0]  read_entry0_updt_data;                  
 reg     [50 :0]  read_entry1_updt_data;                  
 reg     [50 :0]  read_entry2_updt_data;                  
+reg     [50 :0]  read_entry3_updt_data;//Jeremy add                    
 
 // &Wires; @33
 wire             assign_ptr_clk;                         
@@ -540,6 +549,7 @@ wire    [4  :0]  iu_idu_pcfifo_dis_inst0_pid;
 wire    [4  :0]  iu_idu_pcfifo_dis_inst1_pid;            
 wire    [4  :0]  iu_idu_pcfifo_dis_inst2_pid;            
 wire    [4  :0]  iu_idu_pcfifo_dis_inst3_pid;            
+wire    [4  :0]  iu_idu_pcfifo_dis_inst4_pid;//Jeremy add              
 wire             iu_ifu_pcfifo_full;                     
 wire             iu_yy_xx_cancel;                        
 wire             pad_yy_icg_scan_en;                     
@@ -548,6 +558,7 @@ wire    [4  :0]  pcfifo_assign0_ptr_updt_val;
 wire    [4  :0]  pcfifo_assign1_ptr_updt_val;            
 wire    [4  :0]  pcfifo_assign2_ptr_updt_val;            
 wire    [4  :0]  pcfifo_assign3_ptr_updt_val;            
+wire    [4  :0]  pcfifo_assign4_ptr_updt_val; //Jeremy add             
 wire             pcfifo_bju_bht_pred;                    
 wire    [24 :0]  pcfifo_bju_chk_idx;                     
 wire             pcfifo_bju_jmp_mispred;                 
@@ -566,17 +577,25 @@ wire    [66 :0]  pcfifo_create2_data;
 wire             pcfifo_create2_en;                      
 wire    [31 :0]  pcfifo_create2_ptr;                     
 wire    [4  :0]  pcfifo_create2_ptr_encode;              
-wire    [31 :0]  pcfifo_create2_ptr_encode_expand;       
+wire    [31 :0]  pcfifo_create2_ptr_encode_expand;      
+wire             pcfifo_create3_en; //Jeremy add         
 wire    [31 :0]  pcfifo_create3_ptr;                     
 wire    [4  :0]  pcfifo_create3_ptr_encode;              
 wire    [31 :0]  pcfifo_create3_ptr_encode_expand;       
+wire    [31 :0]  pcfifo_create4_ptr;                     //Jeremy add
+wire    [4  :0]  pcfifo_create4_ptr_encode;              //Jeremy add
+wire    [31 :0]  pcfifo_create4_ptr_encode_expand; //Jeremy add      
 wire    [31 :0]  pcfifo_create5_ptr;                     
+wire    [31 :0]  pcfifo_create7_ptr;    //Jeremy add                   
+wire    [31 :0]  pcfifo_create6_ptr;  //Jeremy add                     
 wire             pcfifo_create_to_read_entry0_en;        
 wire             pcfifo_create_to_read_entry0_gateclk_en; 
 wire             pcfifo_create_to_read_entry1_en;        
 wire             pcfifo_create_to_read_entry1_gateclk_en; 
 wire             pcfifo_create_to_read_entry2_en;        
 wire             pcfifo_create_to_read_entry2_gateclk_en; 
+wire             pcfifo_create_to_read_entry3_en; //Jeremy re-write this logic       
+wire             pcfifo_create_to_read_entry3_gateclk_en;//Jeremy re-write this logic 
 wire    [47 :0]  pcfifo_ex2_bypass_read_data;            
 wire    [31 :0]  pcfifo_ex2_cmplt;                       
 wire    [47 :0]  pcfifo_ex3_bypass_read_data;            
@@ -589,7 +608,7 @@ wire    [31 :0]  pcfifo_pop2_ptr;
 wire    [31 :0]  pcfifo_pop3_ptr;                        
 wire    [31 :0]  pcfifo_pop4_ptr;                        
 wire    [31 :0]  pcfifo_pop5_ptr;                        
-wire    [2  :0]  pcfifo_pop_inst;                        
+wire    [3  :0]  pcfifo_pop_inst;                        
 wire    [3  :0]  pcfifo_pop_inst_num;                    
 wire             pcfifo_pop_vld;                         
 wire             pop_ptr_clk;                            
@@ -606,10 +625,15 @@ wire    [50 :0]  read_entry2_create_data;
 wire             read_entry2_create_en;                  
 wire             read_entry2_create_gateclk_en;          
 wire    [50 :0]  read_entry2_rt_read_data;               
+wire    [50 :0]  read_entry3_create_data;   //Jeremy re-write this logic             
+wire             read_entry3_create_en;                  
+wire             read_entry3_create_gateclk_en;          
+wire    [50 :0]  read_entry3_rt_read_data;     //Jeremy re-write this logic          
 wire             rtu_iu_flush_fe;                        
 wire             rtu_iu_rob_read0_pcfifo_vld;            
 wire             rtu_iu_rob_read1_pcfifo_vld;            
 wire             rtu_iu_rob_read2_pcfifo_vld;            
+wire             rtu_iu_rob_read3_pcfifo_vld;//Jeremy add              
 wire             rtu_iu_rob_read_pcfifo_gateclk_vld;     
 wire             rtu_yy_xx_flush;                        
 
@@ -1667,6 +1691,22 @@ ct_iu_bju_pcfifo_read_entry  x_ct_iu_bju_pcfifo_read_entry2 (
   .x_rt_read_data                (read_entry2_rt_read_data     )
 );
 
+//Jermey add read entry3
+ct_iu_bju_pcfifo_read_entry  x_ct_iu_bju_pcfifo_read_entry2 (
+  .cp0_iu_icg_en                 (cp0_iu_icg_en                ),
+  .cp0_yy_clk_en                 (cp0_yy_clk_en                ),
+  .cpurst_b                      (cpurst_b                     ),
+  .forever_cpuclk                (forever_cpuclk               ),
+  .iu_yy_xx_cancel               (iu_yy_xx_cancel              ),
+  .pad_yy_icg_scan_en            (pad_yy_icg_scan_en           ),
+  .rtu_iu_flush_fe               (rtu_iu_flush_fe              ),
+  .rtu_yy_xx_flush               (rtu_yy_xx_flush              ),
+  .x_create_data                 (read_entry3_create_data      ),
+  .x_create_en                   (read_entry3_create_en        ),
+  .x_create_gateclk_en           (read_entry3_create_gateclk_en),
+  .x_rt_read_data                (read_entry3_rt_read_data     )
+);
+
 
 //==========================================================
 //                   PCFIFO Create Entry
@@ -1856,6 +1896,10 @@ assign pcfifo_create1_en = (create_entry0_vld && pcfifo_create0_2_entry
                          || create_entry1_vld)
                            && !iu_yy_xx_cancel
                            && !rtu_iu_flush_fe;
+assign pcfifo_create1_en = (create_entry0_vld && pcfifo_create0_2_entry
+                         || create_entry1_vld)
+                           && !iu_yy_xx_cancel
+                           && !rtu_iu_flush_fe;
 assign pcfifo_create2_en = create_entry0_vld && create_entry1_vld
                            && (create_entry0_dst_vld
                             || create_entry1_dst_vld)
@@ -1973,14 +2017,21 @@ assign pcfifo_create2_ptr[31:0] = {pcfifo_create0_ptr[29:0],
                                    pcfifo_create0_ptr[31:30]};
 assign pcfifo_create3_ptr[31:0] = {pcfifo_create0_ptr[28:0],
                                    pcfifo_create0_ptr[31:29]};
-assign pcfifo_create5_ptr[31:0] = {pcfifo_create0_ptr[26:0],
+assign pcfifo_create4_ptr[31:0] = {pcfifo_create0_ptr[27:0],//Jeremy add  
+                                   pcfifo_create0_ptr[31:28]};
+assign pcfifo_create5_ptr[31:0] = {pcfifo_create0_ptr[26:0],//Jeremy add  
                                    pcfifo_create0_ptr[31:27]};
+// assign pcfifo_create6_ptr[31:0] = {pcfifo_create0_ptr[25:0],//Jeremy add  
+//                                    pcfifo_create0_ptr[31:26]};
+// assign pcfifo_create7_ptr[31:0] = {pcfifo_create0_ptr[24:0],//Jeremy add  
+//                                    pcfifo_create0_ptr[31:25]};
 
 //encode for assign ptr
 assign pcfifo_create0_ptr_encode_expand[31:0] = pcfifo_create0_ptr[31:0];
 assign pcfifo_create1_ptr_encode_expand[31:0] = pcfifo_create1_ptr[31:0];
 assign pcfifo_create2_ptr_encode_expand[31:0] = pcfifo_create2_ptr[31:0];
-assign pcfifo_create3_ptr_encode_expand[31:0] = pcfifo_create3_ptr[31:0];
+assign pcfifo_create3_ptr_encode_expand[31:0] = pcfifo_create3_ptr[31:0];//Jeremy add  
+//assign pcfifo_create4_ptr_encode_expand[31:0] = pcfifo_create4_ptr[31:0];//Jeremy add  
 
 // &ConnRule(s/^x_num/pcfifo_create0_ptr_encode/); @374
 // &Instance("ct_rtu_encode_32","x_ct_rtu_encode_32_pcfifo_create0_ptr_encode"); @375
@@ -2009,6 +2060,10 @@ ct_rtu_encode_32  x_ct_rtu_encode_32_pcfifo_create3_ptr_encode (
   .x_num                            (pcfifo_create3_ptr_encode       ),
   .x_num_expand                     (pcfifo_create3_ptr_encode_expand)
 );
+// ct_rtu_encode_32  x_ct_rtu_encode_32_pcfifo_create4_ptr_encode (
+//   .x_num                            (pcfifo_create4_ptr_encode       ),
+//   .x_num_expand                     (pcfifo_create4_ptr_encode_expand)
+// );
 
 
 //----------------------------------------------------------
@@ -2017,40 +2072,73 @@ ct_rtu_encode_32  x_ct_rtu_encode_32_pcfifo_create3_ptr_encode (
 assign cen0[31:0] = {32{pcfifo_create0_en}} & pcfifo_create0_ptr[31:0];
 assign cen1[31:0] = {32{pcfifo_create1_en}} & pcfifo_create1_ptr[31:0];
 assign cen2[31:0] = {32{pcfifo_create2_en}} & pcfifo_create2_ptr[31:0];
+// assign cen3[31:0] = {32{pcfifo_create3_en}} & pcfifo_create3_ptr[31:0];//Jeremy add  
 
 //rename for entries
-assign entry0_create_en[2:0]  = {cen2[0], cen1[0], cen0[0]};
-assign entry1_create_en[2:0]  = {cen2[1], cen1[1], cen0[1]};
-assign entry2_create_en[2:0]  = {cen2[2], cen1[2], cen0[2]};
-assign entry3_create_en[2:0]  = {cen2[3], cen1[3], cen0[3]};
-assign entry4_create_en[2:0]  = {cen2[4], cen1[4], cen0[4]};
-assign entry5_create_en[2:0]  = {cen2[5], cen1[5], cen0[5]};
-assign entry6_create_en[2:0]  = {cen2[6], cen1[6], cen0[6]};
-assign entry7_create_en[2:0]  = {cen2[7], cen1[7], cen0[7]};
-assign entry8_create_en[2:0]  = {cen2[8], cen1[8], cen0[8]};
-assign entry9_create_en[2:0]  = {cen2[9], cen1[9], cen0[9]};
-assign entry10_create_en[2:0] = {cen2[10],cen1[10],cen0[10]};
-assign entry11_create_en[2:0] = {cen2[11],cen1[11],cen0[11]};
-assign entry12_create_en[2:0] = {cen2[12],cen1[12],cen0[12]};
-assign entry13_create_en[2:0] = {cen2[13],cen1[13],cen0[13]};
-assign entry14_create_en[2:0] = {cen2[14],cen1[14],cen0[14]};
-assign entry15_create_en[2:0] = {cen2[15],cen1[15],cen0[15]};
-assign entry16_create_en[2:0] = {cen2[16],cen1[16],cen0[16]};
-assign entry17_create_en[2:0] = {cen2[17],cen1[17],cen0[17]};
-assign entry18_create_en[2:0] = {cen2[18],cen1[18],cen0[18]};
-assign entry19_create_en[2:0] = {cen2[19],cen1[19],cen0[19]};
-assign entry20_create_en[2:0] = {cen2[20],cen1[20],cen0[20]};
-assign entry21_create_en[2:0] = {cen2[21],cen1[21],cen0[21]};
-assign entry22_create_en[2:0] = {cen2[22],cen1[22],cen0[22]};
-assign entry23_create_en[2:0] = {cen2[23],cen1[23],cen0[23]};
-assign entry24_create_en[2:0] = {cen2[24],cen1[24],cen0[24]};
-assign entry25_create_en[2:0] = {cen2[25],cen1[25],cen0[25]};
-assign entry26_create_en[2:0] = {cen2[26],cen1[26],cen0[26]};
-assign entry27_create_en[2:0] = {cen2[27],cen1[27],cen0[27]};
-assign entry28_create_en[2:0] = {cen2[28],cen1[28],cen0[28]};
-assign entry29_create_en[2:0] = {cen2[29],cen1[29],cen0[29]};
-assign entry30_create_en[2:0] = {cen2[30],cen1[30],cen0[30]};
-assign entry31_create_en[2:0] = {cen2[31],cen1[31],cen0[31]};
+assign entry0_create_en[3:0]  = {cen2[0], cen1[0], cen0[0]};//Jeremy add  
+assign entry1_create_en[3:0]  = {cen2[1], cen1[1], cen0[1]};//Jeremy add  
+assign entry2_create_en[3:0]  = {cen2[2], cen1[2], cen0[2]};//Jeremy add  
+assign entry3_create_en[3:0]  = {cen2[3], cen1[3], cen0[3]};//Jeremy add  
+assign entry4_create_en[3:0]  = {cen2[4], cen1[4], cen0[4]};//Jeremy add  
+assign entry5_create_en[3:0]  = {cen2[5], cen1[5], cen0[5]};//Jeremy add  
+assign entry6_create_en[3:0]  = {cen2[6], cen1[6], cen0[6]};//Jeremy add  
+assign entry7_create_en[3:0]  = {cen2[7], cen1[7], cen0[7]};//Jeremy add  
+assign entry8_create_en[3:0]  = {cen2[8], cen1[8], cen0[8]};//Jeremy add  
+assign entry9_create_en[3:0]  = {cen2[9], cen1[9], cen0[9]};//Jeremy add  
+assign entry10_create_en[3:0] = {cen2[10],cen1[10],cen0[10]};//Jeremy add  
+assign entry11_create_en[3:0] = {cen2[11],cen1[11],cen0[11]};//Jeremy add  
+assign entry12_create_en[3:0] = {cen2[12],cen1[12],cen0[12]};//Jeremy add  
+assign entry13_create_en[3:0] = {cen2[13],cen1[13],cen0[13]};//Jeremy add  
+assign entry14_create_en[3:0] = {cen2[14],cen1[14],cen0[14]};//Jeremy add  
+assign entry15_create_en[3:0] = {cen2[15],cen1[15],cen0[15]};//Jeremy add  
+assign entry16_create_en[3:0] = {cen2[16],cen1[16],cen0[16]};//Jeremy add  
+assign entry17_create_en[3:0] = {cen2[17],cen1[17],cen0[17]};//Jeremy add  
+assign entry18_create_en[3:0] = {cen2[18],cen1[18],cen0[18]};//Jeremy add  
+assign entry19_create_en[3:0] = {cen2[19],cen1[19],cen0[19]};//Jeremy add  
+assign entry20_create_en[3:0] = {cen2[20],cen1[20],cen0[20]};//Jeremy add  
+assign entry21_create_en[3:0] = {cen2[21],cen1[21],cen0[21]};//Jeremy add  
+assign entry22_create_en[3:0] = {cen2[22],cen1[22],cen0[22]};//Jeremy add  
+assign entry23_create_en[3:0] = {cen2[23],cen1[23],cen0[23]};//Jeremy add  
+assign entry24_create_en[3:0] = {cen2[24],cen1[24],cen0[24]};//Jeremy add  
+assign entry25_create_en[3:0] = {cen2[25],cen1[25],cen0[25]};//Jeremy add  
+assign entry26_create_en[3:0] = {cen2[26],cen1[26],cen0[26]};//Jeremy add  
+assign entry27_create_en[3:0] = {cen2[27],cen1[27],cen0[27]};//Jeremy add  
+assign entry28_create_en[3:0] = {cen2[28],cen1[28],cen0[28]};//Jeremy add  
+assign entry29_create_en[3:0] = {cen2[29],cen1[29],cen0[29]};//Jeremy add  
+assign entry30_create_en[3:0] = {cen2[30],cen1[30],cen0[30]};//Jeremy add  
+assign entry31_create_en[3:0] = {cen2[31],cen1[31],cen0[31]};//Jeremy add  
+// assign entry0_create_en[3:0]  = {cen3[0], cen2[0], cen1[0], cen0[0]};//Jeremy add  
+// assign entry1_create_en[3:0]  = {cen3[1], cen2[1], cen1[1], cen0[1]};//Jeremy add  
+// assign entry2_create_en[3:0]  = {cen3[2], cen2[2], cen1[2], cen0[2]};//Jeremy add  
+// assign entry3_create_en[3:0]  = {cen3[3], cen2[3], cen1[3], cen0[3]};//Jeremy add  
+// assign entry4_create_en[3:0]  = {cen3[4], cen2[4], cen1[4], cen0[4]};//Jeremy add  
+// assign entry5_create_en[3:0]  = {cen3[5], cen2[5], cen1[5], cen0[5]};//Jeremy add  
+// assign entry6_create_en[3:0]  = {cen3[6], cen2[6], cen1[6], cen0[6]};//Jeremy add  
+// assign entry7_create_en[3:0]  = {cen3[7], cen2[7], cen1[7], cen0[7]};//Jeremy add  
+// assign entry8_create_en[3:0]  = {cen3[8], cen2[8], cen1[8], cen0[8]};//Jeremy add  
+// assign entry9_create_en[3:0]  = {cen3[9], cen2[9], cen1[9], cen0[9]};//Jeremy add  
+// assign entry10_create_en[3:0] = {cen3[10], cen2[10],cen1[10],cen0[10]};//Jeremy add  
+// assign entry11_create_en[3:0] = {cen3[11], cen2[11],cen1[11],cen0[11]};//Jeremy add  
+// assign entry12_create_en[3:0] = {cen3[12], cen2[12],cen1[12],cen0[12]};//Jeremy add  
+// assign entry13_create_en[3:0] = {cen3[13], cen2[13],cen1[13],cen0[13]};//Jeremy add  
+// assign entry14_create_en[3:0] = {cen3[14], cen2[14],cen1[14],cen0[14]};//Jeremy add  
+// assign entry15_create_en[3:0] = {cen3[15], cen2[15],cen1[15],cen0[15]};//Jeremy add  
+// assign entry16_create_en[3:0] = {cen3[16], cen2[16],cen1[16],cen0[16]};//Jeremy add  
+// assign entry17_create_en[3:0] = {cen3[17], cen2[17],cen1[17],cen0[17]};//Jeremy add  
+// assign entry18_create_en[3:0] = {cen3[18], cen2[18],cen1[18],cen0[18]};//Jeremy add  
+// assign entry19_create_en[3:0] = {cen3[19], cen2[19],cen1[19],cen0[19]};//Jeremy add  
+// assign entry20_create_en[3:0] = {cen3[20], cen2[20],cen1[20],cen0[20]};//Jeremy add  
+// assign entry21_create_en[3:0] = {cen3[21], cen2[21],cen1[21],cen0[21]};//Jeremy add  
+// assign entry22_create_en[3:0] = {cen3[22], cen2[22],cen1[22],cen0[22]};//Jeremy add  
+// assign entry23_create_en[3:0] = {cen3[23], cen2[23],cen1[23],cen0[23]};//Jeremy add  
+// assign entry24_create_en[3:0] = {cen3[24], cen2[24],cen1[24],cen0[24]};//Jeremy add  
+// assign entry25_create_en[3:0] = {cen3[25], cen2[25],cen1[25],cen0[25]};//Jeremy add  
+// assign entry26_create_en[3:0] = {cen3[26], cen2[26],cen1[26],cen0[26]};//Jeremy add  
+// assign entry27_create_en[3:0] = {cen3[27], cen2[27],cen1[27],cen0[27]};//Jeremy add  
+// assign entry28_create_en[3:0] = {cen3[28], cen2[28],cen1[28],cen0[28]};//Jeremy add  
+// assign entry29_create_en[3:0] = {cen3[29], cen2[29],cen1[29],cen0[29]};//Jeremy add  
+// assign entry30_create_en[3:0] = {cen3[30], cen2[30],cen1[30],cen0[30]};//Jeremy add  
+// assign entry31_create_en[3:0] = {cen3[31], cen2[31],cen1[31],cen0[31]};//Jeremy add  
 //==========================================================
 //                      Assign PID
 //==========================================================
@@ -2088,24 +2176,28 @@ begin
     pcfifo_assign1_ptr[4:0] <= 5'd1;
     pcfifo_assign2_ptr[4:0] <= 5'd2;
     pcfifo_assign3_ptr[4:0] <= 5'd3;
+    pcfifo_assign4_ptr[4:0] <= 5'd3;//Jeremy add
   end
   else if(iu_yy_xx_cancel || rtu_iu_flush_fe) begin
     pcfifo_assign0_ptr[4:0] <= pcfifo_create0_ptr_encode[4:0];
     pcfifo_assign1_ptr[4:0] <= pcfifo_create1_ptr_encode[4:0];
     pcfifo_assign2_ptr[4:0] <= pcfifo_create2_ptr_encode[4:0];
     pcfifo_assign3_ptr[4:0] <= pcfifo_create3_ptr_encode[4:0];
+    pcfifo_assign4_ptr[4:0] <= pcfifo_create4_ptr_encode[4:0];//Jeremy add
   end
   else if(idu_iu_is_pcfifo_inst_vld) begin
     pcfifo_assign0_ptr[4:0] <= pcfifo_assign0_ptr_updt_val[4:0];
     pcfifo_assign1_ptr[4:0] <= pcfifo_assign1_ptr_updt_val[4:0];
     pcfifo_assign2_ptr[4:0] <= pcfifo_assign2_ptr_updt_val[4:0];
     pcfifo_assign3_ptr[4:0] <= pcfifo_assign3_ptr_updt_val[4:0];
+    pcfifo_assign4_ptr[4:0] <= pcfifo_assign4_ptr_updt_val[4:0];//Jeremy add
   end
   else begin
     pcfifo_assign0_ptr[4:0] <= pcfifo_assign0_ptr[4:0];
     pcfifo_assign1_ptr[4:0] <= pcfifo_assign1_ptr[4:0];
     pcfifo_assign2_ptr[4:0] <= pcfifo_assign2_ptr[4:0];
     pcfifo_assign3_ptr[4:0] <= pcfifo_assign3_ptr[4:0];
+    pcfifo_assign4_ptr[4:0] <= pcfifo_assign4_ptr[4:0];//Jeremy add
   end
 end
 
@@ -2114,6 +2206,7 @@ assign iu_idu_pcfifo_dis_inst0_pid[4:0] = pcfifo_assign0_ptr[4:0];
 assign iu_idu_pcfifo_dis_inst1_pid[4:0] = pcfifo_assign1_ptr[4:0];
 assign iu_idu_pcfifo_dis_inst2_pid[4:0] = pcfifo_assign2_ptr[4:0];
 assign iu_idu_pcfifo_dis_inst3_pid[4:0] = pcfifo_assign3_ptr[4:0];
+assign iu_idu_pcfifo_dis_inst4_pid[4:0] = pcfifo_assign4_ptr[4:0];//Jeremy add
 
 //expand for pop ptr
 // &ConnRule(s/^x_num/pcfifo_assign0_ptr/); @478
@@ -2135,66 +2228,8 @@ assign pcfifo_assign2_ptr_updt_val[4:0] =
          pcfifo_assign2_ptr[4:0] + {2'b0, idu_iu_is_pcfifo_inst_num[2:0]};
 assign pcfifo_assign3_ptr_updt_val[4:0] =
          pcfifo_assign3_ptr[4:0] + {2'b0, idu_iu_is_pcfifo_inst_num[2:0]};
-//assign pcfifo_assign0_ptr_inc_val[4:0] =
-//         pcfifo_assign0_ptr[4:0] + {2'b0, idu_iu_is_pcfifo_inst_num[2:0]};
-//assign pcfifo_assign1_ptr_inc_val[4:0] =
-//         pcfifo_assign1_ptr[4:0] + {2'b0, idu_iu_is_pcfifo_inst_num[2:0]};
-//assign pcfifo_assign2_ptr_inc_val[4:0] =
-//         pcfifo_assign2_ptr[4:0] + {2'b0, idu_iu_is_pcfifo_inst_num[2:0]};
-//assign pcfifo_assign3_ptr_inc_val[4:0] =
-//         pcfifo_assign3_ptr[4:0] + {2'b0, idu_iu_is_pcfifo_inst_num[2:0]};
-//
-//&CombBeg;
-//  if(pcfifo_assign0_ptr_inc_val[4:0] == 5'd27)
-//    pcfifo_assign0_ptr_updt_val[4:0] = 5'd3;
-//  else if(pcfifo_assign0_ptr_inc_val[4:0] == 5'd26)
-//    pcfifo_assign0_ptr_updt_val[4:0] = 5'd2;
-//  else if(pcfifo_assign0_ptr_inc_val[4:0] == 5'd25)
-//    pcfifo_assign0_ptr_updt_val[4:0] = 5'd1;
-//  else if(pcfifo_assign0_ptr_inc_val[4:0] == 5'd24)
-//    pcfifo_assign0_ptr_updt_val[4:0] = 5'd0;
-//  else
-//    pcfifo_assign0_ptr_updt_val[4:0] = pcfifo_assign0_ptr_inc_val[4:0];
-//&CombEnd;
-//
-//&CombBeg;
-//  if(pcfifo_assign1_ptr_inc_val[4:0] == 5'd27)
-//    pcfifo_assign1_ptr_updt_val[4:0] = 5'd3;
-//  else if(pcfifo_assign1_ptr_inc_val[4:0] == 5'd26)
-//    pcfifo_assign1_ptr_updt_val[4:0] = 5'd2;
-//  else if(pcfifo_assign1_ptr_inc_val[4:0] == 5'd25)
-//    pcfifo_assign1_ptr_updt_val[4:0] = 5'd1;
-//  else if(pcfifo_assign1_ptr_inc_val[4:0] == 5'd24)
-//    pcfifo_assign1_ptr_updt_val[4:0] = 5'd0;
-//  else 
-//    pcfifo_assign1_ptr_updt_val[4:0] = pcfifo_assign1_ptr_inc_val[4:0];
-//&CombEnd;
-//
-//&CombBeg;
-//  if(pcfifo_assign2_ptr_inc_val[4:0] == 5'd27)
-//    pcfifo_assign2_ptr_updt_val[4:0] = 5'd3;
-//  else if(pcfifo_assign2_ptr_inc_val[4:0] == 5'd26)
-//    pcfifo_assign2_ptr_updt_val[4:0] = 5'd2;
-//  else if(pcfifo_assign2_ptr_inc_val[4:0] == 5'd25)
-//    pcfifo_assign2_ptr_updt_val[4:0] = 5'd1;
-//  else if(pcfifo_assign2_ptr_inc_val[4:0] == 5'd24)
-//    pcfifo_assign2_ptr_updt_val[4:0] = 5'd0;
-//  else 
-//    pcfifo_assign2_ptr_updt_val[4:0] = pcfifo_assign2_ptr_inc_val[4:0];
-//&CombEnd;
-//
-//&CombBeg;
-//  if(pcfifo_assign3_ptr_inc_val[4:0] == 5'd27)
-//    pcfifo_assign3_ptr_updt_val[4:0] = 5'd3;
-//  else if(pcfifo_assign3_ptr_inc_val[4:0] == 5'd26)
-//    pcfifo_assign3_ptr_updt_val[4:0] = 5'd2;
-//  else if(pcfifo_assign3_ptr_inc_val[4:0] == 5'd25)
-//    pcfifo_assign3_ptr_updt_val[4:0] = 5'd1;
-//  else if(pcfifo_assign3_ptr_inc_val[4:0] == 5'd24)
-//    pcfifo_assign3_ptr_updt_val[4:0] = 5'd0;
-//  else
-//    pcfifo_assign3_ptr_updt_val[4:0] = pcfifo_assign3_ptr_inc_val[4:0];
-//&CombEnd;
+assign pcfifo_assign4_ptr_updt_val[4:0] =//Jeremy add
+         pcfifo_assign4_ptr[4:0] + {2'b0, idu_iu_is_pcfifo_inst_num[2:0]};//Jeremy add,this is for uop not inst
 
 //==========================================================
 //                      PCFIFO Full
@@ -2234,7 +2269,7 @@ assign entry_vld[30] = entry30_vld;
 assign entry_vld[31] = entry31_vld;
 
 //if less than 6 entry valid, pcfifo full
-assign pcfifo_full  = |(pcfifo_create5_ptr[31:0] & entry_vld[31:0]);
+assign pcfifo_full  = |(pcfifo_create5_ptr[31:0] & entry_vld[31:0]);//this should  be change??A:not 
 //signal IFU full when pcfifo full
 assign iu_ifu_pcfifo_full  = pcfifo_full;
 assign bju_top_pcfifo_full = pcfifo_full;
@@ -2511,26 +2546,36 @@ assign pcfifo_ex3_bypass_read_data[39:0]   = bju_pcfifo_ex3_pc[39:0];
 //----------------------------------------------------------
 //              Read entry update data select
 //----------------------------------------------------------
-// &CombBeg; @798
+//Jeremy  todo: four pop entry 
 always @( pcfifo_pop2_data[50:0]
        or pcfifo_pop1_data[50:0]
        or pcfifo_pop5_data[50:0]
+       or pcfifo_pop6_data[50:0]//Jeremy add
+       or pcfifo_pop7_data[50:0]//Jeremy add
        or pcfifo_pop4_data[50:0]
        or pcfifo_pop0_data[50:0]
        or pcfifo_pop3_data[50:0]
-       or pcfifo_pop_inst_num[3:1])
+       or pcfifo_pop_inst_num[4:1])
 begin
-  if(pcfifo_pop_inst_num[3]) begin
+  if(pcfifo_pop_inst_num[4]) begin//Jeremy add
+    read_entry0_updt_data[POP_WIDTH-1:0] =//Jeremy add
+         pcfifo_pop4_data[POP_WIDTH-1:0];//Jeremy add
+    read_entry1_updt_data[POP_WIDTH-1:0] =//Jeremy add
+         pcfifo_pop5_data[POP_WIDTH-1:0];//Jeremy add
+    read_entry2_updt_data[POP_WIDTH-1:0] =//Jeremy add
+         pcfifo_pop6_data[POP_WIDTH-1:0];//Jeremy add
+    read_entry3_updt_data[POP_WIDTH-1:0] =//Jeremy add
+         pcfifo_pop7_data[POP_WIDTH-1:0];//Jeremy add
+  end
+  else if(pcfifo_pop_inst_num[3]) begin
     read_entry0_updt_data[POP_WIDTH-1:0] =
          pcfifo_pop3_data[POP_WIDTH-1:0];
     read_entry1_updt_data[POP_WIDTH-1:0] =
          pcfifo_pop4_data[POP_WIDTH-1:0];
     read_entry2_updt_data[POP_WIDTH-1:0] =
          pcfifo_pop5_data[POP_WIDTH-1:0];
-
-//    pcfifo_read_entry0_updt_ptr[31:0] = pcfifo_pop3_ptr[31:0];
-//    pcfifo_read_entry1_updt_ptr[31:0] = pcfifo_pop4_ptr[31:0];
-//    pcfifo_read_entry2_updt_ptr[31:0] = pcfifo_pop5_ptr[31:0];
+    read_entry3_updt_data[POP_WIDTH-1:0] =//Jeremy add
+         pcfifo_pop6_data[POP_WIDTH-1:0];//Jeremy add
   end
   else if(pcfifo_pop_inst_num[2]) begin
     read_entry0_updt_data[POP_WIDTH-1:0] =
@@ -2539,10 +2584,8 @@ begin
          pcfifo_pop3_data[POP_WIDTH-1:0];
     read_entry2_updt_data[POP_WIDTH-1:0] =
          pcfifo_pop4_data[POP_WIDTH-1:0];
-
-//    pcfifo_read_entry0_updt_ptr[31:0] = pcfifo_pop2_ptr[31:0];
-//    pcfifo_read_entry1_updt_ptr[31:0] = pcfifo_pop3_ptr[31:0];
-//    pcfifo_read_entry2_updt_ptr[31:0] = pcfifo_pop4_ptr[31:0];
+    read_entry3_updt_data[POP_WIDTH-1:0] =//Jeremy add
+         pcfifo_pop5_data[POP_WIDTH-1:0];//Jeremy add
   end
   else if(pcfifo_pop_inst_num[1]) begin
     read_entry0_updt_data[POP_WIDTH-1:0] =
@@ -2551,10 +2594,8 @@ begin
          pcfifo_pop2_data[POP_WIDTH-1:0];
     read_entry2_updt_data[POP_WIDTH-1:0] =
          pcfifo_pop3_data[POP_WIDTH-1:0];
-
-//    pcfifo_read_entry0_updt_ptr[31:0] = pcfifo_pop1_ptr[31:0];
-//    pcfifo_read_entry1_updt_ptr[31:0] = pcfifo_pop2_ptr[31:0];
-//    pcfifo_read_entry2_updt_ptr[31:0] = pcfifo_pop3_ptr[31:0];
+    read_entry3_updt_data[POP_WIDTH-1:0] =//Jeremy add
+         pcfifo_pop4_data[POP_WIDTH-1:0];//Jeremy add
   end
   else begin
     read_entry0_updt_data[POP_WIDTH-1:0] =
@@ -2563,12 +2604,9 @@ begin
          pcfifo_pop1_data[POP_WIDTH-1:0];
     read_entry2_updt_data[POP_WIDTH-1:0] =
          pcfifo_pop2_data[POP_WIDTH-1:0];
-
-//    pcfifo_read_entry0_updt_ptr[31:0] = pcfifo_pop0_ptr[31:0];
-//    pcfifo_read_entry1_updt_ptr[31:0] = pcfifo_pop1_ptr[31:0];
-//    pcfifo_read_entry2_updt_ptr[31:0] = pcfifo_pop2_ptr[31:0];
+    read_entry3_updt_data[POP_WIDTH-1:0] =//Jeremy add
+         pcfifo_pop3_data[POP_WIDTH-1:0];//Jeremy add
   end
-// &CombEnd; @847
 end
 
 //----------------------------------------------------------
@@ -2583,15 +2621,20 @@ assign pcfifo_create_to_read_entry1_en =
 assign pcfifo_create_to_read_entry2_en =
      pcfifo_pop2_data[PCFIFO_VLD]   && !read_entry2_rt_read_data[PCFIFO_VLD]
   || pcfifo_pop2_data[PCFIFO_CMPLT] && !read_entry2_rt_read_data[PCFIFO_CMPLT];
+assign pcfifo_create_to_read_entry3_en =//Jeremy add
+     pcfifo_pop3_data[PCFIFO_VLD]   && !read_entry3_rt_read_data[PCFIFO_VLD]//Jeremy add
+  || pcfifo_pop3_data[PCFIFO_CMPLT] && !read_entry3_rt_read_data[PCFIFO_CMPLT];//Jeremy add
 
 assign pcfifo_create_to_read_entry0_gateclk_en = pcfifo_create_to_read_entry0_en;
 assign pcfifo_create_to_read_entry1_gateclk_en = pcfifo_create_to_read_entry1_en;
 assign pcfifo_create_to_read_entry2_gateclk_en = pcfifo_create_to_read_entry2_en;
+assign pcfifo_create_to_read_entry3_gateclk_en = pcfifo_create_to_read_entry3_en;//Jeremy add
 
 //mux between create and update
 assign read_entry0_create_data[POP_WIDTH-1:0] = read_entry0_updt_data[POP_WIDTH-1:0];
 assign read_entry1_create_data[POP_WIDTH-1:0] = read_entry1_updt_data[POP_WIDTH-1:0];
 assign read_entry2_create_data[POP_WIDTH-1:0] = read_entry2_updt_data[POP_WIDTH-1:0];
+assign read_entry3_create_data[POP_WIDTH-1:0] = read_entry3_updt_data[POP_WIDTH-1:0];//Jeremy add
 
 //----------------------------------------------------------
 //                Read entry create enable
@@ -2602,6 +2645,8 @@ assign read_entry1_create_en         = pcfifo_pop_vld
                                        || pcfifo_create_to_read_entry1_en;
 assign read_entry2_create_en         = pcfifo_pop_vld
                                        || pcfifo_create_to_read_entry2_en;
+assign read_entry3_create_en         = pcfifo_pop_vld
+                                       || pcfifo_create_to_read_entry3_en;
 
 assign read_entry0_create_gateclk_en = rtu_iu_rob_read_pcfifo_gateclk_vld
                                        || pcfifo_create_to_read_entry0_gateclk_en;
@@ -2609,6 +2654,8 @@ assign read_entry1_create_gateclk_en = rtu_iu_rob_read_pcfifo_gateclk_vld
                                        || pcfifo_create_to_read_entry1_gateclk_en;
 assign read_entry2_create_gateclk_en = rtu_iu_rob_read_pcfifo_gateclk_vld
                                        || pcfifo_create_to_read_entry2_gateclk_en;
+assign read_entry3_create_gateclk_en = rtu_iu_rob_read_pcfifo_gateclk_vld
+                                       || pcfifo_create_to_read_entry3_gateclk_en;
 
 //----------------------------------------------------------
 //                Read entry complete port
@@ -2629,6 +2676,7 @@ assign read_entry2_create_gateclk_en = rtu_iu_rob_read_pcfifo_gateclk_vld
 
 //----------------------------------------------------------
 //               Output Read Data for RTU
+//               Jeremy re-write for 4 inst
 //----------------------------------------------------------
 //do not need pop MSB vld and flush to rtu
 // &CombBeg; @909
@@ -2675,29 +2723,54 @@ begin
   endcase
 // &CombEnd; @934
 end
+//Jeremy add  pop3 
+always @( pcfifo_ex3_bypass_read_data[47:0]
+       or pcfifo_ex2_bypass_read_data[47:0]
+       or read_entry2_rt_read_data[47:0]
+       or pcfifo_pop3_bypass_sel[2:0])
+begin
+  case(pcfifo_pop3_bypass_sel[2:0])
+    3'b001: iu_rtu_pcfifo_pop3_data[POP_WIDTH-4:0] = read_entry2_rt_read_data[POP_WIDTH-4:0];
+    3'b010: iu_rtu_pcfifo_pop3_data[POP_WIDTH-4:0] = pcfifo_ex2_bypass_read_data[POP_WIDTH-4:0];
+    3'b100: iu_rtu_pcfifo_pop3_data[POP_WIDTH-4:0] = pcfifo_ex3_bypass_read_data[POP_WIDTH-4:0];
+    default:iu_rtu_pcfifo_pop3_data[POP_WIDTH-4:0] = {POP_WIDTH-3{1'bx}};
+  endcase
+// &CombEnd; @934
+end
 
 //==========================================================
 //                      Pcfifo Pop
+//                Jeremy re-wire this logic for 4 inst
 //==========================================================
 //----------------------------------------------------------
 //                Prepare Pop Pointer signals
 //----------------------------------------------------------
-assign pcfifo_pop_inst[2:0] = {rtu_iu_rob_read2_pcfifo_vld,
+assign pcfifo_pop_inst[3:0] = {rtu_iu_rob_read3_pcfifo_vld,        //Jeremy : this signal must be add in RTU_RT.V
+                               rtu_iu_rob_read2_pcfifo_vld,
                                rtu_iu_rob_read1_pcfifo_vld,
                                rtu_iu_rob_read0_pcfifo_vld};
 
-assign pcfifo_pop_vld       = |pcfifo_pop_inst[2:0];
-
-assign pcfifo_pop_inst_num[3] = &pcfifo_pop_inst[2:0];
+assign pcfifo_pop_vld       = |pcfifo_pop_inst[3:0];//Jeremy re-write this logic
+//Jeremy should be change 
+assign pcfifo_pop_inst_num[4] = &pcfifo_pop_inst[3:0];
+assign pcfifo_pop_inst_num[3] = 
+     !pcfifo_pop_inst[3] &&  pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] &&  pcfifo_pop_inst[0]    //Jeremy re-write this logic
+  ||  pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] &&  pcfifo_pop_inst[0]    //Jeremy re-write this logic
+  ||  pcfifo_pop_inst[3] &&  pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&  pcfifo_pop_inst[0]    //Jeremy re-write this logic
+  ||  pcfifo_pop_inst[3] &&  pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0] ; //Jeremy re-write this logic
 assign pcfifo_pop_inst_num[2] = 
-     !pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] &&  pcfifo_pop_inst[0]
-  ||  pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&  pcfifo_pop_inst[0]
-  ||  pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] && !pcfifo_pop_inst[0];
+     !pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] &&   pcfifo_pop_inst[0] //Jeremy re-write this logic
+  || !pcfifo_pop_inst[3] &&  pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&   pcfifo_pop_inst[0] //Jeremy re-write this logic
+  || !pcfifo_pop_inst[3] &&  pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0] //Jeremy re-write this logic
+  ||  pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&   pcfifo_pop_inst[0] //Jeremy re-write this logic
+  ||  pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0] //Jeremy re-write this logic
+  ||  pcfifo_pop_inst[3] &&  pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0]; //Jeremy re-write this logic
 assign pcfifo_pop_inst_num[1] = 
-     !pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&  pcfifo_pop_inst[0]
-  || !pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] && !pcfifo_pop_inst[0]
-  ||  pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] && !pcfifo_pop_inst[0];
-assign pcfifo_pop_inst_num[0] = !(|pcfifo_pop_inst[2:0]);
+     !pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&   pcfifo_pop_inst[0] //Jeremy re-write this logic
+  || !pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0] //Jeremy re-write this logic
+  || !pcfifo_pop_inst[3] &&  pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0] //Jeremy re-write this logic
+  ||  pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0] //Jeremy re-write this logic
+assign pcfifo_pop_inst_num[0] = !(|pcfifo_pop_inst[3:0]);
 
 //----------------------------------------------------------
 //                 Instance of Gated Cell  
@@ -2724,6 +2797,7 @@ gated_clk_cell  x_pop_ptr_gated_clk (
 
 //----------------------------------------------------------
 //                      Pop Pointers
+//                Jeremy remake  for 4 inst
 //----------------------------------------------------------
 always @(posedge pop_ptr_clk or negedge cpurst_b)
 begin
@@ -2732,42 +2806,56 @@ begin
     pcfifo_pop0_pid[4:0]  <= 5'd0;
     pcfifo_pop1_pid[4:0]  <= 5'd1;
     pcfifo_pop2_pid[4:0]  <= 5'd2;
+    pcfifo_pop3_pid[4:0]  <= 5'd2;//Jeremy re-write this logic
   end
   else if(rtu_yy_xx_flush && (iu_yy_xx_cancel || rtu_iu_flush_fe)) begin
     pcfifo_pop0_ptr[31:0] <= pcfifo_create0_ptr[31:0];
     pcfifo_pop0_pid[4:0]  <= pcfifo_create0_ptr_encode[4:0];
     pcfifo_pop1_pid[4:0]  <= pcfifo_create1_ptr_encode[4:0];
     pcfifo_pop2_pid[4:0]  <= pcfifo_create2_ptr_encode[4:0];
+    pcfifo_pop3_pid[4:0]  <= pcfifo_create3_ptr_encode[4:0];//Jeremy re-write this logic
   end
   else if(rtu_yy_xx_flush) begin
     pcfifo_pop0_ptr[31:0] <= pcfifo_assign0_ptr_expand[31:0];
     pcfifo_pop0_pid[4:0]  <= pcfifo_assign0_ptr[4:0];
     pcfifo_pop1_pid[4:0]  <= pcfifo_assign1_ptr[4:0];
     pcfifo_pop2_pid[4:0]  <= pcfifo_assign2_ptr[4:0];
+    pcfifo_pop3_pid[4:0]  <= pcfifo_assign3_ptr[4:0];//Jeremy re-write this logic
+  end
+  else if(pcfifo_pop_inst_num[4]) begin//Jeremy re-write this logic
+    pcfifo_pop0_ptr[31:0] <= {pcfifo_pop0_ptr[27:0],pcfifo_pop0_ptr[31:28]};//Jeremy re-write this logic
+    pcfifo_pop0_pid[4:0]  <= pcfifo_pop0_pid[4:0] + 5'd4;//Jeremy re-write this logic
+    pcfifo_pop1_pid[4:0]  <= pcfifo_pop1_pid[4:0] + 5'd4;//Jeremy re-write this logic
+    pcfifo_pop2_pid[4:0]  <= pcfifo_pop2_pid[4:0] + 5'd4;//Jeremy re-write this logic
+    pcfifo_pop3_pid[4:0]  <= pcfifo_pop3_pid[4:0] + 5'd4;//Jeremy re-write this logic
   end
   else if(pcfifo_pop_inst_num[3]) begin
-    pcfifo_pop0_ptr[31:0] <= {pcfifo_pop0_ptr[28:0],pcfifo_pop0_ptr[31:29]};
-    pcfifo_pop0_pid[4:0]  <= pcfifo_pop0_pid[4:0] + 5'd3;
-    pcfifo_pop1_pid[4:0]  <= pcfifo_pop1_pid[4:0] + 5'd3;
-    pcfifo_pop2_pid[4:0]  <= pcfifo_pop2_pid[4:0] + 5'd3;
+    pcfifo_pop0_ptr[31:0] <= {pcfifo_pop0_ptr[28:0],pcfifo_pop0_ptr[31:29]};//Jeremy re-write this logic
+    pcfifo_pop0_pid[4:0]  <= pcfifo_pop0_pid[4:0] + 5'd3;//Jeremy re-write this logic
+    pcfifo_pop1_pid[4:0]  <= pcfifo_pop1_pid[4:0] + 5'd3;//Jeremy re-write this logic
+    pcfifo_pop2_pid[4:0]  <= pcfifo_pop2_pid[4:0] + 5'd3;//Jeremy re-write this logic
+    pcfifo_pop3_pid[4:0]  <= pcfifo_pop3_pid[4:0] + 5'd3;//Jeremy re-write this logic
   end
   else if(pcfifo_pop_inst_num[2]) begin
-    pcfifo_pop0_ptr[31:0] <= {pcfifo_pop0_ptr[29:0],pcfifo_pop0_ptr[31:30]};
-    pcfifo_pop0_pid[4:0]  <= pcfifo_pop0_pid[4:0] + 5'd2;
-    pcfifo_pop1_pid[4:0]  <= pcfifo_pop1_pid[4:0] + 5'd2;
-    pcfifo_pop2_pid[4:0]  <= pcfifo_pop2_pid[4:0] + 5'd2;
+    pcfifo_pop0_ptr[31:0] <= {pcfifo_pop0_ptr[29:0],pcfifo_pop0_ptr[31:30]};//Jeremy re-write this logic
+    pcfifo_pop0_pid[4:0]  <= pcfifo_pop0_pid[4:0] + 5'd2;//Jeremy re-write this logic
+    pcfifo_pop1_pid[4:0]  <= pcfifo_pop1_pid[4:0] + 5'd2;//Jeremy re-write this logic
+    pcfifo_pop2_pid[4:0]  <= pcfifo_pop2_pid[4:0] + 5'd2;//Jeremy re-write this logic
+    pcfifo_pop3_pid[4:0]  <= pcfifo_pop3_pid[4:0] + 5'd2;//Jeremy re-write this logic
   end
   else if(pcfifo_pop_inst_num[1]) begin
-    pcfifo_pop0_ptr[31:0] <= {pcfifo_pop0_ptr[30:0],pcfifo_pop0_ptr[31]};
-    pcfifo_pop0_pid[4:0]  <= pcfifo_pop0_pid[4:0] + 5'd1;
-    pcfifo_pop1_pid[4:0]  <= pcfifo_pop1_pid[4:0] + 5'd1;
-    pcfifo_pop2_pid[4:0]  <= pcfifo_pop2_pid[4:0] + 5'd1;
+    pcfifo_pop0_ptr[31:0] <= {pcfifo_pop0_ptr[30:0],pcfifo_pop0_ptr[31]};//Jeremy re-write this logic
+    pcfifo_pop0_pid[4:0]  <= pcfifo_pop0_pid[4:0] + 5'd1;//Jeremy re-write this logic
+    pcfifo_pop1_pid[4:0]  <= pcfifo_pop1_pid[4:0] + 5'd1;//Jeremy re-write this logic
+    pcfifo_pop2_pid[4:0]  <= pcfifo_pop2_pid[4:0] + 5'd1;//Jeremy re-write this logic
+    pcfifo_pop3_pid[4:0]  <= pcfifo_pop3_pid[4:0] + 5'd1;//Jeremy re-write this logic
   end
   else begin
     pcfifo_pop0_ptr[31:0] <= pcfifo_pop0_ptr[31:0];
     pcfifo_pop0_pid[4:0]  <= pcfifo_pop0_pid[4:0];
     pcfifo_pop1_pid[4:0]  <= pcfifo_pop1_pid[4:0];
     pcfifo_pop2_pid[4:0]  <= pcfifo_pop2_pid[4:0];
+    pcfifo_pop3_pid[4:0]  <= pcfifo_pop3_pid[4:0];//Jeremy re-write this logic
   end
 end
 
@@ -2775,14 +2863,18 @@ assign pcfifo_pop1_ptr[31:0] = {pcfifo_pop0_ptr[30:0],pcfifo_pop0_ptr[31]};
 assign pcfifo_pop2_ptr[31:0] = {pcfifo_pop0_ptr[29:0],pcfifo_pop0_ptr[31:30]};
 assign pcfifo_pop3_ptr[31:0] = {pcfifo_pop0_ptr[28:0],pcfifo_pop0_ptr[31:29]};
 assign pcfifo_pop4_ptr[31:0] = {pcfifo_pop0_ptr[27:0],pcfifo_pop0_ptr[31:28]};
-assign pcfifo_pop5_ptr[31:0] = {pcfifo_pop0_ptr[26:0],pcfifo_pop0_ptr[31:27]};
+assign pcfifo_pop5_ptr[31:0] = {pcfifo_pop0_ptr[26:0],pcfifo_pop0_ptr[31:27]};//Jeremy add  
+assign pcfifo_pop6_ptr[31:0] = {pcfifo_pop0_ptr[25:0],pcfifo_pop0_ptr[31:26]};//
+assign pcfifo_pop7_ptr[31:0] = {pcfifo_pop0_ptr[24:0],pcfifo_pop0_ptr[31:25]};//Jeremy add  extend to 8 ptr
 
 //----------------------------------------------------------
-//                    Bypass valid
+//                    Bypass valid 
+//           Jeremy change for 4 inst
 //----------------------------------------------------------
 assign pcfifo_pop0_bypass_sel[0] = !pcfifo_pop0_bypass_sel[1] && !pcfifo_pop0_bypass_sel[2];
 assign pcfifo_pop1_bypass_sel[0] = !pcfifo_pop1_bypass_sel[1] && !pcfifo_pop1_bypass_sel[2];
 assign pcfifo_pop2_bypass_sel[0] = !pcfifo_pop2_bypass_sel[1] && !pcfifo_pop2_bypass_sel[2];
+assign pcfifo_pop3_bypass_sel[0] = !pcfifo_pop3_bypass_sel[1] && !pcfifo_pop3_bypass_sel[2];//Jeremy re-write this logic
 
 assign pcfifo_pop0_bypass_sel[1] = bju_pcfifo_ex2_inst_vld
                                    && (bju_pcfifo_ex2_pid[4:0] == pcfifo_pop0_pid[4:0]);
@@ -2790,6 +2882,8 @@ assign pcfifo_pop1_bypass_sel[1] = bju_pcfifo_ex2_inst_vld
                                    && (bju_pcfifo_ex2_pid[4:0] == pcfifo_pop1_pid[4:0]);
 assign pcfifo_pop2_bypass_sel[1] = bju_pcfifo_ex2_inst_vld
                                    && (bju_pcfifo_ex2_pid[4:0] == pcfifo_pop2_pid[4:0]);
+assign pcfifo_pop3_bypass_sel[1] = bju_pcfifo_ex2_inst_vld
+                                   && (bju_pcfifo_ex2_pid[4:0] == pcfifo_pop3_pid[4:0]);//Jeremy re-write this logic
 
 assign pcfifo_pop0_bypass_sel[2] = bju_pcfifo_ex3_inst_vld
                                    && (bju_pcfifo_ex3_pid[4:0] == pcfifo_pop0_pid[4:0]);
@@ -2797,17 +2891,23 @@ assign pcfifo_pop1_bypass_sel[2] = bju_pcfifo_ex3_inst_vld
                                    && (bju_pcfifo_ex3_pid[4:0] == pcfifo_pop1_pid[4:0]);
 assign pcfifo_pop2_bypass_sel[2] = bju_pcfifo_ex3_inst_vld
                                    && (bju_pcfifo_ex3_pid[4:0] == pcfifo_pop2_pid[4:0]);
+assign pcfifo_pop3_bypass_sel[2] = bju_pcfifo_ex3_inst_vld
+                                   && (bju_pcfifo_ex3_pid[4:0] == pcfifo_pop3_pid[4:0]);//Jeremy re-write this logic
 
 //----------------------------------------------------------
 //                      Pop Ports
 //----------------------------------------------------------
-assign entry_pop_en[31:0] = {32{|(pcfifo_pop_inst_num[3:1])}} & pcfifo_pop0_ptr[31:0]
-                          | {32{|(pcfifo_pop_inst_num[3:2])}} & pcfifo_pop1_ptr[31:0]
-                          | {32{pcfifo_pop_inst_num[3]}}      & pcfifo_pop2_ptr[31:0];
+assign entry_pop_en[31:0] = {32{|(pcfifo_pop_inst_num[4:1])}} & pcfifo_pop0_ptr[31:0] //Jeremy re-write this logic
+                          | {32{|(pcfifo_pop_inst_num[4:2])}} & pcfifo_pop1_ptr[31:0]                //Jeremy re-write this logic
+                          | {32{|(pcfifo_pop_inst_num[4:3])}} & pcfifo_pop2_ptr[31:0]                //Jeremy re-write this logic
+                          | {32{pcfifo_pop_inst_num[4]}}       & pcfifo_pop3_ptr[31:0];               //Jeremy re-write this logic
+
+
 assign entry_pop_gateclk_en[31:0] = {32{rtu_iu_rob_read_pcfifo_gateclk_vld}}
                                     & (pcfifo_pop0_ptr[31:0]
                                      | pcfifo_pop1_ptr[31:0]
-                                     | pcfifo_pop2_ptr[31:0]);
+                                     | pcfifo_pop2_ptr[31:0]
+                                     | pcfifo_pop3_ptr[31:0]);//Jeremy add 
 
 //rename for entries
 assign entry0_pop_en  = entry_pop_en[0];
@@ -2876,8 +2976,19 @@ assign entry29_pop_gateclk_en = entry_pop_gateclk_en[29];
 assign entry30_pop_gateclk_en = entry_pop_gateclk_en[30];
 assign entry31_pop_gateclk_en = entry_pop_gateclk_en[31];
 
+
+
+
+
+
+
+
+
+
+
 //----------------------------------------------------------
-//                 Read Port for RTU
+//                 Read Port for RTU Modified by Jeremy
+//                       4 read entry for 4 inst retire
 //----------------------------------------------------------
 // &CombBeg; @1129
 always @( entry26_rt_read_data[50:0]
@@ -3315,6 +3426,148 @@ begin
     default   : pcfifo_pop5_data[POP_WIDTH-1:0] = {POP_WIDTH{1'bx}};
   endcase
 // &CombEnd; @1355
+end
+//Jeremy add pop6_data
+always @( entry26_rt_read_data[50:0]
+       or entry16_rt_read_data[50:0]
+       or entry5_rt_read_data[50:0]
+       or entry11_rt_read_data[50:0]
+       or entry1_rt_read_data[50:0]
+       or entry19_rt_read_data[50:0]
+       or entry30_rt_read_data[50:0]
+       or entry29_rt_read_data[50:0]
+       or entry13_rt_read_data[50:0]
+       or entry25_rt_read_data[50:0]
+       or entry3_rt_read_data[50:0]
+       or entry20_rt_read_data[50:0]
+       or entry2_rt_read_data[50:0]
+       or entry9_rt_read_data[50:0]
+       or entry6_rt_read_data[50:0]
+       or entry0_rt_read_data[50:0]
+       or entry28_rt_read_data[50:0]
+       or entry7_rt_read_data[50:0]
+       or entry8_rt_read_data[50:0]
+       or entry14_rt_read_data[50:0]
+       or entry23_rt_read_data[50:0]
+       or pcfifo_pop6_ptr[31:0]
+       or entry18_rt_read_data[50:0]
+       or entry24_rt_read_data[50:0]
+       or entry12_rt_read_data[50:0]
+       or entry17_rt_read_data[50:0]
+       or entry31_rt_read_data[50:0]
+       or entry22_rt_read_data[50:0]
+       or entry27_rt_read_data[50:0]
+       or entry21_rt_read_data[50:0]
+       or entry10_rt_read_data[50:0]
+       or entry15_rt_read_data[50:0]
+       or entry4_rt_read_data[50:0])
+begin
+  case (pcfifo_pop6_ptr[31:0])
+    32'h00000001: pcfifo_pop6_data[POP_WIDTH-1:0] = entry0_rt_read_data[POP_WIDTH-1:0];
+    32'h00000002: pcfifo_pop6_data[POP_WIDTH-1:0] = entry1_rt_read_data[POP_WIDTH-1:0];
+    32'h00000004: pcfifo_pop6_data[POP_WIDTH-1:0] = entry2_rt_read_data[POP_WIDTH-1:0];
+    32'h00000008: pcfifo_pop6_data[POP_WIDTH-1:0] = entry3_rt_read_data[POP_WIDTH-1:0];
+    32'h00000010: pcfifo_pop6_data[POP_WIDTH-1:0] = entry4_rt_read_data[POP_WIDTH-1:0];
+    32'h00000020: pcfifo_pop6_data[POP_WIDTH-1:0] = entry5_rt_read_data[POP_WIDTH-1:0];
+    32'h00000040: pcfifo_pop6_data[POP_WIDTH-1:0] = entry6_rt_read_data[POP_WIDTH-1:0];
+    32'h00000080: pcfifo_pop6_data[POP_WIDTH-1:0] = entry7_rt_read_data[POP_WIDTH-1:0];
+    32'h00000100: pcfifo_pop6_data[POP_WIDTH-1:0] = entry8_rt_read_data[POP_WIDTH-1:0];
+    32'h00000200: pcfifo_pop6_data[POP_WIDTH-1:0] = entry9_rt_read_data[POP_WIDTH-1:0];
+    32'h00000400: pcfifo_pop6_data[POP_WIDTH-1:0] = entry10_rt_read_data[POP_WIDTH-1:0];
+    32'h00000800: pcfifo_pop6_data[POP_WIDTH-1:0] = entry11_rt_read_data[POP_WIDTH-1:0];
+    32'h00001000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry12_rt_read_data[POP_WIDTH-1:0];
+    32'h00002000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry13_rt_read_data[POP_WIDTH-1:0];
+    32'h00004000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry14_rt_read_data[POP_WIDTH-1:0];
+    32'h00008000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry15_rt_read_data[POP_WIDTH-1:0];
+    32'h00010000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry16_rt_read_data[POP_WIDTH-1:0];
+    32'h00020000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry17_rt_read_data[POP_WIDTH-1:0];
+    32'h00040000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry18_rt_read_data[POP_WIDTH-1:0];
+    32'h00080000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry19_rt_read_data[POP_WIDTH-1:0];
+    32'h00100000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry20_rt_read_data[POP_WIDTH-1:0];
+    32'h00200000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry21_rt_read_data[POP_WIDTH-1:0];
+    32'h00400000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry22_rt_read_data[POP_WIDTH-1:0];
+    32'h00800000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry23_rt_read_data[POP_WIDTH-1:0];
+    32'h01000000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry24_rt_read_data[POP_WIDTH-1:0];
+    32'h02000000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry25_rt_read_data[POP_WIDTH-1:0];
+    32'h04000000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry26_rt_read_data[POP_WIDTH-1:0];
+    32'h08000000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry27_rt_read_data[POP_WIDTH-1:0];
+    32'h10000000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry28_rt_read_data[POP_WIDTH-1:0];
+    32'h20000000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry29_rt_read_data[POP_WIDTH-1:0];
+    32'h40000000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry30_rt_read_data[POP_WIDTH-1:0];
+    32'h80000000: pcfifo_pop6_data[POP_WIDTH-1:0] = entry31_rt_read_data[POP_WIDTH-1:0];
+    default   : pcfifo_pop6_data[POP_WIDTH-1:0] = {POP_WIDTH{1'bx}};
+  endcase
+end
+//Jeremy add  pop7_data
+always @( entry26_rt_read_data[50:0]
+       or entry16_rt_read_data[50:0]
+       or entry5_rt_read_data[50:0]
+       or entry11_rt_read_data[50:0]
+       or entry1_rt_read_data[50:0]
+       or entry19_rt_read_data[50:0]
+       or entry30_rt_read_data[50:0]
+       or entry29_rt_read_data[50:0]
+       or entry13_rt_read_data[50:0]
+       or entry25_rt_read_data[50:0]
+       or entry3_rt_read_data[50:0]
+       or entry20_rt_read_data[50:0]
+       or entry2_rt_read_data[50:0]
+       or entry9_rt_read_data[50:0]
+       or entry6_rt_read_data[50:0]
+       or entry0_rt_read_data[50:0]
+       or entry28_rt_read_data[50:0]
+       or entry7_rt_read_data[50:0]
+       or entry8_rt_read_data[50:0]
+       or entry14_rt_read_data[50:0]
+       or entry23_rt_read_data[50:0]
+       or pcfifo_pop7_ptr[31:0]
+       or entry18_rt_read_data[50:0]
+       or entry24_rt_read_data[50:0]
+       or entry12_rt_read_data[50:0]
+       or entry17_rt_read_data[50:0]
+       or entry31_rt_read_data[50:0]
+       or entry22_rt_read_data[50:0]
+       or entry27_rt_read_data[50:0]
+       or entry21_rt_read_data[50:0]
+       or entry10_rt_read_data[50:0]
+       or entry15_rt_read_data[50:0]
+       or entry4_rt_read_data[50:0])
+begin
+  case (pcfifo_pop7_ptr[31:0])
+    32'h00000001: pcfifo_pop7_data[POP_WIDTH-1:0] = entry0_rt_read_data[POP_WIDTH-1:0];
+    32'h00000002: pcfifo_pop7_data[POP_WIDTH-1:0] = entry1_rt_read_data[POP_WIDTH-1:0];
+    32'h00000004: pcfifo_pop7_data[POP_WIDTH-1:0] = entry2_rt_read_data[POP_WIDTH-1:0];
+    32'h00000008: pcfifo_pop7_data[POP_WIDTH-1:0] = entry3_rt_read_data[POP_WIDTH-1:0];
+    32'h00000010: pcfifo_pop7_data[POP_WIDTH-1:0] = entry4_rt_read_data[POP_WIDTH-1:0];
+    32'h00000020: pcfifo_pop7_data[POP_WIDTH-1:0] = entry5_rt_read_data[POP_WIDTH-1:0];
+    32'h00000040: pcfifo_pop7_data[POP_WIDTH-1:0] = entry6_rt_read_data[POP_WIDTH-1:0];
+    32'h00000080: pcfifo_pop7_data[POP_WIDTH-1:0] = entry7_rt_read_data[POP_WIDTH-1:0];
+    32'h00000100: pcfifo_pop7_data[POP_WIDTH-1:0] = entry8_rt_read_data[POP_WIDTH-1:0];
+    32'h00000200: pcfifo_pop7_data[POP_WIDTH-1:0] = entry9_rt_read_data[POP_WIDTH-1:0];
+    32'h00000400: pcfifo_pop7_data[POP_WIDTH-1:0] = entry10_rt_read_data[POP_WIDTH-1:0];
+    32'h00000800: pcfifo_pop7_data[POP_WIDTH-1:0] = entry11_rt_read_data[POP_WIDTH-1:0];
+    32'h00001000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry12_rt_read_data[POP_WIDTH-1:0];
+    32'h00002000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry13_rt_read_data[POP_WIDTH-1:0];
+    32'h00004000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry14_rt_read_data[POP_WIDTH-1:0];
+    32'h00008000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry15_rt_read_data[POP_WIDTH-1:0];
+    32'h00010000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry16_rt_read_data[POP_WIDTH-1:0];
+    32'h00020000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry17_rt_read_data[POP_WIDTH-1:0];
+    32'h00040000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry18_rt_read_data[POP_WIDTH-1:0];
+    32'h00080000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry19_rt_read_data[POP_WIDTH-1:0];
+    32'h00100000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry20_rt_read_data[POP_WIDTH-1:0];
+    32'h00200000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry21_rt_read_data[POP_WIDTH-1:0];
+    32'h00400000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry22_rt_read_data[POP_WIDTH-1:0];
+    32'h00800000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry23_rt_read_data[POP_WIDTH-1:0];
+    32'h01000000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry24_rt_read_data[POP_WIDTH-1:0];
+    32'h02000000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry25_rt_read_data[POP_WIDTH-1:0];
+    32'h04000000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry26_rt_read_data[POP_WIDTH-1:0];
+    32'h08000000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry27_rt_read_data[POP_WIDTH-1:0];
+    32'h10000000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry28_rt_read_data[POP_WIDTH-1:0];
+    32'h20000000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry29_rt_read_data[POP_WIDTH-1:0];
+    32'h40000000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry30_rt_read_data[POP_WIDTH-1:0];
+    32'h80000000: pcfifo_pop7_data[POP_WIDTH-1:0] = entry31_rt_read_data[POP_WIDTH-1:0];
+    default   : pcfifo_pop7_data[POP_WIDTH-1:0] = {POP_WIDTH{1'bx}};
+  endcase
 end
 
 // &ModuleEnd; @1357

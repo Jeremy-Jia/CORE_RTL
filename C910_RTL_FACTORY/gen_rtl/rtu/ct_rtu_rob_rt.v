@@ -36,8 +36,7 @@ module ct_rtu_rob_rt(
   iu_rtu_pcfifo_pop0_data,
   iu_rtu_pcfifo_pop1_data,
   iu_rtu_pcfifo_pop2_data,
-  iu_rtu_pcfifo_pop3_data,
-  iu_rtu_pcfifo_pop4_data,// &&* mu
+  iu_rtu_pcfifo_pop3_data,//Jeremy add   
   iu_rtu_pipe0_abnormal,
   iu_rtu_pipe0_cmplt,
   iu_rtu_pipe0_efpc,
@@ -84,6 +83,7 @@ module ct_rtu_rob_rt(
   retire_rob_inst0_jmp,
   retire_rob_inst1_jmp,
   retire_rob_inst2_jmp,
+  retire_rob_inst3_jmp,//Jeremy add
   retire_rob_inst_flush,
   retire_rob_rt_mask,
   retire_rob_split_fof_flush,
@@ -316,6 +316,7 @@ input           ifu_rtu_cur_pc_load;
 input   [47:0]  iu_rtu_pcfifo_pop0_data;           
 input   [47:0]  iu_rtu_pcfifo_pop1_data;           
 input   [47:0]  iu_rtu_pcfifo_pop2_data;           
+input   [47:0]  iu_rtu_pcfifo_pop3_data;//Jeremy add      iu-pcfifo.v     
 input           iu_rtu_pipe0_abnormal;             
 input           iu_rtu_pipe0_cmplt;                
 input   [38:0]  iu_rtu_pipe0_efpc;                 
@@ -366,7 +367,7 @@ input   [39:0]  rob_read1_data;
 input   [6 :0]  rob_read1_iid;                     
 input   [39:0]  rob_read2_data;                    
 input   [6 :0]  rob_read2_iid;
-input   [39:0]  rob_read3_data;      // &&* mu              
+input   [39:0]  rob_read3_data;     //Jeremy add : should be add in rob.v
 input   [6 :0]  rob_read3_iid;       // &&* mu              
 input           vfpu_rtu_pipe6_cmplt;              
 input   [6 :0]  vfpu_rtu_pipe6_iid;                
@@ -1222,8 +1223,7 @@ parameter PCFIFO_POP_WIDTH    = 48;
 //----------------------------------------------------------
 //                   rename for input
 //----------------------------------------------------------
-// &Force("bus","rob_read1_data",ROB_WIDTH-1,0); @81
-// &Force("bus","rob_read2_data",ROB_WIDTH-1,0); @82
+
 assign rob_read0_inst_vld        = rob_read0_data[ROB_VLD];
 assign rob_read1_inst_vld        = rob_read1_data[ROB_VLD];
 assign rob_read2_inst_vld        = rob_read2_data[ROB_VLD];
@@ -1709,10 +1709,7 @@ assign rob_read3_abnormal = rob_read3_pipe0_abnormal
                          || rob_read3_expt_entry_vld;
 // &&* mu end
 
-// &Force("output","retire_entry0_updt_vld"); @444
-// &Force("output","retire_entry1_updt_vld"); @445
-// &Force("output","retire_entry2_updt_vld"); @446
-// &Force("output","retire_entry0_updt_gateclk_vld"); @447
+
 //rob read0 will unconditionally update retire entry0
 assign retire_entry0_updt_vld = rob_read0_cmplted
                                 && !retire_rob_rt_mask
@@ -2157,11 +2154,13 @@ assign rob_read1_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
 // &&???????
 // &&???????
 // &CombBeg; @758
+//Jeremy : need to modify
 always @( rob_read1_data[10]
        or iu_rtu_pcfifo_pop0_data[47:0]
        or iu_rtu_pcfifo_pop1_data[47:0]
        or rob_read0_data[10]
-       or iu_rtu_pcfifo_pop2_data[47:0])
+       or iu_rtu_pcfifo_pop2_data[47:0]
+       or iu_rtu_pcfifo_pop3_data[47:0])
 begin
   if(rob_read0_data[ROB_PCFIFO] && rob_read1_data[ROB_PCFIFO])
     rob_read2_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
@@ -2819,7 +2818,36 @@ assign rob_retire_inst2_cur_pc[38:0]  = retire_inst2_cur_pc_addend0[38:0]
 //for pad
 assign rtu_pad_retire2_pc[39:0]       = {rob_retire_inst2_cur_pc[38:0],1'b0};
 //retire inst2 next pc
-assign rob_retire_inst2_next_pc[38:0] = rob_cur_pc[38:0];
+//Jeremy fix this logic
+assign rob_retire_inst2_next_pc[38:0] = (retire_inst3_vld)
+                                        ? rob_retire_inst3_cur_pc[38:0]
+                                        : rob_cur_pc[38:0];
+//----------------------------------------------------------
+//               Retire inst 3 Current PC add by Jeremy
+//----------------------------------------------------------
+always @(posedge entry3_clk or negedge cpurst_b)
+begin
+  if(!cpurst_b) begin
+    retire_inst3_cur_pc_addend0[38:0] <= 39'b0;
+    retire_inst3_cur_pc_addend1[4:0]  <= 5'b0;
+  end
+  else if(retire_entry3_updt_vld) begin
+    retire_inst3_cur_pc_addend0[38:0] <= rob_read3_cur_pc_addend0[38:0];
+    retire_inst3_cur_pc_addend1[4:0]  <= rob_read3_cur_pc_addend1[4:0];
+  end
+  else begin
+    retire_inst3_cur_pc_addend0[38:0] <= retire_inst3_cur_pc_addend0[38:0];
+    retire_inst3_cur_pc_addend1[4:0]  <= retire_inst3_cur_pc_addend1[4:0];
+  end
+end
+//output
+// &Force("output","rob_retire_inst2_cur_pc"); @1328
+assign rob_retire_inst3_cur_pc[38:0]  = retire_inst3_cur_pc_addend0[38:0]
+                                        + {34'b0, retire_inst3_cur_pc_addend1[4:0]};
+//for pad
+assign rtu_pad_retire3_pc[39:0]       = {rob_retire_inst3_cur_pc[38:0],1'b0};
+//retire inst2 next pc
+assign rob_retire_inst3_next_pc[38:0] = rob_cur_pc[38:0];
 
 //==========================================================
 //                   ROB Current PC
@@ -3027,6 +3055,7 @@ end
 assign rtu_had_retire_inst0_info[38:0] = debug_retire_inst0_pc[38:0];
 assign rtu_had_retire_inst1_info[38:0] = debug_retire_inst1_pc[38:0];
 assign rtu_had_retire_inst2_info[38:0] = debug_retire_inst2_pc[38:0];
+assign rtu_had_retire_inst3_info[38:0] = debug_retire_inst3_pc[38:0];//Jeremy add this
 
 //----------------------------------------------------------
 //                   HPCP inst PC info
@@ -3034,6 +3063,7 @@ assign rtu_had_retire_inst2_info[38:0] = debug_retire_inst2_pc[38:0];
 assign rtu_hpcp_inst0_cur_pc[39:0] = {debug_retire_inst0_pc[38:0],1'b0};
 assign rtu_hpcp_inst1_cur_pc[39:0] = {debug_retire_inst1_pc[38:0],1'b0};
 assign rtu_hpcp_inst2_cur_pc[39:0] = {debug_retire_inst2_pc[38:0],1'b0};
+assign rtu_hpcp_inst3_cur_pc[39:0] = {debug_retire_inst3_pc[38:0],1'b0};//Jeremy add  this logic
 //offset is larger than 8m
 assign rtu_hpcp_inst0_jmp_pc_offset_8m = retire_rob_inst0_jmp
                                          && (debug_retire_inst0_jmp_pc_offset[16]
@@ -3047,6 +3077,11 @@ assign rtu_hpcp_inst2_jmp_pc_offset_8m = retire_rob_inst2_jmp
                                          && (debug_retire_inst2_jmp_pc_offset[16]
                                             ? !(&debug_retire_inst2_jmp_pc_offset[15:0])
                                             : (|debug_retire_inst2_jmp_pc_offset[15:0]));
+//Jeremy add this logic
+assign rtu_hpcp_inst3_jmp_pc_offset_8m = retire_rob_inst3_jmp
+                                         && (debug_retire_inst3_jmp_pc_offset[16]
+                                            ? !(&debug_retire_inst3_jmp_pc_offset[15:0])
+                                            : (|debug_retire_inst3_jmp_pc_offset[15:0]));
 
 //----------------------------------------------------------
 //                 Debug retire inst info
@@ -3185,7 +3220,7 @@ assign rob_commit2_async_expt_mask =
 //sync commit mask cannot mask inst already committed
 //the sync commit mask need not to mask commit0 for new inst
 assign rob_sync_commit_mask = rob_int_commit_mask || rob_dbg_commit_mask || rob_ctc_flush_commit_mask;
-
+//Jeremy need todo
 assign rob_commit0_sync_mask = 1'b0;
 assign rob_commit1_sync_mask =
          rob_sync_commit_mask
@@ -3201,6 +3236,7 @@ assign rob_commit2_sync_mask =
 assign rob_commit0_mask = rob_commit0_async_expt_mask || rob_commit0_sync_mask;
 assign rob_commit1_mask = rob_commit1_async_expt_mask || rob_commit1_sync_mask;
 assign rob_commit2_mask = rob_commit2_async_expt_mask || rob_commit2_sync_mask;
+assign rob_commit3_mask = rob_commit3_async_expt_mask || rob_commit3_sync_mask;//Jeremy add   
 //for timing consideration, unconditionally flop commit signal and iid
 always @(posedge commit_clk or negedge cpurst_b)
 begin
@@ -3208,16 +3244,19 @@ begin
     rob_commit0          <= 1'b0;
     rob_commit1          <= 1'b0;
     rob_commit2          <= 1'b0;
+    rob_commit3          <= 1'b0;//Jeremy add   
   end
   else if(retire_rob_flush) begin
     rob_commit0          <= 1'b0;
     rob_commit1          <= 1'b0;
     rob_commit2          <= 1'b0;
+    rob_commit3          <= 1'b0;//Jeremy add   
   end
   else begin
     rob_commit0          <= rob_read0_commit && !rob_commit0_mask;
     rob_commit1          <= rob_read1_commit && !rob_commit1_mask;
     rob_commit2          <= rob_read2_commit && !rob_commit2_mask;
+    rob_commit3          <= rob_read3_commit && !rob_commit3_mask;//Jeremy add   
   end
 end
 
@@ -3227,11 +3266,13 @@ begin
     rob_commit0_iid[6:0] <= 7'b0;
     rob_commit1_iid[6:0] <= 7'b0;
     rob_commit2_iid[6:0] <= 7'b0;
+    rob_commit3_iid[6:0] <= 7'b0;//Jeremy add   
   end
   else begin
     rob_commit0_iid[6:0] <= rob_read0_iid[6:0];
     rob_commit1_iid[6:0] <= rob_read1_iid[6:0];
     rob_commit2_iid[6:0] <= rob_read2_iid[6:0];
+    rob_commit3_iid[6:0] <= rob_read3_iid[6:0];//Jeremy add   
   end
 end
 
@@ -3239,16 +3280,19 @@ end
 assign rob_retire_commit0         = rob_commit0;
 assign rob_retire_commit1         = rob_commit1;
 assign rob_retire_commit2         = rob_commit2;
+assign rob_retire_commit3         = rob_commit3;//Jeremy add   
 
 assign rtu_yy_xx_commit0          = rob_commit0;
 assign rtu_yy_xx_commit1          = rob_commit1;
 assign rtu_yy_xx_commit2          = rob_commit2;
+assign rtu_yy_xx_commit3          = rob_commit3;//Jeremy add   
 
 assign rob_debug_commit0          = rob_commit0;
 
 assign rtu_yy_xx_commit0_iid[6:0] = rob_commit0_iid[6:0];
 assign rtu_yy_xx_commit1_iid[6:0] = rob_commit1_iid[6:0];
 assign rtu_yy_xx_commit2_iid[6:0] = rob_commit2_iid[6:0];
+assign rtu_yy_xx_commit3_iid[6:0] = rob_commit3_iid[6:0];//Jeremy add   
 
 //----------------------------------------------------------
 //                 Debug Counter for FPGA
