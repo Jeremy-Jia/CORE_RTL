@@ -3896,7 +3896,6 @@ begin
     rt_dp_inst1_src1_data[0]     = rt_inst0_mov_dst_rdy;
     rt_dp_inst1_src1_data[1]     = rt_inst0_mov_dst_wb;
     rt_dp_inst1_src1_data[8:2]   = rt_inst0_mov_dst_preg[6:0];
-
     rt_dp_inst01_src_match[1]    = 1'b0;
   end
   else if(rt_inst1_src1_match_inst0) begin

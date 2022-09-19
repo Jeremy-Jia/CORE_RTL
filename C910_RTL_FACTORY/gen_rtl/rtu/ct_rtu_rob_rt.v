@@ -649,6 +649,10 @@ reg     [38:0]  rob_read2_cur_pc_addend0;
 reg     [38:0]  rob_read2_next_pc_addend0;         
 reg     [4 :0]  rob_read2_next_pc_addend1;         
 reg     [47:0]  rob_read2_pcfifo_data;             
+reg     [38:0]  rob_read3_cur_pc_addend0;//Jeremy add           
+reg     [38:0]  rob_read3_next_pc_addend0; //Jeremy add          
+reg     [4 :0]  rob_read3_next_pc_addend1;//Jeremy add           
+reg     [47:0]  rob_read3_pcfifo_data;//Jeremy add               
 
 // &Wires; @31
 wire            commit_clk;                        
@@ -2139,6 +2143,7 @@ assign rob_retire_inst2_pst_ereg_vld = retire_pst_ereg_inst2_vld;
 assign rob_retire_inst3_pst_ereg_vld = retire_pst_ereg_inst3_vld; // &&* mu
 
 assign retire_expt_inst0_vld = retire_inst0_vld;
+//Jeremy fixed begin
 
 //==========================================================
 //                 PCFIFO Pop Data select
@@ -2149,12 +2154,7 @@ assign rob_read0_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
 assign rob_read1_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
          (rob_read0_data[ROB_PCFIFO]) ? iu_rtu_pcfifo_pop1_data[PCFIFO_POP_WIDTH-1:0]
                             : iu_rtu_pcfifo_pop0_data[PCFIFO_POP_WIDTH-1:0];
-// &&? ???????? need modified? haven't changed 
-// &&???????
-// &&???????
-// &&???????
-// &CombBeg; @758
-//Jeremy : need to modify
+//Jeremy : need to do begin
 always @( rob_read1_data[10]
        or iu_rtu_pcfifo_pop0_data[47:0]
        or iu_rtu_pcfifo_pop1_data[47:0]
@@ -2171,13 +2171,38 @@ begin
   else
     rob_read2_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
          iu_rtu_pcfifo_pop0_data[PCFIFO_POP_WIDTH-1:0];
-// &CombEnd; @768
+end
+//Jeremy add rob_read3_pcfifo_data;
+always @( rob_read1_data[10]
+       or iu_rtu_pcfifo_pop0_data[47:0]
+       or iu_rtu_pcfifo_pop1_data[47:0]
+       or rob_read0_data[10]
+       or iu_rtu_pcfifo_pop2_data[47:0]
+       or iu_rtu_pcfifo_pop3_data[47:0])
+begin
+  if(rob_read0_data[ROB_PCFIFO] && rob_read1_data[ROB_PCFIFO]&&rob_read2_data[ROB_PCFIFO])               //Jeremy add this logic
+    rob_read3_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
+         iu_rtu_pcfifo_pop3_data[PCFIFO_POP_WIDTH-1:0];
+  else if(   rob2_read0_data[ROB_PCFIFO] && rob_read1_data[ROB_PCFIFO] && !rob_read0_data[ROB_PCFIFO]
+            || rob2_read0_data[ROB_PCFIFO] && !rob_read1_data[ROB_PCFIFO] && rob_read0_data[ROB_PCFIFO]
+            || !rob2_read0_data[ROB_PCFIFO] && rob_read1_data[ROB_PCFIFO] && rob_read0_data[ROB_PCFIFO])//Jeremy add this logic
+    rob_read3_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
+         iu_rtu_pcfifo_pop2_data[PCFIFO_POP_WIDTH-1:0];
+  else if(    rob2_read0_data[ROB_PCFIFO] && !rob_read1_data[ROB_PCFIFO] && !rob_read0_data[ROB_PCFIFO]
+            || !rob2_read0_data[ROB_PCFIFO] && rob_read1_data[ROB_PCFIFO] && !rob_read0_data[ROB_PCFIFO]
+            || !rob2_read0_data[ROB_PCFIFO] && !rob_read1_data[ROB_PCFIFO] && rob_read0_data[ROB_PCFIFO])//Jeremy add this logic
+    rob_read3_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
+         iu_rtu_pcfifo_pop1_data[PCFIFO_POP_WIDTH-1:0];
+  else                                                                                                                                                           //Jeremy add this logic
+    rob_read3_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
+         iu_rtu_pcfifo_pop0_data[PCFIFO_POP_WIDTH-1:0];
 end
 
 
 assign rob_read0_next_pc[38:0] = rob_read0_pcfifo_data[39:1];
 assign rob_read1_next_pc[38:0] = rob_read1_pcfifo_data[39:1];
 assign rob_read2_next_pc[38:0] = rob_read2_pcfifo_data[39:1];
+assign rob_read3_next_pc[38:0] = rob_read3_pcfifo_data[39:1];//Jeremy add this logic
 // &&? ???????? need modified? haven't changed end
 
 //==========================================================
@@ -2267,7 +2292,7 @@ assign retire_inst2_create_data[8]     = rob_read2_data[ROB_BJU];
 assign retire_inst2_create_data[7]     = rob_read2_data[ROB_SPLIT];
 assign retire_inst2_create_data[6:0]   = rob_read2_iid[6:0];
 
-// &&* mu added:
+// Jeremy add this logic
 assign retire_inst3_create_data[51]    = rob_read3_data[ROB_VL_PRED];
 assign retire_inst3_create_data[50:43] = rob_read3_data[ROB_VL:ROB_VL-7];
 assign retire_inst3_create_data[42]    = rob_read3_data[ROB_VEC_DIRTY];
@@ -2296,7 +2321,7 @@ assign retire_inst3_create_data[8]     = rob_read3_data[ROB_BJU];
 assign retire_inst3_create_data[7]     = rob_read3_data[ROB_SPLIT];
 assign retire_inst3_create_data[6:0]   = rob_read3_iid[6:0];
 
-// &&* end
+
 always @(posedge entry0_clk or negedge cpurst_b)
 begin
   if(!cpurst_b)
@@ -2639,7 +2664,7 @@ begin
 end
 
 assign rob_retire_inst0_inst_bkpt    = retire_inst0_inst_bkpt;
-
+//Jeremy : hard begin 
 //==========================================================
 //                Retire inst 0/1/2 Current PC
 //==========================================================
@@ -2650,7 +2675,7 @@ assign rob_retire_inst0_inst_bkpt    = retire_inst0_inst_bkpt;
 assign rob_read0_pc_offset[4:0] = {2'b0,rob_read0_data[ROB_PC_OFFSET:ROB_PC_OFFSET-2]};
 assign rob_read1_pc_offset[4:0] = {2'b0,rob_read1_data[ROB_PC_OFFSET:ROB_PC_OFFSET-2]};
 assign rob_read2_pc_offset[4:0] = {2'b0,rob_read2_data[ROB_PC_OFFSET:ROB_PC_OFFSET-2]};
-assign rob_read3_pc_offset[4:0] = {2'b0,rob_read3_data[ROB_PC_OFFSET:ROB_PC_OFFSET-2]}; // &&* mu added
+assign rob_read3_pc_offset[4:0] = {2'b0,rob_read3_data[ROB_PC_OFFSET:ROB_PC_OFFSET-2]}; 
 
 //----------------------------------------------------------
 //                 ROB Read 0/1/2 Current PC
@@ -2659,18 +2684,17 @@ assign rob_read3_pc_offset[4:0] = {2'b0,rob_read3_data[ROB_PC_OFFSET:ROB_PC_OFFS
 //when split fof flush, ifu change flow pc should be next pc of split
 //fof inst whose addend1 must be 0 (it is split inst), so change flow
 //pc will be addend0 + 0 (addend1) + 2
-
-// &&??? need modified??? mu
+//READ0
 assign rob_read0_cur_pc[38:0]         = retire_rob_split_fof_flush
                                         ? rob_cur_pc_plus_2[38:0]
                                         : rob_cur_pc[38:0];
-
+//READ1
 assign rob_read1_cur_pc_addend0[38:0] = (rob_read0_data[ROB_BJU]) ? rob_read0_next_pc[38:0]
                                                         : rob_cur_pc[38:0];
 //pc offset will be 0 if bju
 assign rob_read1_cur_pc_addend1[4:0]  = rob_read0_pc_offset[4:0];
 
-// &CombBeg; @1196
+//Jeremy: READ2??
 always @( rob_cur_pc[38:0]
        or rob_read1_data[9]
        or rob_read0_next_pc[38:0]
@@ -2683,55 +2707,122 @@ begin
     rob_read2_cur_pc_addend0[38:0]    = rob_read0_next_pc[38:0];
   else
     rob_read2_cur_pc_addend0[38:0]    = rob_cur_pc[38:0];
-// &CombEnd; @1203
 end
-
 //pc offset will be 0 if bju
 assign rob_read2_cur_pc_addend1[4:0]  = (rob_read1_data[ROB_BJU])
                                         ? 5'b0 : rob_read0_pc_offset[4:0]
                                                + rob_read1_pc_offset[4:0];
+//Jeremy: READ3??
+always @( rob_cur_pc[38:0]
+       or rob_read1_data[9]
+       or rob_read2_data[9]
+       or rob_read0_next_pc[38:0]
+       or rob_read1_next_pc[38:0]
+       or rob_read2_next_pc[38:0]
+       or rob_read0_data[9])
+begin
+  if(rob_read2_data[ROB_BJU])
+    rob_read3_cur_pc_addend0[38:0]    = rob_read2_next_pc[38:0];//Jeremy add this??
+  else if(rob_read1_data[ROB_BJU])
+    rob_read3_cur_pc_addend0[38:0]    = rob_read1_next_pc[38:0];//Jeremy add this??
+  else if(rob_read0_data[ROB_BJU])
+    rob_read3_cur_pc_addend0[38:0]    = rob_read0_next_pc[38:0];//Jeremy add this??
+  else
+    rob_read3_cur_pc_addend0[38:0]    = rob_cur_pc[38:0];//Jeremy add this??
+end
+//pc offset will be 0 if bju
+assign rob_read3_cur_pc_addend1[4:0]  = (rob_read2_data[ROB_BJU])//Jeremy add this??
+                                        ? 5'b0 : rob_read0_pc_offset[4:0]//Jeremy add this??
+                                               + rob_read1_pc_offset[4:0]//Jeremy add this??
+                                               + rob_read2_pc_offset[4:0];//Jeremy add this??
+// //----------------------------------------------------------
+// //                  ROB Read 2 Next PC
+// //                 (ROB cur pc updt val)
+// //----------------------------------------------------------
+// // &CombBeg; @1214
+// always @( rob_cur_pc[38:0]
+//        or rob_read1_data[9]
+//        or rob_read0_next_pc[38:0]
+//        or rob_read1_next_pc[38:0]
+//        or rob_read2_next_pc[38:0]
+//        or rob_read2_data[9]
+//        or rob_read0_data[9])
+// begin
+//   if(rob_read2_data[ROB_BJU])
+//     rob_read2_next_pc_addend0[38:0] = rob_read2_next_pc[38:0];
+//   else if(rob_read1_data[ROB_BJU])
+//     rob_read2_next_pc_addend0[38:0] = rob_read1_next_pc[38:0];
+//   else if(rob_read0_data[ROB_BJU])
+//     rob_read2_next_pc_addend0[38:0] = rob_read0_next_pc[38:0];
+//   else
+//     rob_read2_next_pc_addend0[38:0] = rob_cur_pc[38:0];
+// // &CombEnd; @1223
+// end
 
+// //pc offset will be 0 if bju
+// // &CombBeg; @1226
+// always @( rob_read1_data[9]
+//        or rob_read1_pc_offset[4:0]
+//        or rob_read0_pc_offset[4:0]
+//        or rob_read2_pc_offset[4:0]
+//        or rob_read2_data[9])
+// begin
+//   if(rob_read2_data[ROB_BJU])
+//     rob_read2_next_pc_addend1[4:0]  = 5'b0;
+//   else if(rob_read1_data[ROB_BJU])
+//     rob_read2_next_pc_addend1[4:0]  = rob_read2_pc_offset[4:0];
+//   else
+//     rob_read2_next_pc_addend1[4:0]  = rob_read0_pc_offset[4:0]
+//                                       + rob_read1_pc_offset[4:0]
+//                                       + rob_read2_pc_offset[4:0];
+// // &CombEnd; @1235
+// end
+
+//Jeremy chang read2 -> read3 for 4 inst retire
 //----------------------------------------------------------
-//                  ROB Read 2 Next PC
+//                  ROB Read 3 Next PC
 //                 (ROB cur pc updt val)
 //----------------------------------------------------------
-// &CombBeg; @1214
 always @( rob_cur_pc[38:0]
        or rob_read1_data[9]
        or rob_read0_next_pc[38:0]
        or rob_read1_next_pc[38:0]
        or rob_read2_next_pc[38:0]
+       or rob_read3_next_pc[38:0]//Jeremy add  
        or rob_read2_data[9]
+       or rob_read3_data[9]//Jeremy add  
        or rob_read0_data[9])
 begin
-  if(rob_read2_data[ROB_BJU])
-    rob_read2_next_pc_addend0[38:0] = rob_read2_next_pc[38:0];
+  if(rob_read3_data[ROB_BJU])
+    rob_read3_next_pc_addend0[38:0] = rob_read3_next_pc[38:0];//Jeremy add  
+  else if(rob_read2_data[ROB_BJU])
+    rob_read3_next_pc_addend0[38:0] = rob_read2_next_pc[38:0];//Jeremy add  
   else if(rob_read1_data[ROB_BJU])
-    rob_read2_next_pc_addend0[38:0] = rob_read1_next_pc[38:0];
+    rob_read3_next_pc_addend0[38:0] = rob_read1_next_pc[38:0];//Jeremy add  
   else if(rob_read0_data[ROB_BJU])
-    rob_read2_next_pc_addend0[38:0] = rob_read0_next_pc[38:0];
+    rob_read3_next_pc_addend0[38:0] = rob_read0_next_pc[38:0];//Jeremy add  
   else
-    rob_read2_next_pc_addend0[38:0] = rob_cur_pc[38:0];
-// &CombEnd; @1223
+    rob_read3_next_pc_addend0[38:0] = rob_cur_pc[38:0];
 end
 
 //pc offset will be 0 if bju
-// &CombBeg; @1226
 always @( rob_read1_data[9]
        or rob_read1_pc_offset[4:0]
        or rob_read0_pc_offset[4:0]
-       or rob_read2_pc_offset[4:0]
-       or rob_read2_data[9])
+       or rob_read2_pc_offset[4:0]//Jeremy add  
+       or rob_read2_data[9]
+       or rob_read3_data[9])//Jeremy add  
 begin
-  if(rob_read2_data[ROB_BJU])
-    rob_read2_next_pc_addend1[4:0]  = 5'b0;
+  if(rob_read3_data[ROB_BJU])
+    rob_read3_next_pc_addend1[4:0]  = 5'b0;//Jeremy add  
+  else if(rob_read2_data[ROB_BJU])
+    rob_read3_next_pc_addend1[4:0]  = rob_read2_pc_offset[4:0];//Jeremy add  
   else if(rob_read1_data[ROB_BJU])
-    rob_read2_next_pc_addend1[4:0]  = rob_read2_pc_offset[4:0];
+    rob_read3_next_pc_addend1[4:0]  = rob_read1_pc_offset[4:0];//Jeremy add  
   else
-    rob_read2_next_pc_addend1[4:0]  = rob_read0_pc_offset[4:0]
+    rob_read3_next_pc_addend1[4:0]  = rob_read0_pc_offset[4:0]
                                       + rob_read1_pc_offset[4:0]
-                                      + rob_read2_pc_offset[4:0];
-// &CombEnd; @1235
+                                      + rob_read2_pc_offset[4:0];//Jeremy add  
 end
 
 //----------------------------------------------------------
@@ -2849,8 +2940,10 @@ assign rtu_pad_retire3_pc[39:0]       = {rob_retire_inst3_cur_pc[38:0],1'b0};
 //retire inst2 next pc
 assign rob_retire_inst3_next_pc[38:0] = rob_cur_pc[38:0];
 
+//Jeremy : hard begin
 //==========================================================
-//                   ROB Current PC
+//                   ROB Current PC  
+//                   Jeremy :  need to do ????????????/
 //==========================================================
 //----------------------------------------------------------
 //                 Instance of Gated Cell  
@@ -2881,9 +2974,67 @@ gated_clk_cell  x_pc_gated_clk (
 //----------------------------------------------------------
 //if rob read0 is rte/rfi, rob read0 next pc will be EPC/FPC from CP0
 //rte/rfi is fence inst, ROB can only bypass rte/rfi info from Cbus,
-//no rob read 1/2 inst, rob cur pc will be EFPC
+//no rob read 1/2 inst, rob cur pc will be EFPC 
 assign rob_read0_rte = iu_rtu_pipe0_cmplt && iu_rtu_pipe0_efpc_vld;
 
+// //----------------------------------------------------------
+// //                 ROB Current PC Register
+// //----------------------------------------------------------
+// always @(posedge pc_clk or negedge cpurst_b)
+// begin
+//   if(!cpurst_b) begin
+//     rob_cur_pc_addend0[38:0] <= 39'b0;
+//     rob_cur_pc_addend1[4:0]  <= 5'b0;
+//   end
+//   //if flush by split vector first only fault inst
+//   //rtu should skip left inst by add pc 4,
+//   //retire must flush rob at this time
+//   else if(retire_rob_split_fof_flush) begin
+//     rob_cur_pc_addend0[38:0] <= rob_cur_pc_addend0[38:0];
+//     rob_cur_pc_addend1[4:0]  <= rob_cur_pc_addend1[4:0] + 5'd2;
+//   end
+//   else if(retire_rob_flush) begin
+//     rob_cur_pc_addend0[38:0] <= rob_cur_pc_addend0[38:0];
+//     rob_cur_pc_addend1[4:0]  <= rob_cur_pc_addend1[4:0];
+//   end
+//   else if(ifu_rtu_cur_pc_load) begin
+//     rob_cur_pc_addend0[38:0] <= ifu_rtu_cur_pc[38:0];
+//     rob_cur_pc_addend1[4:0]  <= 5'b0;
+//   end
+//   else if(retire_entry2_updt_vld) begin
+//     rob_cur_pc_addend0[38:0] <= rob_read2_next_pc_addend0[38:0];
+//     rob_cur_pc_addend1[4:0]  <= rob_read2_next_pc_addend1[4:0];
+//   end
+//   else if(retire_entry1_updt_vld) begin
+//     rob_cur_pc_addend0[38:0] <= rob_read2_cur_pc_addend0[38:0];
+//     rob_cur_pc_addend1[4:0]  <= rob_read2_cur_pc_addend1[4:0];
+//   end
+//   else if(retire_entry0_updt_vld && rob_read0_rte) begin
+//     rob_cur_pc_addend0[38:0] <= iu_rtu_pipe0_efpc[38:0];
+//     rob_cur_pc_addend1[4:0]  <= 5'b0;
+//   end
+//   else if(retire_entry0_updt_vld) begin
+//     rob_cur_pc_addend0[38:0] <= rob_read1_cur_pc_addend0[38:0];
+//     rob_cur_pc_addend1[4:0]  <= rob_read1_cur_pc_addend1[4:0];
+//   end
+//   else begin
+//     rob_cur_pc_addend0[38:0] <= rob_cur_pc_addend0[38:0];
+//     rob_cur_pc_addend1[4:0]  <= rob_cur_pc_addend1[4:0];
+//   end
+// end
+// //output
+// assign rob_cur_pc[38:0]            = rob_cur_pc_addend0[38:0]
+//                                      + {34'b0, rob_cur_pc_addend1[4:0]};
+// //when split fof flush, ifu change flow pc should be next pc of split
+// //fof inst whose addend1 must be 0 (it is split inst), so change flow
+// //pc will be addend0 + 0 (addend1) + 2
+// assign rob_cur_pc_plus_2[38:0]     = rob_cur_pc_addend0[38:0]
+//                                      + 38'd2;
+// assign rob_retire_rob_cur_pc[38:0] = rob_cur_pc[38:0];
+// assign rob_top_rob_cur_pc[6:0]     = rob_cur_pc[6:0];
+// //for had inst bkpt
+// //assign rtu_had_commit_vld          = rob_read0_inst_vld;
+// //assign rtu_had_commit_pc[38:0]     = rob_cur_pc[38:0];
 //----------------------------------------------------------
 //                 ROB Current PC Register
 //----------------------------------------------------------
@@ -2908,9 +3059,13 @@ begin
     rob_cur_pc_addend0[38:0] <= ifu_rtu_cur_pc[38:0];
     rob_cur_pc_addend1[4:0]  <= 5'b0;
   end
+  else if(retire_entry3_updt_vld) begin
+    rob_cur_pc_addend0[38:0] <= rob_read3_next_pc_addend0[38:0];//Jeremy add 
+    rob_cur_pc_addend1[4:0]  <= rob_read3_next_pc_addend1[4:0];//Jeremy add 
+  end
   else if(retire_entry2_updt_vld) begin
-    rob_cur_pc_addend0[38:0] <= rob_read2_next_pc_addend0[38:0];
-    rob_cur_pc_addend1[4:0]  <= rob_read2_next_pc_addend1[4:0];
+    rob_cur_pc_addend0[38:0] <= rob_read3_next_pc_addend0[38:0];//Jeremy add 
+    rob_cur_pc_addend1[4:0]  <= rob_read3_next_pc_addend1[4:0];//Jeremy add 
   end
   else if(retire_entry1_updt_vld) begin
     rob_cur_pc_addend0[38:0] <= rob_read2_cur_pc_addend0[38:0];
@@ -2942,26 +3097,53 @@ assign rob_top_rob_cur_pc[6:0]     = rob_cur_pc[6:0];
 //for had inst bkpt
 //assign rtu_had_commit_vld          = rob_read0_inst_vld;
 //assign rtu_had_commit_pc[38:0]     = rob_cur_pc[38:0];
+// //==========================================================
+// //                  Jump Offset for HPCP
+// //==========================================================
+// //if retire inst is jump, cur pc addend1 is all 0
+// assign retire_inst2_jmp_pc_offset[38:0] =
+//   rob_cur_pc_addend0[38:0] - retire_inst2_cur_pc_addend0[38:0];
 
+// assign retire_inst1_jmp_pc_offset[38:0] =
+//   (!retire_inst2_vld)
+//   ? rob_cur_pc_addend0[38:0]            - retire_inst1_cur_pc_addend0[38:0]
+//   : retire_inst2_cur_pc_addend0[38:0]   - retire_inst1_cur_pc_addend0[38:0];
+
+// assign retire_inst0_jmp_pc_offset[38:0] =
+//   (!retire_inst2_vld)
+//   ? rob_cur_pc_addend0[38:0]            - retire_inst0_cur_pc[38:0]
+//   : (!retire_inst1_vld)
+//     ? retire_inst2_cur_pc_addend0[38:0] - retire_inst0_cur_pc[38:0]
+//     : retire_inst1_cur_pc_addend0[38:0] - retire_inst0_cur_pc[38:0];
 //==========================================================
-//                  Jump Offset for HPCP
+//                 Jeremy re-write Jump Offset for HPCP
 //==========================================================
 //if retire inst is jump, cur pc addend1 is all 0
+//Jeremy add this logic
+assign retire_inst3_jmp_pc_offset[38:0] =
+  rob_cur_pc_addend0[38:0] - retire_inst3_cur_pc_addend0[38:0];//Jeremy fix
+
 assign retire_inst2_jmp_pc_offset[38:0] =
-  rob_cur_pc_addend0[38:0] - retire_inst2_cur_pc_addend0[38:0];
+  (!retire_inst3_vld)
+  ? rob_cur_pc_addend0[38:0] - retire_inst2_cur_pc_addend0[38:0]
+  : retire_inst3_cur_pc_addend0[38:0]   - retire_inst2_cur_pc_addend0[38:0]; //Jeremy fix
 
 assign retire_inst1_jmp_pc_offset[38:0] =
-  (!retire_inst2_vld)
+  (!retire_inst3_vld)
   ? rob_cur_pc_addend0[38:0]            - retire_inst1_cur_pc_addend0[38:0]
-  : retire_inst2_cur_pc_addend0[38:0]   - retire_inst1_cur_pc_addend0[38:0];
+  : (!retire_inst2_vld)
+    ? retire_inst3_cur_pc_addend0[38:0]   - retire_inst1_cur_pc_addend0[38:0]
+    :  retire_inst2_cur_pc_addend0[38:0]   - retire_inst1_cur_pc_addend0[38:0];//Jeremy fix
 
 assign retire_inst0_jmp_pc_offset[38:0] =
-  (!retire_inst2_vld)
+  (!retire_inst3_vld)
   ? rob_cur_pc_addend0[38:0]            - retire_inst0_cur_pc[38:0]
-  : (!retire_inst1_vld)
-    ? retire_inst2_cur_pc_addend0[38:0] - retire_inst0_cur_pc[38:0]
-    : retire_inst1_cur_pc_addend0[38:0] - retire_inst0_cur_pc[38:0];
-
+  : (!retire_inst2_vld)
+    ? retire_inst3_cur_pc_addend0[38:0] - retire_inst0_cur_pc[38:0]
+    : (!retire_inst1_vld)
+      ? retire_inst2_cur_pc_addend0[38:0] - retire_inst0_cur_pc[38:0]
+       : retire_inst1_cur_pc_addend0[38:0] - retire_inst0_cur_pc[38:0];//Jeremy fix
+//Jeremy : hard end
 //==========================================================
 //                   Retire PC for HAD
 //==========================================================
@@ -2999,27 +3181,32 @@ begin
     debug_retire_inst0_vld <= 1'b0;
     debug_retire_inst1_vld <= 1'b0;
     debug_retire_inst2_vld <= 1'b0;
+    debug_retire_inst3_vld <= 1'b0;//Jeremy add 
   end
   else if(debug_info_en && retire_inst0_vld) begin
     debug_retire_inst0_vld <= retire_inst0_vld;
     debug_retire_inst1_vld <= retire_inst1_vld;
     debug_retire_inst2_vld <= retire_inst2_vld;
+    debug_retire_inst3_vld <= retire_inst3_vld;//Jeremy add 
   end
   else if(debug_retire_inst0_vld) begin
     debug_retire_inst0_vld <= 1'b0;
     debug_retire_inst1_vld <= 1'b0;
     debug_retire_inst2_vld <= 1'b0;
+    debug_retire_inst3_vld <= 1'b0;//Jeremy add 
   end
   else begin
     debug_retire_inst0_vld <= debug_retire_inst0_vld;
     debug_retire_inst1_vld <= debug_retire_inst1_vld;
     debug_retire_inst2_vld <= debug_retire_inst2_vld;
+    debug_retire_inst3_vld <= debug_retire_inst3_vld;//Jeremy add 
   end
 end
 
 assign rtu_had_retire_inst0_vld = debug_retire_inst0_vld;
 assign rtu_had_retire_inst1_vld = debug_retire_inst1_vld;
 assign rtu_had_retire_inst2_vld = debug_retire_inst2_vld;
+assign rtu_had_retire_inst3_vld = debug_retire_inst3_vld;//Jeremy add 
 
 //----------------------------------------------------------
 //                 Debug retire inst pc
@@ -3030,25 +3217,31 @@ begin
     debug_retire_inst0_pc[38:0]            <= 39'b0;
     debug_retire_inst1_pc[38:0]            <= 39'b0;
     debug_retire_inst2_pc[38:0]            <= 39'b0;
+    debug_retire_inst3_pc[38:0]            <= 39'b0;//Jeremy add 
     debug_retire_inst0_jmp_pc_offset[16:0] <= 17'b0;
     debug_retire_inst1_jmp_pc_offset[16:0] <= 17'b0;
     debug_retire_inst2_jmp_pc_offset[16:0] <= 17'b0;
+    debug_retire_inst3_jmp_pc_offset[16:0] <= 17'b0;//Jeremy add 
   end
   else if(debug_info_en && retire_inst0_vld) begin
     debug_retire_inst0_pc[38:0]            <= retire_inst0_cur_pc[38:0];
     debug_retire_inst1_pc[38:0]            <= rob_retire_inst1_cur_pc[38:0];
     debug_retire_inst2_pc[38:0]            <= rob_retire_inst2_cur_pc[38:0];
+    debug_retire_inst3_pc[38:0]            <= rob_retire_inst3_cur_pc[38:0];//Jeremy add 
     debug_retire_inst0_jmp_pc_offset[16:0] <= retire_inst0_jmp_pc_offset[38:22];
     debug_retire_inst1_jmp_pc_offset[16:0] <= retire_inst1_jmp_pc_offset[38:22];
     debug_retire_inst2_jmp_pc_offset[16:0] <= retire_inst2_jmp_pc_offset[38:22];
+    debug_retire_inst3_jmp_pc_offset[16:0] <= retire_inst3_jmp_pc_offset[38:22];//Jeremy add 
   end
   else begin
     debug_retire_inst0_pc[38:0]            <= debug_retire_inst0_pc[38:0];
     debug_retire_inst1_pc[38:0]            <= debug_retire_inst1_pc[38:0];
     debug_retire_inst2_pc[38:0]            <= debug_retire_inst2_pc[38:0];
+    debug_retire_inst3_pc[38:0]            <= debug_retire_inst3_pc[38:0];//Jeremy add 
     debug_retire_inst0_jmp_pc_offset[16:0] <= debug_retire_inst0_jmp_pc_offset[16:0];
     debug_retire_inst1_jmp_pc_offset[16:0] <= debug_retire_inst1_jmp_pc_offset[16:0];
     debug_retire_inst2_jmp_pc_offset[16:0] <= debug_retire_inst2_jmp_pc_offset[16:0];
+    debug_retire_inst3_jmp_pc_offset[16:0] <= debug_retire_inst3_jmp_pc_offset[16:0];//Jeremy add 
   end
 end
 
@@ -3119,6 +3312,16 @@ assign retire_inst2_debug_info[11]    = retire_inst2_store;
 assign retire_inst2_debug_info[13:12] = retire_inst2_num[1:0];
 assign retire_inst2_debug_info[16:14] = retire_entry2_pc_offset[2:0];
 assign retire_inst2_debug_info[21:17] = 5'b0;
+//Jeremy add this logic
+assign retire_inst3_debug_info[6:0]     = retire_inst3_iid[6:0];//Jeremy add 
+assign retire_inst3_debug_info[7]        = retire_inst3_split;//Jeremy add 
+assign retire_inst3_debug_info[8]        = retire_inst3_bju;//Jeremy add 
+assign retire_inst3_debug_info[9]        = retire_inst3_condbr;//Jeremy add 
+assign retire_inst3_debug_info[10]      = retire_inst3_jmp;//Jeremy add 
+assign retire_inst3_debug_info[11]      = retire_inst3_store;//Jeremy add 
+assign retire_inst3_debug_info[13:12] = retire_inst3_num[1:0];//Jeremy add 
+assign retire_inst3_debug_info[16:14] = retire_entry3_pc_offset[2:0];//Jeremy add 
+assign retire_inst3_debug_info[21:17] = 5'b0;//Jeremy add 
 
 always @(posedge debug_clk or negedge cpurst_b)
 begin
@@ -3126,22 +3329,26 @@ begin
     debug_retire_inst0_info[21:0] <= 22'b0;
     debug_retire_inst1_info[21:0] <= 22'b0;
     debug_retire_inst2_info[21:0] <= 22'b0;
+    debug_retire_inst3_info[21:0] <= 22'b0;//Jeremy add 
   end
   else if(debug_info_en && retire_inst0_vld) begin
     debug_retire_inst0_info[21:0] <= retire_inst0_debug_info[21:0];
     debug_retire_inst1_info[21:0] <= retire_inst1_debug_info[21:0];
     debug_retire_inst2_info[21:0] <= retire_inst2_debug_info[21:0];
+    debug_retire_inst3_info[21:0] <= retire_inst3_debug_info[21:0];//Jeremy add 
   end
   else begin
     debug_retire_inst0_info[21:0] <= debug_retire_inst0_info[21:0];
     debug_retire_inst1_info[21:0] <= debug_retire_inst1_info[21:0];
     debug_retire_inst2_info[21:0] <= debug_retire_inst2_info[21:0];
+    debug_retire_inst3_info[21:0] <= debug_retire_inst3_info[21:0];//Jeremy add 
   end
 end
 
 assign rtu_had_retire_inst0_info[63:39] = {3'b0,debug_retire_inst0_info[21:0]};
 assign rtu_had_retire_inst1_info[63:39] = {3'b0,debug_retire_inst1_info[21:0]};
 assign rtu_had_retire_inst2_info[63:39] = {3'b0,debug_retire_inst2_info[21:0]};
+assign rtu_had_retire_inst3_info[63:39] = {3'b0,debug_retire_inst3_info[21:0]};//Jeremy add 
 
 //==========================================================
 //                    Commit Signals
@@ -3152,6 +3359,7 @@ assign rtu_had_retire_inst2_info[63:39] = {3'b0,debug_retire_inst2_info[21:0]};
 assign commit_clk_en = rob_read0_inst_vld
                        || rob_read1_inst_vld
                        || rob_read2_inst_vld
+                       || rob_read3_inst_vld//Jeremy add 
                        || rob_commit0;
 // &Instance("gated_clk_cell", "x_commit_gated_clk"); @1613
 gated_clk_cell  x_commit_gated_clk (
@@ -3192,6 +3400,17 @@ assign rob_read2_commit = rob_read2_inst_vld
                           && rob_read1_cmplted
                           && !rob_read0_abnormal
                           && !rob_read1_abnormal;
+//Jeremy add this logic
+assign rob_read3_commit = rob_read3_inst_vld
+                          && !had_rtu_inst_bkpt_dbgreq
+                          && !retire_rob_rt_mask
+                          && !retire_rob_srt_en
+                          && rob_read0_cmplted
+                          && rob_read1_cmplted
+                          && rob_read2_cmplted//Jeremy add 
+                          && !rob_read0_abnormal
+                          && !rob_read1_abnormal
+                          && !rob_read2_abnormal;//Jeremy add 
 
 //----------------------------------------------------------
 //          Asynchronous Exception Mask Signals
@@ -3203,14 +3422,20 @@ assign rob_commit0_async_expt_mask =
          retire_rob_async_expt_commit_mask
          && !(rob_commit0 && (rob_read0_iid[6:0] == rob_commit0_iid[6:0])
            || rob_commit1 && (rob_read0_iid[6:0] == rob_commit1_iid[6:0])
-           || rob_commit2 && (rob_read0_iid[6:0] == rob_commit2_iid[6:0]));
+           || rob_commit2 && (rob_read0_iid[6:0] == rob_commit2_iid[6:0])
+           || rob_commit3 && (rob_read0_iid[6:0] == rob_commit3_iid[6:0]));//Jeremy add this logic
 assign rob_commit1_async_expt_mask = 
          retire_rob_async_expt_commit_mask
          && !(rob_commit1 && (rob_read1_iid[6:0] == rob_commit1_iid[6:0])
-           || rob_commit2 && (rob_read1_iid[6:0] == rob_commit2_iid[6:0]));
+           || rob_commit2 && (rob_read1_iid[6:0] == rob_commit2_iid[6:0])
+           || rob_commit3 && (rob_read1_iid[6:0] == rob_commit3_iid[6:0]));//Jeremy add this logic
 assign rob_commit2_async_expt_mask = 
          retire_rob_async_expt_commit_mask
-         && !(rob_commit2 && (rob_read2_iid[6:0] == rob_commit2_iid[6:0]));
+         && !(rob_commit2 && (rob_read2_iid[6:0] == rob_commit2_iid[6:0])
+           || rob_commit3 && (rob_read2_iid[6:0] == rob_commit2=3_iid[6:0]));//Jeremy add this logic
+assign rob_commit3_async_expt_mask = 
+         retire_rob_async_expt_commit_mask
+         && !(rob_commit3 && (rob_read3_iid[6:0] == rob_commit3_iid[6:0]));//Jeremy add this logic
 
 //----------------------------------------------------------
 //                 Sync Commit Mask Signals
@@ -3225,10 +3450,15 @@ assign rob_commit0_sync_mask = 1'b0;
 assign rob_commit1_sync_mask =
          rob_sync_commit_mask
          && !(rob_commit1 && (rob_read1_iid[6:0] == rob_commit1_iid[6:0])
-           || rob_commit2 && (rob_read1_iid[6:0] == rob_commit2_iid[6:0]));
+           || rob_commit2 && (rob_read1_iid[6:0] == rob_commit2_iid[6:0])
+           || rob_commit3 && (rob_read1_iid[6:0] == rob_commit3_iid[6:0]));//Jeremy add this logic
 assign rob_commit2_sync_mask =
          rob_sync_commit_mask
-         && !(rob_commit2 && (rob_read2_iid[6:0] == rob_commit2_iid[6:0]));
+         && !(rob_commit2 && (rob_read2_iid[6:0] == rob_commit2_iid[6:0])
+           || rob_commit3 && (rob_read2_iid[6:0] == rob_commit3_iid[6:0]));//Jeremy add this logic
+assign rob_commit3_sync_mask =
+         rob_sync_commit_mask
+         && !(rob_commit3 && (rob_read3_iid[6:0] == rob_commit3_iid[6:0]));//Jeremy add this logic
 
 //----------------------------------------------------------
 //                  Flop commit signals

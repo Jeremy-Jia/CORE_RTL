@@ -2730,7 +2730,7 @@ always @( pcfifo_ex3_bypass_read_data[47:0]
        or pcfifo_pop3_bypass_sel[2:0])
 begin
   case(pcfifo_pop3_bypass_sel[2:0])
-    3'b001: iu_rtu_pcfifo_pop3_data[POP_WIDTH-4:0] = read_entry2_rt_read_data[POP_WIDTH-4:0];
+    3'b001: iu_rtu_pcfifo_pop3_data[POP_WIDTH-4:0] = read_entry3_rt_read_data[POP_WIDTH-4:0];
     3'b010: iu_rtu_pcfifo_pop3_data[POP_WIDTH-4:0] = pcfifo_ex2_bypass_read_data[POP_WIDTH-4:0];
     3'b100: iu_rtu_pcfifo_pop3_data[POP_WIDTH-4:0] = pcfifo_ex3_bypass_read_data[POP_WIDTH-4:0];
     default:iu_rtu_pcfifo_pop3_data[POP_WIDTH-4:0] = {POP_WIDTH-3{1'bx}};
