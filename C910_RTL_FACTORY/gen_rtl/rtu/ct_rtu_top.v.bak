@@ -42,25 +42,21 @@ module ct_rtu_top(
   idu_rtu_ir_ereg1_alloc_vld,
   idu_rtu_ir_ereg2_alloc_vld,
   idu_rtu_ir_ereg3_alloc_vld,
-  idu_rtu_ir_ereg4_alloc_vld, // &&* mu
   idu_rtu_ir_ereg_alloc_gateclk_vld,
   idu_rtu_ir_freg0_alloc_vld,
   idu_rtu_ir_freg1_alloc_vld,
   idu_rtu_ir_freg2_alloc_vld,
   idu_rtu_ir_freg3_alloc_vld,
-  idu_rtu_ir_freg4_alloc_vld,// &&* mu
   idu_rtu_ir_freg_alloc_gateclk_vld,
   idu_rtu_ir_preg0_alloc_vld,
   idu_rtu_ir_preg1_alloc_vld,
   idu_rtu_ir_preg2_alloc_vld,
   idu_rtu_ir_preg3_alloc_vld,
-  idu_rtu_ir_preg4_alloc_vld,// &&* mu
   idu_rtu_ir_preg_alloc_gateclk_vld,
   idu_rtu_ir_vreg0_alloc_vld,
   idu_rtu_ir_vreg1_alloc_vld,
   idu_rtu_ir_vreg2_alloc_vld,
   idu_rtu_ir_vreg3_alloc_vld,
-  idu_rtu_ir_vreg4_alloc_vld,// &&* mu
   idu_rtu_ir_vreg_alloc_gateclk_vld,
   idu_rtu_pst_dis_inst0_dst_reg,
   idu_rtu_pst_dis_inst0_dstv_reg,
@@ -122,23 +118,6 @@ module ct_rtu_top(
   idu_rtu_pst_dis_inst3_vreg,
   idu_rtu_pst_dis_inst3_vreg_iid,
   idu_rtu_pst_dis_inst3_vreg_vld,
-  // &&* mu added:
-  idu_rtu_pst_dis_inst4_dst_reg,
-  idu_rtu_pst_dis_inst4_dstv_reg,
-  idu_rtu_pst_dis_inst4_ereg,
-  idu_rtu_pst_dis_inst4_ereg_iid,
-  idu_rtu_pst_dis_inst4_ereg_vld,
-  idu_rtu_pst_dis_inst4_freg_vld,
-  idu_rtu_pst_dis_inst4_preg,
-  idu_rtu_pst_dis_inst4_preg_iid,
-  idu_rtu_pst_dis_inst4_preg_vld,
-  idu_rtu_pst_dis_inst4_rel_ereg,
-  idu_rtu_pst_dis_inst4_rel_preg,
-  idu_rtu_pst_dis_inst4_rel_vreg,
-  idu_rtu_pst_dis_inst4_vreg,
-  idu_rtu_pst_dis_inst4_vreg_iid,
-  idu_rtu_pst_dis_inst4_vreg_vld,
-  // &&* mu end
   idu_rtu_pst_freg_dealloc_mask,
   idu_rtu_pst_preg_dealloc_mask,
   idu_rtu_pst_vreg_dealloc_mask,
@@ -158,12 +137,6 @@ module ct_rtu_top(
   idu_rtu_rob_create3_dp_en,
   idu_rtu_rob_create3_en,
   idu_rtu_rob_create3_gateclk_en,
-  // &&* mu:
-  idu_rtu_rob_create4_data,
-  idu_rtu_rob_create4_dp_en,
-  idu_rtu_rob_create4_en,
-  idu_rtu_rob_create4_gateclk_en,
-  // &&* 
   ifu_rtu_cur_pc,
   ifu_rtu_cur_pc_load,
   ifu_xx_sync_reset,
@@ -174,7 +147,6 @@ module ct_rtu_top(
   iu_rtu_pcfifo_pop0_data,
   iu_rtu_pcfifo_pop1_data,
   iu_rtu_pcfifo_pop2_data,
-  iu_rtu_pcfifo_pop3_data, // &&* mu
   iu_rtu_pipe0_abnormal,
   iu_rtu_pipe0_bkpt,
   iu_rtu_pipe0_cmplt,
@@ -269,7 +241,6 @@ module ct_rtu_top(
   rtu_had_inst0_non_irv_bkpt,
   rtu_had_inst1_non_irv_bkpt,
   rtu_had_inst2_non_irv_bkpt,
-  rtu_had_inst3_non_irv_bkpt, // &&* mu
   rtu_had_inst_bkpt_inst_vld,
   rtu_had_inst_bkpta_vld,
   rtu_had_inst_bkptb_vld,
@@ -282,8 +253,6 @@ module ct_rtu_top(
   rtu_had_retire_inst1_vld,
   rtu_had_retire_inst2_info,
   rtu_had_retire_inst2_vld,
-  rtu_had_retire_inst3_info, // &&* mu
-  rtu_had_retire_inst3_vld,  // &&* mu
   rtu_had_rob_empty,
   rtu_had_xx_dbg_ack_pc,
   rtu_had_xx_mbkpt_chgflow,
@@ -312,15 +281,6 @@ module ct_rtu_top(
   rtu_had_xx_pcfifo_inst2_next_pc,
   rtu_had_xx_pcfifo_inst2_pcall,
   rtu_had_xx_pcfifo_inst2_preturn,
-  // &&* mu:
-  rtu_had_xx_pcfifo_inst3_chgflow,
-  rtu_had_xx_pcfifo_inst3_condbr,
-  rtu_had_xx_pcfifo_inst3_condbr_taken,
-  rtu_had_xx_pcfifo_inst3_jmp,
-  rtu_had_xx_pcfifo_inst3_next_pc,
-  rtu_had_xx_pcfifo_inst3_pcall,
-  rtu_had_xx_pcfifo_inst3_preturn,
-  // &&*
   rtu_had_xx_split_inst,
   rtu_hpcp_inst0_ack_int,
   rtu_hpcp_inst0_bht_mispred,
@@ -353,27 +313,12 @@ module ct_rtu_top(
   rtu_hpcp_inst2_split,
   rtu_hpcp_inst2_store,
   rtu_hpcp_inst2_vld,
-  // &&* mu:
-  rtu_hpcp_inst3_condbr,
-  rtu_hpcp_inst3_cur_pc,
-  rtu_hpcp_inst3_jmp,
-  rtu_hpcp_inst3_jmp_pc_offset_8m,
-  rtu_hpcp_inst3_num,
-  rtu_hpcp_inst3_pc_offset,
-  rtu_hpcp_inst3_split,
-  rtu_hpcp_inst3_store,
-  rtu_hpcp_inst3_vld,
-  // &&*
   rtu_hpcp_trace_inst0_chgflow,
   rtu_hpcp_trace_inst0_next_pc,
   rtu_hpcp_trace_inst1_chgflow,
   rtu_hpcp_trace_inst1_next_pc,
   rtu_hpcp_trace_inst2_chgflow,
   rtu_hpcp_trace_inst2_next_pc,
-  // &&* mu
-  rtu_hpcp_trace_inst3_chgflow,
-  rtu_hpcp_trace_inst3_next_pc,
-  // &&*
   rtu_idu_alloc_ereg0,
   rtu_idu_alloc_ereg0_vld,
   rtu_idu_alloc_ereg1,
@@ -382,8 +327,6 @@ module ct_rtu_top(
   rtu_idu_alloc_ereg2_vld,
   rtu_idu_alloc_ereg3,
   rtu_idu_alloc_ereg3_vld,
-  rtu_idu_alloc_ereg4,// &&* mu
-  rtu_idu_alloc_ereg4_vld,// &&* mu
   rtu_idu_alloc_freg0,
   rtu_idu_alloc_freg0_vld,
   rtu_idu_alloc_freg1,
@@ -392,8 +335,6 @@ module ct_rtu_top(
   rtu_idu_alloc_freg2_vld,
   rtu_idu_alloc_freg3,
   rtu_idu_alloc_freg3_vld,
-  rtu_idu_alloc_freg4,// &&* mu
-  rtu_idu_alloc_freg4_vld,// &&* mu
   rtu_idu_alloc_preg0,
   rtu_idu_alloc_preg0_vld,
   rtu_idu_alloc_preg1,
@@ -402,8 +343,6 @@ module ct_rtu_top(
   rtu_idu_alloc_preg2_vld,
   rtu_idu_alloc_preg3,
   rtu_idu_alloc_preg3_vld,
-  rtu_idu_alloc_preg4,// &&* mu
-  rtu_idu_alloc_preg4_vld,// &&* mu
   rtu_idu_alloc_vreg0,
   rtu_idu_alloc_vreg0_vld,
   rtu_idu_alloc_vreg1,
@@ -412,8 +351,6 @@ module ct_rtu_top(
   rtu_idu_alloc_vreg2_vld,
   rtu_idu_alloc_vreg3,
   rtu_idu_alloc_vreg3_vld,
-  rtu_idu_alloc_vreg4,// &&* mu
-  rtu_idu_alloc_vreg4_vld,// &&* mu
   rtu_idu_flush_fe,
   rtu_idu_flush_is,
   rtu_idu_flush_stall,
@@ -427,7 +364,6 @@ module ct_rtu_top(
   rtu_idu_rob_inst1_iid,
   rtu_idu_rob_inst2_iid,
   rtu_idu_rob_inst3_iid,
-  rtu_idu_rob_inst4_iid, // &&* mu
   rtu_idu_rt_recover_ereg,
   rtu_idu_rt_recover_freg,
   rtu_idu_rt_recover_preg,
@@ -454,12 +390,6 @@ module ct_rtu_top(
   rtu_ifu_retire2_condbr,
   rtu_ifu_retire2_condbr_taken,
   rtu_ifu_retire2_jmp,
-  // &&* mu:
-  rtu_ifu_retire3_chk_idx,
-  rtu_ifu_retire3_condbr,
-  rtu_ifu_retire3_condbr_taken,
-  rtu_ifu_retire3_jmp,
-  // &&* end
   rtu_ifu_retire_inst0_cur_pc,
   rtu_ifu_retire_inst0_load,
   rtu_ifu_retire_inst0_no_spec_hit,
@@ -484,15 +414,6 @@ module ct_rtu_top(
   rtu_ifu_retire_inst2_no_spec_miss,
   rtu_ifu_retire_inst2_store,
   rtu_ifu_retire_inst2_vl_pred,
-  // &&* mu:
-  rtu_ifu_retire_inst3_cur_pc,
-  rtu_ifu_retire_inst3_load,
-  rtu_ifu_retire_inst3_no_spec_hit,
-  rtu_ifu_retire_inst3_no_spec_mispred,
-  rtu_ifu_retire_inst3_no_spec_miss,
-  rtu_ifu_retire_inst3_store,
-  rtu_ifu_retire_inst3_vl_pred,
-  // &&*
   rtu_ifu_xx_dbgon,
   rtu_ifu_xx_expt_vec,
   rtu_ifu_xx_expt_vld,
@@ -501,13 +422,11 @@ module ct_rtu_top(
   rtu_iu_rob_read0_pcfifo_vld,
   rtu_iu_rob_read1_pcfifo_vld,
   rtu_iu_rob_read2_pcfifo_vld,
-  rtu_iu_rob_read2_pcfifo_vld,// &&* mu
   rtu_iu_rob_read_pcfifo_gateclk_vld,
   rtu_lsu_async_flush,
   rtu_lsu_commit0_iid_updt_val,
   rtu_lsu_commit1_iid_updt_val,
   rtu_lsu_commit2_iid_updt_val,
-  rtu_lsu_commit3_iid_updt_val,// &&* mu
   rtu_lsu_eret_flush,
   rtu_lsu_expt_flush,
   rtu_lsu_spec_fail_flush,
@@ -520,16 +439,12 @@ module ct_rtu_top(
   rtu_pad_retire1_pc,
   rtu_pad_retire2,
   rtu_pad_retire2_pc,
-  rtu_pad_retire3, // &&* mu
-  rtu_pad_retire3_pc,// &&* mu
   rtu_yy_xx_commit0,
   rtu_yy_xx_commit0_iid,
   rtu_yy_xx_commit1,
   rtu_yy_xx_commit1_iid,
   rtu_yy_xx_commit2,
   rtu_yy_xx_commit2_iid,
-  rtu_yy_xx_commit3,// &&* mu
-  rtu_yy_xx_commit3_iid,// &&* mu
   rtu_yy_xx_dbgon,
   rtu_yy_xx_expt_vec,
   rtu_yy_xx_flush,
@@ -537,7 +452,6 @@ module ct_rtu_top(
   rtu_yy_xx_retire0_normal,
   rtu_yy_xx_retire1,
   rtu_yy_xx_retire2,
-  rtu_yy_xx_retire3,// &&* mu
   vfpu_rtu_ex5_pipe6_ereg_wb_vld,
   vfpu_rtu_ex5_pipe6_wb_ereg,
   vfpu_rtu_ex5_pipe6_wb_vreg_expand,
@@ -583,26 +497,22 @@ input            idu_rtu_fence_idle;
 input            idu_rtu_ir_ereg0_alloc_vld;          
 input            idu_rtu_ir_ereg1_alloc_vld;          
 input            idu_rtu_ir_ereg2_alloc_vld;          
-input            idu_rtu_ir_ereg3_alloc_vld;
-input            idu_rtu_ir_ereg4_alloc_vld; // &&* mu          
+input            idu_rtu_ir_ereg3_alloc_vld;          
 input            idu_rtu_ir_ereg_alloc_gateclk_vld;   
 input            idu_rtu_ir_freg0_alloc_vld;          
 input            idu_rtu_ir_freg1_alloc_vld;          
 input            idu_rtu_ir_freg2_alloc_vld;          
-input            idu_rtu_ir_freg3_alloc_vld;  
-input            idu_rtu_ir_freg4_alloc_vld; // &&* mu         
+input            idu_rtu_ir_freg3_alloc_vld;          
 input            idu_rtu_ir_freg_alloc_gateclk_vld;   
 input            idu_rtu_ir_preg0_alloc_vld;          
 input            idu_rtu_ir_preg1_alloc_vld;          
 input            idu_rtu_ir_preg2_alloc_vld;          
-input            idu_rtu_ir_preg3_alloc_vld;
-input            idu_rtu_ir_preg4_alloc_vld;  // &&* mu          
+input            idu_rtu_ir_preg3_alloc_vld;          
 input            idu_rtu_ir_preg_alloc_gateclk_vld;   
 input            idu_rtu_ir_vreg0_alloc_vld;          
 input            idu_rtu_ir_vreg1_alloc_vld;          
 input            idu_rtu_ir_vreg2_alloc_vld;          
-input            idu_rtu_ir_vreg3_alloc_vld;
-input            idu_rtu_ir_vreg4_alloc_vld; // &&* mu         
+input            idu_rtu_ir_vreg3_alloc_vld;          
 input            idu_rtu_ir_vreg_alloc_gateclk_vld;   
 input   [4  :0]  idu_rtu_pst_dis_inst0_dst_reg;       
 input   [4  :0]  idu_rtu_pst_dis_inst0_dstv_reg;      
@@ -663,24 +573,7 @@ input   [6  :0]  idu_rtu_pst_dis_inst3_rel_preg;
 input   [5  :0]  idu_rtu_pst_dis_inst3_rel_vreg;      
 input   [5  :0]  idu_rtu_pst_dis_inst3_vreg;          
 input   [6  :0]  idu_rtu_pst_dis_inst3_vreg_iid;      
-input            idu_rtu_pst_dis_inst3_vreg_vld;
-// &&* mu:
-input   [4  :0]  idu_rtu_pst_dis_inst4_dst_reg;       
-input   [4  :0]  idu_rtu_pst_dis_inst4_dstv_reg;      
-input   [4  :0]  idu_rtu_pst_dis_inst4_ereg;          
-input   [6  :0]  idu_rtu_pst_dis_inst4_ereg_iid;      
-input            idu_rtu_pst_dis_inst4_ereg_vld;      
-input            idu_rtu_pst_dis_inst4_freg_vld;      
-input   [6  :0]  idu_rtu_pst_dis_inst4_preg;          
-input   [6  :0]  idu_rtu_pst_dis_inst4_preg_iid;      
-input            idu_rtu_pst_dis_inst4_preg_vld;      
-input   [4  :0]  idu_rtu_pst_dis_inst4_rel_ereg;      
-input   [6  :0]  idu_rtu_pst_dis_inst4_rel_preg;      
-input   [5  :0]  idu_rtu_pst_dis_inst4_rel_vreg;      
-input   [5  :0]  idu_rtu_pst_dis_inst4_vreg;          
-input   [6  :0]  idu_rtu_pst_dis_inst4_vreg_iid;      
-input            idu_rtu_pst_dis_inst4_vreg_vld;
-// &&* end      
+input            idu_rtu_pst_dis_inst3_vreg_vld;      
 input   [63 :0]  idu_rtu_pst_freg_dealloc_mask;       
 input   [95 :0]  idu_rtu_pst_preg_dealloc_mask;       
 input   [63 :0]  idu_rtu_pst_vreg_dealloc_mask;       
@@ -699,13 +592,7 @@ input            idu_rtu_rob_create2_gateclk_en;
 input   [39 :0]  idu_rtu_rob_create3_data;            
 input            idu_rtu_rob_create3_dp_en;           
 input            idu_rtu_rob_create3_en;              
-input            idu_rtu_rob_create3_gateclk_en;
-// &&* mu:
-input   [39 :0]  idu_rtu_rob_create4_data;            
-input            idu_rtu_rob_create4_dp_en;           
-input            idu_rtu_rob_create4_en;              
-input            idu_rtu_rob_create4_gateclk_en; 
-// &&*      
+input            idu_rtu_rob_create3_gateclk_en;      
 input   [38 :0]  ifu_rtu_cur_pc;                      
 input            ifu_rtu_cur_pc_load;                 
 input            ifu_xx_sync_reset;                   
@@ -715,8 +602,7 @@ input   [95 :0]  iu_rtu_ex2_pipe1_wb_preg_expand;
 input            iu_rtu_ex2_pipe1_wb_preg_vld;        
 input   [47 :0]  iu_rtu_pcfifo_pop0_data;             
 input   [47 :0]  iu_rtu_pcfifo_pop1_data;             
-input   [47 :0]  iu_rtu_pcfifo_pop2_data;
-input   [47 :0]  iu_rtu_pcfifo_pop3_data; // &&* mu             
+input   [47 :0]  iu_rtu_pcfifo_pop2_data;             
 input            iu_rtu_pipe0_abnormal;               
 input            iu_rtu_pipe0_bkpt;                   
 input            iu_rtu_pipe0_cmplt;                  
@@ -824,8 +710,7 @@ output  [42 :0]  rtu_had_debug_info;
 output           rtu_had_inst0_bkpt_inst;             
 output  [3  :0]  rtu_had_inst0_non_irv_bkpt;          
 output  [3  :0]  rtu_had_inst1_non_irv_bkpt;          
-output  [3  :0]  rtu_had_inst2_non_irv_bkpt;
-output  [3  :0]  rtu_had_inst3_non_irv_bkpt; // &&* mu           
+output  [3  :0]  rtu_had_inst2_non_irv_bkpt;          
 output           rtu_had_inst_bkpt_inst_vld;          
 output           rtu_had_inst_bkpta_vld;              
 output           rtu_had_inst_bkptb_vld;              
@@ -837,9 +722,7 @@ output           rtu_had_retire_inst0_vld;
 output  [63 :0]  rtu_had_retire_inst1_info;           
 output           rtu_had_retire_inst1_vld;            
 output  [63 :0]  rtu_had_retire_inst2_info;           
-output           rtu_had_retire_inst2_vld;
-output  [63 :0]  rtu_had_retire_inst3_info; // &&* mu          
-output           rtu_had_retire_inst3_vld;  // &&* mu          
+output           rtu_had_retire_inst2_vld;            
 output           rtu_had_rob_empty;                   
 output           rtu_had_xx_dbg_ack_pc;               
 output           rtu_had_xx_mbkpt_chgflow;            
@@ -867,16 +750,7 @@ output           rtu_had_xx_pcfifo_inst2_condbr_taken;
 output           rtu_had_xx_pcfifo_inst2_jmp;         
 output  [38 :0]  rtu_had_xx_pcfifo_inst2_next_pc;     
 output           rtu_had_xx_pcfifo_inst2_pcall;       
-output           rtu_had_xx_pcfifo_inst2_preturn;
-// &&* mu:
-output           rtu_had_xx_pcfifo_inst3_chgflow;     
-output           rtu_had_xx_pcfifo_inst3_condbr;      
-output           rtu_had_xx_pcfifo_inst3_condbr_taken; 
-output           rtu_had_xx_pcfifo_inst3_jmp;         
-output  [38 :0]  rtu_had_xx_pcfifo_inst3_next_pc;     
-output           rtu_had_xx_pcfifo_inst3_pcall;       
-output           rtu_had_xx_pcfifo_inst3_preturn;
-// &&* end     
+output           rtu_had_xx_pcfifo_inst2_preturn;     
 output           rtu_had_xx_split_inst;               
 output           rtu_hpcp_inst0_ack_int;              
 output           rtu_hpcp_inst0_bht_mispred;          
@@ -908,26 +782,13 @@ output  [1  :0]  rtu_hpcp_inst2_num;
 output  [2  :0]  rtu_hpcp_inst2_pc_offset;            
 output           rtu_hpcp_inst2_split;                
 output           rtu_hpcp_inst2_store;                
-output           rtu_hpcp_inst2_vld;
-// &&* mu:
-output           rtu_hpcp_inst3_condbr;               
-output  [39 :0]  rtu_hpcp_inst3_cur_pc;               
-output           rtu_hpcp_inst3_jmp;                  
-output           rtu_hpcp_inst3_jmp_pc_offset_8m;     
-output  [1  :0]  rtu_hpcp_inst3_num;                  
-output  [2  :0]  rtu_hpcp_inst3_pc_offset;            
-output           rtu_hpcp_inst3_split;                
-output           rtu_hpcp_inst3_store;                
-output           rtu_hpcp_inst3_vld;
-// &&*                  
+output           rtu_hpcp_inst2_vld;                  
 output           rtu_hpcp_trace_inst0_chgflow;        
 output  [38 :0]  rtu_hpcp_trace_inst0_next_pc;        
 output           rtu_hpcp_trace_inst1_chgflow;        
 output  [38 :0]  rtu_hpcp_trace_inst1_next_pc;        
 output           rtu_hpcp_trace_inst2_chgflow;        
-output  [38 :0]  rtu_hpcp_trace_inst2_next_pc;
-output           rtu_hpcp_trace_inst3_chgflow; // &&* mu       
-output  [38 :0]  rtu_hpcp_trace_inst3_next_pc; // &&* mu         
+output  [38 :0]  rtu_hpcp_trace_inst2_next_pc;        
 output  [4  :0]  rtu_idu_alloc_ereg0;                 
 output           rtu_idu_alloc_ereg0_vld;             
 output  [4  :0]  rtu_idu_alloc_ereg1;                 
@@ -972,8 +833,7 @@ output           rtu_idu_rob_full;
 output  [6  :0]  rtu_idu_rob_inst0_iid;               
 output  [6  :0]  rtu_idu_rob_inst1_iid;               
 output  [6  :0]  rtu_idu_rob_inst2_iid;               
-output  [6  :0]  rtu_idu_rob_inst3_iid;
-output  [6  :0]  rtu_idu_rob_inst4_iid;// &&* mu               
+output  [6  :0]  rtu_idu_rob_inst3_iid;               
 output  [4  :0]  rtu_idu_rt_recover_ereg;             
 output  [191:0]  rtu_idu_rt_recover_freg;             
 output  [223:0]  rtu_idu_rt_recover_preg;             
@@ -999,13 +859,7 @@ output           rtu_ifu_retire1_jmp;
 output  [7  :0]  rtu_ifu_retire2_chk_idx;             
 output           rtu_ifu_retire2_condbr;              
 output           rtu_ifu_retire2_condbr_taken;        
-output           rtu_ifu_retire2_jmp;
-// &&* mu:
-output  [7  :0]  rtu_ifu_retire3_chk_idx;             
-output           rtu_ifu_retire3_condbr;              
-output           rtu_ifu_retire3_condbr_taken;        
-output           rtu_ifu_retire3_jmp;
-// &&*                 
+output           rtu_ifu_retire2_jmp;                 
 output  [38 :0]  rtu_ifu_retire_inst0_cur_pc;         
 output           rtu_ifu_retire_inst0_load;           
 output           rtu_ifu_retire_inst0_no_spec_hit;    
@@ -1029,16 +883,7 @@ output           rtu_ifu_retire_inst2_no_spec_hit;
 output           rtu_ifu_retire_inst2_no_spec_mispred; 
 output           rtu_ifu_retire_inst2_no_spec_miss;   
 output           rtu_ifu_retire_inst2_store;          
-output           rtu_ifu_retire_inst2_vl_pred;
-// &&* mu:
-output  [38 :0]  rtu_ifu_retire_inst3_cur_pc;         
-output           rtu_ifu_retire_inst3_load;           
-output           rtu_ifu_retire_inst3_no_spec_hit;    
-output           rtu_ifu_retire_inst3_no_spec_mispred; 
-output           rtu_ifu_retire_inst3_no_spec_miss;   
-output           rtu_ifu_retire_inst3_store;          
-output           rtu_ifu_retire_inst3_vl_pred;
-// &&*         
+output           rtu_ifu_retire_inst2_vl_pred;        
 output           rtu_ifu_xx_dbgon;                    
 output  [5  :0]  rtu_ifu_xx_expt_vec;                 
 output           rtu_ifu_xx_expt_vld;                 
@@ -1046,14 +891,12 @@ output           rtu_iu_flush_chgflw_mask;
 output           rtu_iu_flush_fe;                     
 output           rtu_iu_rob_read0_pcfifo_vld;         
 output           rtu_iu_rob_read1_pcfifo_vld;         
-output           rtu_iu_rob_read2_pcfifo_vld;
-output           rtu_iu_rob_read3_pcfifo_vld;  // &&* mu        
+output           rtu_iu_rob_read2_pcfifo_vld;         
 output           rtu_iu_rob_read_pcfifo_gateclk_vld;  
 output           rtu_lsu_async_flush;                 
 output  [6  :0]  rtu_lsu_commit0_iid_updt_val;        
 output  [6  :0]  rtu_lsu_commit1_iid_updt_val;        
-output  [6  :0]  rtu_lsu_commit2_iid_updt_val;
-output  [6  :0]  rtu_lsu_commit3_iid_updt_val; // &&* mu        
+output  [6  :0]  rtu_lsu_commit2_iid_updt_val;        
 output           rtu_lsu_eret_flush;                  
 output           rtu_lsu_expt_flush;                  
 output           rtu_lsu_spec_fail_flush;             
@@ -1071,17 +914,14 @@ output  [6  :0]  rtu_yy_xx_commit0_iid;
 output           rtu_yy_xx_commit1;                   
 output  [6  :0]  rtu_yy_xx_commit1_iid;               
 output           rtu_yy_xx_commit2;                   
-output  [6  :0]  rtu_yy_xx_commit2_iid;
-output           rtu_yy_xx_commit3;    // &&* mu               
-output  [6  :0]  rtu_yy_xx_commit3_iid;// &&* mu               
+output  [6  :0]  rtu_yy_xx_commit2_iid;               
 output           rtu_yy_xx_dbgon;                     
 output  [5  :0]  rtu_yy_xx_expt_vec;                  
 output           rtu_yy_xx_flush;                     
 output           rtu_yy_xx_retire0;                   
 output           rtu_yy_xx_retire0_normal;            
 output           rtu_yy_xx_retire1;                   
-output           rtu_yy_xx_retire2;
-output           rtu_yy_xx_retire3;                    
+output           rtu_yy_xx_retire2;                   
 
 // &Regs; @26
 
@@ -1114,26 +954,22 @@ wire             idu_rtu_fence_idle;
 wire             idu_rtu_ir_ereg0_alloc_vld;          
 wire             idu_rtu_ir_ereg1_alloc_vld;          
 wire             idu_rtu_ir_ereg2_alloc_vld;          
-wire             idu_rtu_ir_ereg3_alloc_vld;
-wire             idu_rtu_ir_ereg4_alloc_vld;  // &&* mu          
+wire             idu_rtu_ir_ereg3_alloc_vld;          
 wire             idu_rtu_ir_ereg_alloc_gateclk_vld;   
 wire             idu_rtu_ir_freg0_alloc_vld;          
 wire             idu_rtu_ir_freg1_alloc_vld;          
 wire             idu_rtu_ir_freg2_alloc_vld;          
-wire             idu_rtu_ir_freg3_alloc_vld; 
-wire             idu_rtu_ir_freg4_alloc_vld;  // &&* mu        
+wire             idu_rtu_ir_freg3_alloc_vld;          
 wire             idu_rtu_ir_freg_alloc_gateclk_vld;   
 wire             idu_rtu_ir_preg0_alloc_vld;          
 wire             idu_rtu_ir_preg1_alloc_vld;          
 wire             idu_rtu_ir_preg2_alloc_vld;          
-wire             idu_rtu_ir_preg3_alloc_vld;
-wire             idu_rtu_ir_preg4_alloc_vld; // &&* mu         
+wire             idu_rtu_ir_preg3_alloc_vld;          
 wire             idu_rtu_ir_preg_alloc_gateclk_vld;   
 wire             idu_rtu_ir_vreg0_alloc_vld;          
 wire             idu_rtu_ir_vreg1_alloc_vld;          
 wire             idu_rtu_ir_vreg2_alloc_vld;          
-wire             idu_rtu_ir_vreg3_alloc_vld;   
-wire             idu_rtu_ir_vreg4_alloc_vld;       
+wire             idu_rtu_ir_vreg3_alloc_vld;          
 wire             idu_rtu_ir_vreg_alloc_gateclk_vld;   
 wire    [4  :0]  idu_rtu_pst_dis_inst0_dst_reg;       
 wire    [4  :0]  idu_rtu_pst_dis_inst0_dstv_reg;      
@@ -1194,24 +1030,7 @@ wire    [6  :0]  idu_rtu_pst_dis_inst3_rel_preg;
 wire    [5  :0]  idu_rtu_pst_dis_inst3_rel_vreg;      
 wire    [5  :0]  idu_rtu_pst_dis_inst3_vreg;          
 wire    [6  :0]  idu_rtu_pst_dis_inst3_vreg_iid;      
-wire             idu_rtu_pst_dis_inst3_vreg_vld;
-// &&* mu add:
-wire    [4  :0]  idu_rtu_pst_dis_inst4_dst_reg;       
-wire    [4  :0]  idu_rtu_pst_dis_inst4_dstv_reg;      
-wire    [4  :0]  idu_rtu_pst_dis_inst4_ereg;          
-wire    [6  :0]  idu_rtu_pst_dis_inst4_ereg_iid;      
-wire             idu_rtu_pst_dis_inst4_ereg_vld;      
-wire             idu_rtu_pst_dis_inst4_freg_vld;      
-wire    [6  :0]  idu_rtu_pst_dis_inst4_preg;          
-wire    [6  :0]  idu_rtu_pst_dis_inst4_preg_iid;      
-wire             idu_rtu_pst_dis_inst4_preg_vld;      
-wire    [4  :0]  idu_rtu_pst_dis_inst4_rel_ereg;      
-wire    [6  :0]  idu_rtu_pst_dis_inst4_rel_preg;      
-wire    [5  :0]  idu_rtu_pst_dis_inst4_rel_vreg;      
-wire    [5  :0]  idu_rtu_pst_dis_inst4_vreg;          
-wire    [6  :0]  idu_rtu_pst_dis_inst4_vreg_iid;      
-wire             idu_rtu_pst_dis_inst4_vreg_vld;
-// &&*      
+wire             idu_rtu_pst_dis_inst3_vreg_vld;      
 wire    [63 :0]  idu_rtu_pst_freg_dealloc_mask;       
 wire    [95 :0]  idu_rtu_pst_preg_dealloc_mask;       
 wire    [63 :0]  idu_rtu_pst_vreg_dealloc_mask;       
@@ -1230,13 +1049,7 @@ wire             idu_rtu_rob_create2_gateclk_en;
 wire    [39 :0]  idu_rtu_rob_create3_data;            
 wire             idu_rtu_rob_create3_dp_en;           
 wire             idu_rtu_rob_create3_en;              
-wire             idu_rtu_rob_create3_gateclk_en;
-// &&* mu:
-wire    [39 :0]  idu_rtu_rob_create4_data;            
-wire             idu_rtu_rob_create4_dp_en;           
-wire             idu_rtu_rob_create4_en;              
-wire             idu_rtu_rob_create4_gateclk_en;
-// &&*      
+wire             idu_rtu_rob_create3_gateclk_en;      
 wire    [38 :0]  ifu_rtu_cur_pc;                      
 wire             ifu_rtu_cur_pc_load;                 
 wire             ifu_xx_sync_reset;                   
@@ -1329,12 +1142,7 @@ wire             retire_pst_wb_retire_inst1_preg_vld;
 wire             retire_pst_wb_retire_inst1_vreg_vld; 
 wire             retire_pst_wb_retire_inst2_ereg_vld; 
 wire             retire_pst_wb_retire_inst2_preg_vld; 
-wire             retire_pst_wb_retire_inst2_vreg_vld;
-// &&* mu:
-wire             retire_pst_wb_retire_inst3_ereg_vld; 
-wire             retire_pst_wb_retire_inst3_preg_vld; 
-wire             retire_pst_wb_retire_inst3_vreg_vld;
-// &&* 
+wire             retire_pst_wb_retire_inst2_vreg_vld; 
 wire             retire_rob_async_expt_commit_mask;   
 wire             retire_rob_ctc_flush_req;            
 wire             retire_rob_dbg_inst0_ack_int;        
@@ -1362,16 +1170,10 @@ wire    [6  :0]  rob_pst_retire_inst1_iid;
 wire    [6  :0]  rob_pst_retire_inst1_iid_updt_val;   
 wire             rob_pst_retire_inst2_gateclk_vld;    
 wire    [6  :0]  rob_pst_retire_inst2_iid;            
-wire    [6  :0]  rob_pst_retire_inst2_iid_updt_val;
-// &&* mu add:
-wire             rob_pst_retire_inst3_gateclk_vld;    
-wire    [6  :0]  rob_pst_retire_inst3_iid;            
-wire    [6  :0]  rob_pst_retire_inst3_iid_updt_val; 
-// &&*    
+wire    [6  :0]  rob_pst_retire_inst2_iid_updt_val;   
 wire             rob_retire_commit0;                  
 wire             rob_retire_commit1;                  
-wire             rob_retire_commit2;
-wire             rob_retire_commit3; // &&* mu                   
+wire             rob_retire_commit2;                  
 wire             rob_retire_ctc_flush_srt_en;         
 wire             rob_retire_inst0_bht_mispred;        
 wire             rob_retire_inst0_bju;                
@@ -1478,35 +1280,7 @@ wire             rob_retire_inst2_vl_pred;
 wire             rob_retire_inst2_vld;                
 wire    [1  :0]  rob_retire_inst2_vlmul;              
 wire             rob_retire_inst2_vsetvli;            
-wire    [2  :0]  rob_retire_inst2_vsew;
-// &&* mu:
-wire             rob_retire_inst3_bju;                
-wire    [7  :0]  rob_retire_inst3_chk_idx;            
-wire             rob_retire_inst3_condbr;             
-wire             rob_retire_inst3_condbr_taken;       
-wire    [38 :0]  rob_retire_inst3_cur_pc;             
-wire             rob_retire_inst3_fp_dirty;           
-wire             rob_retire_inst3_jmp;                
-wire             rob_retire_inst3_load;               
-wire    [38 :0]  rob_retire_inst3_next_pc;            
-wire             rob_retire_inst3_no_spec_hit;        
-wire             rob_retire_inst3_no_spec_mispred;    
-wire             rob_retire_inst3_no_spec_miss;       
-wire    [1  :0]  rob_retire_inst3_num;                
-wire    [2  :0]  rob_retire_inst3_pc_offset;          
-wire             rob_retire_inst3_pst_ereg_vld;       
-wire             rob_retire_inst3_pst_preg_vld;       
-wire             rob_retire_inst3_pst_vreg_vld;       
-wire             rob_retire_inst3_split;              
-wire             rob_retire_inst3_store;              
-wire             rob_retire_inst3_vec_dirty;          
-wire    [7  :0]  rob_retire_inst3_vl;                 
-wire             rob_retire_inst3_vl_pred;            
-wire             rob_retire_inst3_vld;                
-wire    [1  :0]  rob_retire_inst3_vlmul;              
-wire             rob_retire_inst3_vsetvli;            
-wire    [2  :0]  rob_retire_inst3_vsew;
-// &&*               
+wire    [2  :0]  rob_retire_inst2_vsew;               
 wire             rob_retire_int_srt_en;               
 wire    [38 :0]  rob_retire_rob_cur_pc;               
 wire             rob_retire_split_spec_fail_srt;      
@@ -1545,8 +1319,7 @@ wire    [42 :0]  rtu_had_debug_info;
 wire             rtu_had_inst0_bkpt_inst;             
 wire    [3  :0]  rtu_had_inst0_non_irv_bkpt;          
 wire    [3  :0]  rtu_had_inst1_non_irv_bkpt;          
-wire    [3  :0]  rtu_had_inst2_non_irv_bkpt;
-wire    [3  :0]  rtu_had_inst3_non_irv_bkpt;   // &&* mu       
+wire    [3  :0]  rtu_had_inst2_non_irv_bkpt;          
 wire             rtu_had_inst_bkpt_inst_vld;          
 wire             rtu_had_inst_bkpta_vld;              
 wire             rtu_had_inst_bkptb_vld;              
@@ -1558,9 +1331,7 @@ wire             rtu_had_retire_inst0_vld;
 wire    [63 :0]  rtu_had_retire_inst1_info;           
 wire             rtu_had_retire_inst1_vld;            
 wire    [63 :0]  rtu_had_retire_inst2_info;           
-wire             rtu_had_retire_inst2_vld;
-wire    [63 :0]  rtu_had_retire_inst3_info;   // &&* mu        
-wire             rtu_had_retire_inst3_vld;    // &&* mu         
+wire             rtu_had_retire_inst2_vld;            
 wire             rtu_had_rob_empty;                   
 wire             rtu_had_xx_dbg_ack_pc;               
 wire             rtu_had_xx_mbkpt_chgflow;            
@@ -1588,16 +1359,7 @@ wire             rtu_had_xx_pcfifo_inst2_condbr_taken;
 wire             rtu_had_xx_pcfifo_inst2_jmp;         
 wire    [38 :0]  rtu_had_xx_pcfifo_inst2_next_pc;     
 wire             rtu_had_xx_pcfifo_inst2_pcall;       
-wire             rtu_had_xx_pcfifo_inst2_preturn;
-// &&* mu:
-wire             rtu_had_xx_pcfifo_inst3_chgflow;     
-wire             rtu_had_xx_pcfifo_inst3_condbr;      
-wire             rtu_had_xx_pcfifo_inst3_condbr_taken; 
-wire             rtu_had_xx_pcfifo_inst3_jmp;         
-wire    [38 :0]  rtu_had_xx_pcfifo_inst3_next_pc;     
-wire             rtu_had_xx_pcfifo_inst3_pcall;       
-wire             rtu_had_xx_pcfifo_inst3_preturn; 
-// &&*     
+wire             rtu_had_xx_pcfifo_inst2_preturn;     
 wire             rtu_had_xx_split_inst;               
 wire             rtu_hpcp_inst0_ack_int;              
 wire             rtu_hpcp_inst0_bht_mispred;          
@@ -1629,26 +1391,13 @@ wire    [1  :0]  rtu_hpcp_inst2_num;
 wire    [2  :0]  rtu_hpcp_inst2_pc_offset;            
 wire             rtu_hpcp_inst2_split;                
 wire             rtu_hpcp_inst2_store;                
-wire             rtu_hpcp_inst2_vld;
-// &&* mu:
-wire             rtu_hpcp_inst3_condbr;               
-wire    [39 :0]  rtu_hpcp_inst3_cur_pc;               
-wire             rtu_hpcp_inst3_jmp;                  
-wire             rtu_hpcp_inst3_jmp_pc_offset_8m;     
-wire    [1  :0]  rtu_hpcp_inst3_num;                  
-wire    [2  :0]  rtu_hpcp_inst3_pc_offset;            
-wire             rtu_hpcp_inst3_split;                
-wire             rtu_hpcp_inst3_store;                
-wire             rtu_hpcp_inst3_vld; 
-// &&*                  
+wire             rtu_hpcp_inst2_vld;                  
 wire             rtu_hpcp_trace_inst0_chgflow;        
 wire    [38 :0]  rtu_hpcp_trace_inst0_next_pc;        
 wire             rtu_hpcp_trace_inst1_chgflow;        
 wire    [38 :0]  rtu_hpcp_trace_inst1_next_pc;        
 wire             rtu_hpcp_trace_inst2_chgflow;        
-wire    [38 :0]  rtu_hpcp_trace_inst2_next_pc;
-wire             rtu_hpcp_trace_inst3_chgflow;  // &&* mu      
-wire    [38 :0]  rtu_hpcp_trace_inst3_next_pc;  // &&* mu       
+wire    [38 :0]  rtu_hpcp_trace_inst2_next_pc;        
 wire    [4  :0]  rtu_idu_alloc_ereg0;                 
 wire             rtu_idu_alloc_ereg0_vld;             
 wire    [4  :0]  rtu_idu_alloc_ereg1;                 
@@ -1656,9 +1405,7 @@ wire             rtu_idu_alloc_ereg1_vld;
 wire    [4  :0]  rtu_idu_alloc_ereg2;                 
 wire             rtu_idu_alloc_ereg2_vld;             
 wire    [4  :0]  rtu_idu_alloc_ereg3;                 
-wire             rtu_idu_alloc_ereg3_vld;
-wire    [4  :0]  rtu_idu_alloc_ereg4;    // &&* mu             
-wire             rtu_idu_alloc_ereg4_vld;// &&* mu              
+wire             rtu_idu_alloc_ereg3_vld;             
 wire    [5  :0]  rtu_idu_alloc_freg0;                 
 wire             rtu_idu_alloc_freg0_vld;             
 wire    [5  :0]  rtu_idu_alloc_freg1;                 
@@ -1666,9 +1413,7 @@ wire             rtu_idu_alloc_freg1_vld;
 wire    [5  :0]  rtu_idu_alloc_freg2;                 
 wire             rtu_idu_alloc_freg2_vld;             
 wire    [5  :0]  rtu_idu_alloc_freg3;                 
-wire             rtu_idu_alloc_freg3_vld;
-wire    [5  :0]  rtu_idu_alloc_freg4;     // &&* mu            
-wire             rtu_idu_alloc_freg4_vld; // &&* mu             
+wire             rtu_idu_alloc_freg3_vld;             
 wire    [6  :0]  rtu_idu_alloc_preg0;                 
 wire             rtu_idu_alloc_preg0_vld;             
 wire    [6  :0]  rtu_idu_alloc_preg1;                 
@@ -1676,9 +1421,7 @@ wire             rtu_idu_alloc_preg1_vld;
 wire    [6  :0]  rtu_idu_alloc_preg2;                 
 wire             rtu_idu_alloc_preg2_vld;             
 wire    [6  :0]  rtu_idu_alloc_preg3;                 
-wire             rtu_idu_alloc_preg3_vld;
-wire    [6  :0]  rtu_idu_alloc_preg4;    // &&* mu           
-wire             rtu_idu_alloc_preg4_vld;// &&* mu           
+wire             rtu_idu_alloc_preg3_vld;             
 wire    [5  :0]  rtu_idu_alloc_vreg0;                 
 wire             rtu_idu_alloc_vreg0_vld;             
 wire    [5  :0]  rtu_idu_alloc_vreg1;                 
@@ -1686,9 +1429,7 @@ wire             rtu_idu_alloc_vreg1_vld;
 wire    [5  :0]  rtu_idu_alloc_vreg2;                 
 wire             rtu_idu_alloc_vreg2_vld;             
 wire    [5  :0]  rtu_idu_alloc_vreg3;                 
-wire             rtu_idu_alloc_vreg3_vld;
-wire    [5  :0]  rtu_idu_alloc_vreg4;      // &&* mu           
-wire             rtu_idu_alloc_vreg4_vld;  // &&* mu             
+wire             rtu_idu_alloc_vreg3_vld;             
 wire             rtu_idu_flush_fe;                    
 wire             rtu_idu_flush_is;                    
 wire             rtu_idu_flush_stall;                 
@@ -1701,8 +1442,7 @@ wire             rtu_idu_rob_full;
 wire    [6  :0]  rtu_idu_rob_inst0_iid;               
 wire    [6  :0]  rtu_idu_rob_inst1_iid;               
 wire    [6  :0]  rtu_idu_rob_inst2_iid;               
-wire    [6  :0]  rtu_idu_rob_inst3_iid;
-wire    [6  :0]  rtu_idu_rob_inst4_iid; // &&* mu               
+wire    [6  :0]  rtu_idu_rob_inst3_iid;               
 wire    [4  :0]  rtu_idu_rt_recover_ereg;             
 wire    [191:0]  rtu_idu_rt_recover_freg;             
 wire    [223:0]  rtu_idu_rt_recover_preg;             
@@ -1752,16 +1492,7 @@ wire             rtu_ifu_retire_inst2_no_spec_hit;
 wire             rtu_ifu_retire_inst2_no_spec_mispred; 
 wire             rtu_ifu_retire_inst2_no_spec_miss;   
 wire             rtu_ifu_retire_inst2_store;          
-wire             rtu_ifu_retire_inst2_vl_pred; 
-// &&* mu:
-wire    [38 :0]  rtu_ifu_retire_inst3_cur_pc;         
-wire             rtu_ifu_retire_inst3_load;           
-wire             rtu_ifu_retire_inst3_no_spec_hit;    
-wire             rtu_ifu_retire_inst3_no_spec_mispred; 
-wire             rtu_ifu_retire_inst3_no_spec_miss;   
-wire             rtu_ifu_retire_inst3_store;          
-wire             rtu_ifu_retire_inst3_vl_pred; 
-// &&*        
+wire             rtu_ifu_retire_inst2_vl_pred;        
 wire             rtu_ifu_xx_dbgon;                    
 wire    [5  :0]  rtu_ifu_xx_expt_vec;                 
 wire             rtu_ifu_xx_expt_vld;                 
@@ -1769,14 +1500,12 @@ wire             rtu_iu_flush_chgflw_mask;
 wire             rtu_iu_flush_fe;                     
 wire             rtu_iu_rob_read0_pcfifo_vld;         
 wire             rtu_iu_rob_read1_pcfifo_vld;         
-wire             rtu_iu_rob_read2_pcfifo_vld; 
-wire             rtu_iu_rob_read3_pcfifo_vld; // &&*  mu        
+wire             rtu_iu_rob_read2_pcfifo_vld;         
 wire             rtu_iu_rob_read_pcfifo_gateclk_vld;  
 wire             rtu_lsu_async_flush;                 
 wire    [6  :0]  rtu_lsu_commit0_iid_updt_val;        
 wire    [6  :0]  rtu_lsu_commit1_iid_updt_val;        
-wire    [6  :0]  rtu_lsu_commit2_iid_updt_val; 
-wire    [6  :0]  rtu_lsu_commit3_iid_updt_val;  // &&* mu      
+wire    [6  :0]  rtu_lsu_commit2_iid_updt_val;        
 wire             rtu_lsu_eret_flush;                  
 wire             rtu_lsu_expt_flush;                  
 wire             rtu_lsu_spec_fail_flush;             
@@ -1788,25 +1517,20 @@ wire    [39 :0]  rtu_pad_retire0_pc;
 wire             rtu_pad_retire1;                     
 wire    [39 :0]  rtu_pad_retire1_pc;                  
 wire             rtu_pad_retire2;                     
-wire    [39 :0]  rtu_pad_retire2_pc;
-wire             rtu_pad_retire3;         // &&* mu            
-wire    [39 :0]  rtu_pad_retire3_pc;      // &&* mu            
+wire    [39 :0]  rtu_pad_retire2_pc;                  
 wire             rtu_yy_xx_commit0;                   
 wire    [6  :0]  rtu_yy_xx_commit0_iid;               
 wire             rtu_yy_xx_commit1;                   
 wire    [6  :0]  rtu_yy_xx_commit1_iid;               
 wire             rtu_yy_xx_commit2;                   
-wire    [6  :0]  rtu_yy_xx_commit2_iid;
-wire             rtu_yy_xx_commit3;      // &&* mu             
-wire    [6  :0]  rtu_yy_xx_commit3_iid;  // &&* mu              
+wire    [6  :0]  rtu_yy_xx_commit2_iid;               
 wire             rtu_yy_xx_dbgon;                     
 wire    [5  :0]  rtu_yy_xx_expt_vec;                  
 wire             rtu_yy_xx_flush;                     
 wire             rtu_yy_xx_retire0;                   
 wire             rtu_yy_xx_retire0_normal;            
 wire             rtu_yy_xx_retire1;                   
-wire             rtu_yy_xx_retire2;
-wire             rtu_yy_xx_retire3;      // &&* mu              
+wire             rtu_yy_xx_retire2;                   
 wire             vfpu_rtu_ex5_pipe6_ereg_wb_vld;      
 wire    [4  :0]  vfpu_rtu_ex5_pipe6_wb_ereg;          
 wire    [63 :0]  vfpu_rtu_ex5_pipe6_wb_vreg_expand;   
@@ -1828,6 +1552,7 @@ wire    [6  :0]  vfpu_rtu_pipe7_iid;
 //                     Instance PST
 //==========================================================
 // &Instance("ct_rtu_pst_preg", "x_ct_rtu_pst_preg"); @33
+//Jeremmy: integer reg
 ct_rtu_pst_preg  x_ct_rtu_pst_preg (
   .cp0_rtu_icg_en                      (cp0_rtu_icg_en                     ),
   .cp0_yy_clk_en                       (cp0_yy_clk_en                      ),
@@ -1837,7 +1562,6 @@ ct_rtu_pst_preg  x_ct_rtu_pst_preg (
   .idu_rtu_ir_preg1_alloc_vld          (idu_rtu_ir_preg1_alloc_vld         ),
   .idu_rtu_ir_preg2_alloc_vld          (idu_rtu_ir_preg2_alloc_vld         ),
   .idu_rtu_ir_preg3_alloc_vld          (idu_rtu_ir_preg3_alloc_vld         ),
-  .idu_rtu_ir_preg4_alloc_vld          (idu_rtu_ir_preg4_alloc_vld         ), // &&*
   .idu_rtu_ir_preg_alloc_gateclk_vld   (idu_rtu_ir_preg_alloc_gateclk_vld  ),
   .idu_rtu_pst_dis_inst0_dst_reg       (idu_rtu_pst_dis_inst0_dst_reg      ),
   .idu_rtu_pst_dis_inst0_preg          (idu_rtu_pst_dis_inst0_preg         ),
@@ -1859,13 +1583,6 @@ ct_rtu_pst_preg  x_ct_rtu_pst_preg (
   .idu_rtu_pst_dis_inst3_preg_iid      (idu_rtu_pst_dis_inst3_preg_iid     ),
   .idu_rtu_pst_dis_inst3_preg_vld      (idu_rtu_pst_dis_inst3_preg_vld     ),
   .idu_rtu_pst_dis_inst3_rel_preg      (idu_rtu_pst_dis_inst3_rel_preg     ),
-  // &&*
-  .idu_rtu_pst_dis_inst4_dst_reg       (idu_rtu_pst_dis_inst4_dst_reg      ),
-  .idu_rtu_pst_dis_inst4_preg          (idu_rtu_pst_dis_inst4_preg         ),
-  .idu_rtu_pst_dis_inst4_preg_iid      (idu_rtu_pst_dis_inst4_preg_iid     ),
-  .idu_rtu_pst_dis_inst4_preg_vld      (idu_rtu_pst_dis_inst4_preg_vld     ),
-  .idu_rtu_pst_dis_inst4_rel_preg      (idu_rtu_pst_dis_inst4_rel_preg     ),
-  // &&* 
   .idu_rtu_pst_preg_dealloc_mask       (idu_rtu_pst_preg_dealloc_mask      ),
   .ifu_xx_sync_reset                   (ifu_xx_sync_reset                  ),
   .iu_rtu_ex2_pipe0_wb_preg_expand     (iu_rtu_ex2_pipe0_wb_preg_expand    ),
@@ -1884,17 +1601,12 @@ ct_rtu_pst_preg  x_ct_rtu_pst_preg (
   .retire_pst_wb_retire_inst0_preg_vld (retire_pst_wb_retire_inst0_preg_vld),
   .retire_pst_wb_retire_inst1_preg_vld (retire_pst_wb_retire_inst1_preg_vld),
   .retire_pst_wb_retire_inst2_preg_vld (retire_pst_wb_retire_inst2_preg_vld),
-  .retire_pst_wb_retire_inst3_preg_vld (retire_pst_wb_retire_inst3_preg_vld),// &&* mu
   .rob_pst_retire_inst0_gateclk_vld    (rob_pst_retire_inst0_gateclk_vld   ),
   .rob_pst_retire_inst0_iid_updt_val   (rob_pst_retire_inst0_iid_updt_val  ),
   .rob_pst_retire_inst1_gateclk_vld    (rob_pst_retire_inst1_gateclk_vld   ),
   .rob_pst_retire_inst1_iid_updt_val   (rob_pst_retire_inst1_iid_updt_val  ),
   .rob_pst_retire_inst2_gateclk_vld    (rob_pst_retire_inst2_gateclk_vld   ),
   .rob_pst_retire_inst2_iid_updt_val   (rob_pst_retire_inst2_iid_updt_val  ),
-  // &&* 
-  .rob_pst_retire_inst3_gateclk_vld    (rob_pst_retire_inst3_gateclk_vld   ),
-  .rob_pst_retire_inst3_iid_updt_val   (rob_pst_retire_inst3_iid_updt_val  ),
-  // &&*
   .rtu_had_inst_not_wb                 (rtu_had_inst_not_wb                ),
   .rtu_idu_alloc_preg0                 (rtu_idu_alloc_preg0                ),
   .rtu_idu_alloc_preg0_vld             (rtu_idu_alloc_preg0_vld            ),
@@ -1919,7 +1631,6 @@ ct_rtu_pst_ereg  x_ct_rtu_pst_ereg (
   .idu_rtu_ir_ereg1_alloc_vld           (idu_rtu_ir_ereg1_alloc_vld          ),
   .idu_rtu_ir_ereg2_alloc_vld           (idu_rtu_ir_ereg2_alloc_vld          ),
   .idu_rtu_ir_ereg3_alloc_vld           (idu_rtu_ir_ereg3_alloc_vld          ),
-  .idu_rtu_ir_ereg4_alloc_vld           (idu_rtu_ir_ereg4_alloc_vld          ), // &&* mu
   .idu_rtu_ir_ereg_alloc_gateclk_vld    (idu_rtu_ir_ereg_alloc_gateclk_vld   ),
   .idu_rtu_pst_dis_inst0_ereg           (idu_rtu_pst_dis_inst0_ereg          ),
   .idu_rtu_pst_dis_inst0_ereg_iid       (idu_rtu_pst_dis_inst0_ereg_iid      ),
@@ -1937,12 +1648,6 @@ ct_rtu_pst_ereg  x_ct_rtu_pst_ereg (
   .idu_rtu_pst_dis_inst3_ereg_iid       (idu_rtu_pst_dis_inst3_ereg_iid      ),
   .idu_rtu_pst_dis_inst3_ereg_vld       (idu_rtu_pst_dis_inst3_ereg_vld      ),
   .idu_rtu_pst_dis_inst3_rel_ereg       (idu_rtu_pst_dis_inst3_rel_ereg      ),
-  // &&* mu:
-  .idu_rtu_pst_dis_inst4_ereg           (idu_rtu_pst_dis_inst4_ereg          ),
-  .idu_rtu_pst_dis_inst4_ereg_iid       (idu_rtu_pst_dis_inst4_ereg_iid      ),
-  .idu_rtu_pst_dis_inst4_ereg_vld       (idu_rtu_pst_dis_inst4_ereg_vld      ),
-  .idu_rtu_pst_dis_inst4_rel_ereg       (idu_rtu_pst_dis_inst4_rel_ereg      ),
-  // &&*
   .ifu_xx_sync_reset                    (ifu_xx_sync_reset                   ),
   .pad_yy_icg_scan_en                   (pad_yy_icg_scan_en                  ),
   .pst_retired_ereg_wb                  (pst_retired_ereg_wb                 ),
@@ -1953,7 +1658,6 @@ ct_rtu_pst_ereg  x_ct_rtu_pst_ereg (
   .rob_pst_retire_inst0_iid             (rob_pst_retire_inst0_iid            ),
   .rob_pst_retire_inst1_iid             (rob_pst_retire_inst1_iid            ),
   .rob_pst_retire_inst2_iid             (rob_pst_retire_inst2_iid            ),
-  .rob_pst_retire_inst3_iid             (rob_pst_retire_inst3_iid            ),
   .rtu_idu_alloc_ereg0                  (rtu_idu_alloc_ereg0                 ),
   .rtu_idu_alloc_ereg0_vld              (rtu_idu_alloc_ereg0_vld             ),
   .rtu_idu_alloc_ereg1                  (rtu_idu_alloc_ereg1                 ),
@@ -1962,10 +1666,6 @@ ct_rtu_pst_ereg  x_ct_rtu_pst_ereg (
   .rtu_idu_alloc_ereg2_vld              (rtu_idu_alloc_ereg2_vld             ),
   .rtu_idu_alloc_ereg3                  (rtu_idu_alloc_ereg3                 ),
   .rtu_idu_alloc_ereg3_vld              (rtu_idu_alloc_ereg3_vld             ),
-  // &&* mu
-  .rtu_idu_alloc_ereg4                  (rtu_idu_alloc_ereg4                 ),
-  .rtu_idu_alloc_ereg4_vld              (rtu_idu_alloc_ereg4_vld             ),
-  // &&*
   .rtu_idu_pst_ereg_retired_released_wb (rtu_idu_pst_ereg_retired_released_wb),
   .rtu_idu_rt_recover_ereg              (rtu_idu_rt_recover_ereg             ),
   .rtu_yy_xx_flush                      (rtu_yy_xx_flush                     ),
@@ -1991,7 +1691,6 @@ ct_rtu_pst_vreg_dummy  x_ct_rtu_pst_vreg_dummy (
   .idu_rtu_ir_xreg1_alloc_vld              (idu_rtu_ir_vreg1_alloc_vld             ),
   .idu_rtu_ir_xreg2_alloc_vld              (idu_rtu_ir_vreg2_alloc_vld             ),
   .idu_rtu_ir_xreg3_alloc_vld              (idu_rtu_ir_vreg3_alloc_vld             ),
-  .idu_rtu_ir_xreg4_alloc_vld              (idu_rtu_ir_vreg4_alloc_vld             ),// &&* mu
   .idu_rtu_ir_xreg_alloc_gateclk_vld       (idu_rtu_ir_vreg_alloc_gateclk_vld      ),
   .idu_rtu_pst_dis_inst0_dstv_reg          (idu_rtu_pst_dis_inst0_dstv_reg         ),
   .idu_rtu_pst_dis_inst0_rel_vreg          (idu_rtu_pst_dis_inst0_rel_vreg         ),
@@ -2013,13 +1712,6 @@ ct_rtu_pst_vreg_dummy  x_ct_rtu_pst_vreg_dummy (
   .idu_rtu_pst_dis_inst3_vreg              (idu_rtu_pst_dis_inst3_vreg             ),
   .idu_rtu_pst_dis_inst3_vreg_iid          (idu_rtu_pst_dis_inst3_vreg_iid         ),
   .idu_rtu_pst_dis_inst3_xreg_vld          (idu_rtu_pst_dis_inst3_vreg_vld         ),
-  // &&* mu:
-  .idu_rtu_pst_dis_inst4_dstv_reg          (idu_rtu_pst_dis_inst4_dstv_reg         ),
-  .idu_rtu_pst_dis_inst4_rel_vreg          (idu_rtu_pst_dis_inst4_rel_vreg         ),
-  .idu_rtu_pst_dis_inst4_vreg              (idu_rtu_pst_dis_inst4_vreg             ),
-  .idu_rtu_pst_dis_inst4_vreg_iid          (idu_rtu_pst_dis_inst4_vreg_iid         ),
-  .idu_rtu_pst_dis_inst4_xreg_vld          (idu_rtu_pst_dis_inst4_vreg_vld         ),
-  // &&* 
   .idu_rtu_pst_xreg_dealloc_mask           (idu_rtu_pst_vreg_dealloc_mask          ),
   .lsu_rtu_wb_pipe3_wb_vreg_expand         (lsu_rtu_wb_pipe3_wb_vreg_expand[63:0]  ),
   .lsu_rtu_wb_pipe3_wb_vreg_vld            (lsu_rtu_wb_pipe3_wb_vreg_vr_vld        ),
@@ -2032,10 +1724,6 @@ ct_rtu_pst_vreg_dummy  x_ct_rtu_pst_vreg_dummy (
   .rtu_idu_alloc_xreg2_vld                 (rtu_idu_alloc_vreg2_vld                ),
   .rtu_idu_alloc_xreg3                     (rtu_idu_alloc_vreg3                    ),
   .rtu_idu_alloc_xreg3_vld                 (rtu_idu_alloc_vreg3_vld                ),
-  // &&* mu:
-  .rtu_idu_alloc_xreg4                     (rtu_idu_alloc_vreg4                    ),
-  .rtu_idu_alloc_xreg4_vld                 (rtu_idu_alloc_vreg4_vld                ),
-  // &&*
   .rtu_idu_rt_recover_xreg                 (rtu_idu_rt_recover_vreg                ),
   .vfpu_rtu_ex5_pipe6_wb_vreg_expand       (vfpu_rtu_ex5_pipe6_wb_vreg_expand[63:0]),
   .vfpu_rtu_ex5_pipe6_wb_vreg_vld          (vfpu_rtu_ex5_pipe6_wb_vreg_vr_vld      ),
@@ -2069,7 +1757,7 @@ ct_rtu_pst_vreg  x_ct_rtu_pst_freg (
   .idu_rtu_ir_xreg1_alloc_vld              (idu_rtu_ir_freg1_alloc_vld             ),
   .idu_rtu_ir_xreg2_alloc_vld              (idu_rtu_ir_freg2_alloc_vld             ),
   .idu_rtu_ir_xreg3_alloc_vld              (idu_rtu_ir_freg3_alloc_vld             ),
-  .idu_rtu_ir_xreg4_alloc_vld              (idu_rtu_ir_freg4_alloc_vld             ),// &&* mu
+  .idu_rtu_ir_xreg4_alloc_vld              (idu_rtu_ir_freg4_alloc_vld             ),//this signal must be add to portlist
   .idu_rtu_ir_xreg_alloc_gateclk_vld       (idu_rtu_ir_freg_alloc_gateclk_vld      ),
   .idu_rtu_pst_dis_inst0_dstv_reg          (idu_rtu_pst_dis_inst0_dstv_reg         ),
   .idu_rtu_pst_dis_inst0_rel_vreg          (idu_rtu_pst_dis_inst0_rel_vreg         ),
@@ -2091,13 +1779,11 @@ ct_rtu_pst_vreg  x_ct_rtu_pst_freg (
   .idu_rtu_pst_dis_inst3_vreg              (idu_rtu_pst_dis_inst3_vreg             ),
   .idu_rtu_pst_dis_inst3_vreg_iid          (idu_rtu_pst_dis_inst3_vreg_iid         ),
   .idu_rtu_pst_dis_inst3_xreg_vld          (idu_rtu_pst_dis_inst3_freg_vld         ),
-  // &&* mu:
-  .idu_rtu_pst_dis_inst4_dstv_reg          (idu_rtu_pst_dis_inst4_dstv_reg         ),
-  .idu_rtu_pst_dis_inst4_rel_vreg          (idu_rtu_pst_dis_inst4_rel_vreg         ),
-  .idu_rtu_pst_dis_inst4_vreg              (idu_rtu_pst_dis_inst4_vreg             ),
-  .idu_rtu_pst_dis_inst4_vreg_iid          (idu_rtu_pst_dis_inst4_vreg_iid         ),
-  .idu_rtu_pst_dis_inst4_xreg_vld          (idu_rtu_pst_dis_inst4_freg_vld         ),
-  // &&* 
+  .idu_rtu_pst_dis_inst4_dstv_reg          (idu_rtu_pst_dis_inst4_dstv_reg         ),//these signal must be add to portlist
+  .idu_rtu_pst_dis_inst4_rel_vreg          (idu_rtu_pst_dis_inst4_rel_vreg         ),//these signal must be add to portlist
+  .idu_rtu_pst_dis_inst4_vreg              (idu_rtu_pst_dis_inst4_vreg             ),//these signal must be add to portlist
+  .idu_rtu_pst_dis_inst4_vreg_iid          (idu_rtu_pst_dis_inst4_vreg_iid         ),//these signal must be add to portlist
+  .idu_rtu_pst_dis_inst4_xreg_vld          (idu_rtu_pst_dis_inst4_freg_vld         ),//these signal must be add to portlist
   .idu_rtu_pst_xreg_dealloc_mask           (idu_rtu_pst_freg_dealloc_mask          ),
   .ifu_xx_sync_reset                       (ifu_xx_sync_reset                      ),
   .lsu_rtu_wb_pipe3_wb_vreg_expand         (lsu_rtu_wb_pipe3_wb_vreg_expand[63:0]  ),
@@ -2108,17 +1794,15 @@ ct_rtu_pst_vreg  x_ct_rtu_pst_freg (
   .retire_pst_wb_retire_inst0_vreg_vld     (retire_pst_wb_retire_inst0_vreg_vld    ),
   .retire_pst_wb_retire_inst1_vreg_vld     (retire_pst_wb_retire_inst1_vreg_vld    ),
   .retire_pst_wb_retire_inst2_vreg_vld     (retire_pst_wb_retire_inst2_vreg_vld    ),
-  .retire_pst_wb_retire_inst3_vreg_vld     (retire_pst_wb_retire_inst3_vreg_vld    ),
+  .retire_pst_wb_retire_inst3_vreg_vld     (retire_pst_wb_retire_inst3_vreg_vld    ),//the signal must be add to portlist
   .rob_pst_retire_inst0_gateclk_vld        (rob_pst_retire_inst0_gateclk_vld       ),
   .rob_pst_retire_inst0_iid_updt_val       (rob_pst_retire_inst0_iid_updt_val      ),
   .rob_pst_retire_inst1_gateclk_vld        (rob_pst_retire_inst1_gateclk_vld       ),
   .rob_pst_retire_inst1_iid_updt_val       (rob_pst_retire_inst1_iid_updt_val      ),
   .rob_pst_retire_inst2_gateclk_vld        (rob_pst_retire_inst2_gateclk_vld       ),
   .rob_pst_retire_inst2_iid_updt_val       (rob_pst_retire_inst2_iid_updt_val      ),
-  // &&* mu:
-  .rob_pst_retire_inst3_gateclk_vld        (rob_pst_retire_inst3_gateclk_vld       ),
-  .rob_pst_retire_inst3_iid_updt_val       (rob_pst_retire_inst3_iid_updt_val      ),
-  // &&* 
+  .rob_pst_retire_inst3_gateclk_vld        (rob_pst_retire_inst3_gateclk_vld       ),//these signal must be add to portlist
+  .rob_pst_retire_inst3_iid_updt_val       (rob_pst_retire_inst3_iid_updt_val      ),//these signal must be add to portlist
   .rtu_idu_alloc_xreg0                     (rtu_idu_alloc_freg0                    ),
   .rtu_idu_alloc_xreg0_vld                 (rtu_idu_alloc_freg0_vld                ),
   .rtu_idu_alloc_xreg1                     (rtu_idu_alloc_freg1                    ),
@@ -2127,10 +1811,8 @@ ct_rtu_pst_vreg  x_ct_rtu_pst_freg (
   .rtu_idu_alloc_xreg2_vld                 (rtu_idu_alloc_freg2_vld                ),
   .rtu_idu_alloc_xreg3                     (rtu_idu_alloc_freg3                    ),
   .rtu_idu_alloc_xreg3_vld                 (rtu_idu_alloc_freg3_vld                ),
-  // &&* mu
-  .rtu_idu_alloc_xreg4                     (rtu_idu_alloc_freg4                    ),
-  .rtu_idu_alloc_xreg4_vld                 (rtu_idu_alloc_freg4_vld                ),
-  // &&*
+  .rtu_idu_alloc_xreg4                     (rtu_idu_alloc_freg4                    ),//these signal must be add to portlist 
+  .rtu_idu_alloc_xreg4_vld                 (rtu_idu_alloc_freg4_vld                ),//these signal must be add to portlist 
   .rtu_idu_rt_recover_xreg                 (rtu_idu_rt_recover_freg                ),
   .rtu_yy_xx_flush                         (rtu_yy_xx_flush                        ),
   .vfpu_rtu_ex5_pipe6_wb_vreg_expand       (vfpu_rtu_ex5_pipe6_wb_vreg_expand[63:0]),
@@ -2184,18 +1866,11 @@ ct_rtu_rob  x_ct_rtu_rob (
   .idu_rtu_rob_create3_dp_en            (idu_rtu_rob_create3_dp_en           ),
   .idu_rtu_rob_create3_en               (idu_rtu_rob_create3_en              ),
   .idu_rtu_rob_create3_gateclk_en       (idu_rtu_rob_create3_gateclk_en      ),
-  // &&* mu:
-  .idu_rtu_rob_create4_data             (idu_rtu_rob_create4_data            ),
-  .idu_rtu_rob_create4_dp_en            (idu_rtu_rob_create4_dp_en           ),
-  .idu_rtu_rob_create4_en               (idu_rtu_rob_create4_en              ),
-  .idu_rtu_rob_create4_gateclk_en       (idu_rtu_rob_create4_gateclk_en      ),
-  // &&*
   .ifu_rtu_cur_pc                       (ifu_rtu_cur_pc                      ),
   .ifu_rtu_cur_pc_load                  (ifu_rtu_cur_pc_load                 ),
   .iu_rtu_pcfifo_pop0_data              (iu_rtu_pcfifo_pop0_data             ),
   .iu_rtu_pcfifo_pop1_data              (iu_rtu_pcfifo_pop1_data             ),
   .iu_rtu_pcfifo_pop2_data              (iu_rtu_pcfifo_pop2_data             ),
-  .iu_rtu_pcfifo_pop3_data              (iu_rtu_pcfifo_pop3_data             ),// &&*
   .iu_rtu_pipe0_abnormal                (iu_rtu_pipe0_abnormal               ),
   .iu_rtu_pipe0_bkpt                    (iu_rtu_pipe0_bkpt                   ),
   .iu_rtu_pipe0_cmplt                   (iu_rtu_pipe0_cmplt                  ),
@@ -2282,15 +1957,9 @@ ct_rtu_rob  x_ct_rtu_rob (
   .rob_pst_retire_inst2_gateclk_vld     (rob_pst_retire_inst2_gateclk_vld    ),
   .rob_pst_retire_inst2_iid             (rob_pst_retire_inst2_iid            ),
   .rob_pst_retire_inst2_iid_updt_val    (rob_pst_retire_inst2_iid_updt_val   ),
-  // &&*
-  .rob_pst_retire_inst3_gateclk_vld     (rob_pst_retire_inst3_gateclk_vld    ),
-  .rob_pst_retire_inst3_iid             (rob_pst_retire_inst3_iid            ),
-  .rob_pst_retire_inst3_iid_updt_val    (rob_pst_retire_inst3_iid_updt_val   ),
-  // &&*
   .rob_retire_commit0                   (rob_retire_commit0                  ),
   .rob_retire_commit1                   (rob_retire_commit1                  ),
   .rob_retire_commit2                   (rob_retire_commit2                  ),
-  .rob_retire_commit3                   (rob_retire_commit3                  ), // &&*
   .rob_retire_ctc_flush_srt_en          (rob_retire_ctc_flush_srt_en         ),
   .rob_retire_inst0_bht_mispred         (rob_retire_inst0_bht_mispred        ),
   .rob_retire_inst0_bju                 (rob_retire_inst0_bju                ),
@@ -2398,34 +2067,6 @@ ct_rtu_rob  x_ct_rtu_rob (
   .rob_retire_inst2_vlmul               (rob_retire_inst2_vlmul              ),
   .rob_retire_inst2_vsetvli             (rob_retire_inst2_vsetvli            ),
   .rob_retire_inst2_vsew                (rob_retire_inst2_vsew               ),
-  // &&* mu added :
-  .rob_retire_inst3_bju                 (rob_retire_inst3_bju                ),
-  .rob_retire_inst3_chk_idx             (rob_retire_inst3_chk_idx            ),
-  .rob_retire_inst3_condbr              (rob_retire_inst3_condbr             ),
-  .rob_retire_inst3_condbr_taken        (rob_retire_inst3_condbr_taken       ),
-  .rob_retire_inst3_cur_pc              (rob_retire_inst3_cur_pc             ),
-  .rob_retire_inst3_fp_dirty            (rob_retire_inst3_fp_dirty           ),
-  .rob_retire_inst3_jmp                 (rob_retire_inst3_jmp                ),
-  .rob_retire_inst3_load                (rob_retire_inst3_load               ),
-  .rob_retire_inst3_next_pc             (rob_retire_inst3_next_pc            ),
-  .rob_retire_inst3_no_spec_hit         (rob_retire_inst3_no_spec_hit        ),
-  .rob_retire_inst3_no_spec_mispred     (rob_retire_inst3_no_spec_mispred    ),
-  .rob_retire_inst3_no_spec_miss        (rob_retire_inst3_no_spec_miss       ),
-  .rob_retire_inst3_num                 (rob_retire_inst3_num                ),
-  .rob_retire_inst3_pc_offset           (rob_retire_inst3_pc_offset          ),
-  .rob_retire_inst3_pst_ereg_vld        (rob_retire_inst3_pst_ereg_vld       ),
-  .rob_retire_inst3_pst_preg_vld        (rob_retire_inst3_pst_preg_vld       ),
-  .rob_retire_inst3_pst_vreg_vld        (rob_retire_inst3_pst_vreg_vld       ),
-  .rob_retire_inst3_split               (rob_retire_inst3_split              ),
-  .rob_retire_inst3_store               (rob_retire_inst3_store              ),
-  .rob_retire_inst3_vec_dirty           (rob_retire_inst3_vec_dirty          ),
-  .rob_retire_inst3_vl                  (rob_retire_inst3_vl                 ),
-  .rob_retire_inst3_vl_pred             (rob_retire_inst3_vl_pred            ),
-  .rob_retire_inst3_vld                 (rob_retire_inst3_vld                ),
-  .rob_retire_inst3_vlmul               (rob_retire_inst3_vlmul              ),
-  .rob_retire_inst3_vsetvli             (rob_retire_inst3_vsetvli            ),
-  .rob_retire_inst3_vsew                (rob_retire_inst3_vsew               ),
-  // &&*
   .rob_retire_int_srt_en                (rob_retire_int_srt_en               ),
   .rob_retire_rob_cur_pc                (rob_retire_rob_cur_pc               ),
   .rob_retire_split_spec_fail_srt       (rob_retire_split_spec_fail_srt      ),
@@ -2446,7 +2087,6 @@ ct_rtu_rob  x_ct_rtu_rob (
   .rtu_had_inst0_non_irv_bkpt           (rtu_had_inst0_non_irv_bkpt          ),
   .rtu_had_inst1_non_irv_bkpt           (rtu_had_inst1_non_irv_bkpt          ),
   .rtu_had_inst2_non_irv_bkpt           (rtu_had_inst2_non_irv_bkpt          ),
-  .rtu_had_inst3_non_irv_bkpt           (rtu_had_inst3_non_irv_bkpt          ), // &&*
   .rtu_had_inst_bkpt_inst_vld           (rtu_had_inst_bkpt_inst_vld          ),
   .rtu_had_inst_bkpta_vld               (rtu_had_inst_bkpta_vld              ),
   .rtu_had_inst_bkptb_vld               (rtu_had_inst_bkptb_vld              ),
@@ -2458,10 +2098,6 @@ ct_rtu_rob  x_ct_rtu_rob (
   .rtu_had_retire_inst1_vld             (rtu_had_retire_inst1_vld            ),
   .rtu_had_retire_inst2_info            (rtu_had_retire_inst2_info           ),
   .rtu_had_retire_inst2_vld             (rtu_had_retire_inst2_vld            ),
-  // &&* mu :
-  .rtu_had_retire_inst3_info            (rtu_had_retire_inst3_info           ),
-  .rtu_had_retire_inst3_vld             (rtu_had_retire_inst3_vld            ),
-  // &&* 
   .rtu_had_rob_empty                    (rtu_had_rob_empty                   ),
   .rtu_had_xx_mbkpt_chgflow             (rtu_had_xx_mbkpt_chgflow            ),
   .rtu_hpcp_inst0_cur_pc                (rtu_hpcp_inst0_cur_pc               ),
@@ -2470,10 +2106,6 @@ ct_rtu_rob  x_ct_rtu_rob (
   .rtu_hpcp_inst1_jmp_pc_offset_8m      (rtu_hpcp_inst1_jmp_pc_offset_8m     ),
   .rtu_hpcp_inst2_cur_pc                (rtu_hpcp_inst2_cur_pc               ),
   .rtu_hpcp_inst2_jmp_pc_offset_8m      (rtu_hpcp_inst2_jmp_pc_offset_8m     ),
-  // &&* mu:
-  .rtu_hpcp_inst3_cur_pc                (rtu_hpcp_inst3_cur_pc               ),
-  .rtu_hpcp_inst3_jmp_pc_offset_8m      (rtu_hpcp_inst3_jmp_pc_offset_8m     ),
-  // &&*
   .rtu_idu_retire_int_vld               (rtu_idu_retire_int_vld              ),
   .rtu_idu_rob_empty                    (rtu_idu_rob_empty                   ),
   .rtu_idu_rob_full                     (rtu_idu_rob_full                    ),
@@ -2481,41 +2113,29 @@ ct_rtu_rob  x_ct_rtu_rob (
   .rtu_idu_rob_inst1_iid                (rtu_idu_rob_inst1_iid               ),
   .rtu_idu_rob_inst2_iid                (rtu_idu_rob_inst2_iid               ),
   .rtu_idu_rob_inst3_iid                (rtu_idu_rob_inst3_iid               ),
-  .rtu_idu_rob_inst4_iid                (rtu_idu_rob_inst4_iid               ),// &&* 
   .rtu_iu_rob_read0_pcfifo_vld          (rtu_iu_rob_read0_pcfifo_vld         ),
   .rtu_iu_rob_read1_pcfifo_vld          (rtu_iu_rob_read1_pcfifo_vld         ),
   .rtu_iu_rob_read2_pcfifo_vld          (rtu_iu_rob_read2_pcfifo_vld         ),
-  .rtu_iu_rob_read3_pcfifo_vld          (rtu_iu_rob_read3_pcfifo_vld         ),// &&* 
   .rtu_iu_rob_read_pcfifo_gateclk_vld   (rtu_iu_rob_read_pcfifo_gateclk_vld  ),
   .rtu_lsu_commit0_iid_updt_val         (rtu_lsu_commit0_iid_updt_val        ),
   .rtu_lsu_commit1_iid_updt_val         (rtu_lsu_commit1_iid_updt_val        ),
   .rtu_lsu_commit2_iid_updt_val         (rtu_lsu_commit2_iid_updt_val        ),
-  .rtu_lsu_commit3_iid_updt_val         (rtu_lsu_commit3_iid_updt_val        ),// &&*
   .rtu_pad_retire0                      (rtu_pad_retire0                     ),
   .rtu_pad_retire0_pc                   (rtu_pad_retire0_pc                  ),
   .rtu_pad_retire1                      (rtu_pad_retire1                     ),
   .rtu_pad_retire1_pc                   (rtu_pad_retire1_pc                  ),
   .rtu_pad_retire2                      (rtu_pad_retire2                     ),
   .rtu_pad_retire2_pc                   (rtu_pad_retire2_pc                  ),
-  // &&* mu:
-  .rtu_pad_retire3                      (rtu_pad_retire3                     ),
-  .rtu_pad_retire3_pc                   (rtu_pad_retire3_pc                  ),
-  // &&*
   .rtu_yy_xx_commit0                    (rtu_yy_xx_commit0                   ),
   .rtu_yy_xx_commit0_iid                (rtu_yy_xx_commit0_iid               ),
   .rtu_yy_xx_commit1                    (rtu_yy_xx_commit1                   ),
   .rtu_yy_xx_commit1_iid                (rtu_yy_xx_commit1_iid               ),
   .rtu_yy_xx_commit2                    (rtu_yy_xx_commit2                   ),
   .rtu_yy_xx_commit2_iid                (rtu_yy_xx_commit2_iid               ),
-  // &&*
-  .rtu_yy_xx_commit3                    (rtu_yy_xx_commit3                   ),
-  .rtu_yy_xx_commit3_iid                (rtu_yy_xx_commit3_iid               ),
-  // &&*
   .rtu_yy_xx_flush                      (rtu_yy_xx_flush                     ),
   .rtu_yy_xx_retire0                    (rtu_yy_xx_retire0                   ),
   .rtu_yy_xx_retire1                    (rtu_yy_xx_retire1                   ),
   .rtu_yy_xx_retire2                    (rtu_yy_xx_retire2                   ),
-  .rtu_yy_xx_retire3                    (rtu_yy_xx_retire3                   ), // &&* mu
   .vfpu_rtu_pipe6_cmplt                 (vfpu_rtu_pipe6_cmplt                ),
   .vfpu_rtu_pipe6_iid                   (vfpu_rtu_pipe6_iid                  ),
   .vfpu_rtu_pipe7_cmplt                 (vfpu_rtu_pipe7_cmplt                ),
@@ -2559,11 +2179,6 @@ ct_rtu_retire  x_ct_rtu_retire (
   .retire_pst_wb_retire_inst2_ereg_vld  (retire_pst_wb_retire_inst2_ereg_vld ),
   .retire_pst_wb_retire_inst2_preg_vld  (retire_pst_wb_retire_inst2_preg_vld ),
   .retire_pst_wb_retire_inst2_vreg_vld  (retire_pst_wb_retire_inst2_vreg_vld ),
-  // &&*
-  .retire_pst_wb_retire_inst3_ereg_vld  (retire_pst_wb_retire_inst3_ereg_vld ),
-  .retire_pst_wb_retire_inst3_preg_vld  (retire_pst_wb_retire_inst3_preg_vld ),
-  .retire_pst_wb_retire_inst3_vreg_vld  (retire_pst_wb_retire_inst3_vreg_vld ),
-  // &&*
   .retire_rob_async_expt_commit_mask    (retire_rob_async_expt_commit_mask   ),
   .retire_rob_ctc_flush_req             (retire_rob_ctc_flush_req            ),
   .retire_rob_dbg_inst0_ack_int         (retire_rob_dbg_inst0_ack_int        ),
@@ -2586,7 +2201,6 @@ ct_rtu_retire  x_ct_rtu_retire (
   .rob_retire_commit0                   (rob_retire_commit0                  ),
   .rob_retire_commit1                   (rob_retire_commit1                  ),
   .rob_retire_commit2                   (rob_retire_commit2                  ),
-  .rob_retire_commit3                   (rob_retire_commit3                  ), // &&*
   .rob_retire_ctc_flush_srt_en          (rob_retire_ctc_flush_srt_en         ),
   .rob_retire_inst0_bht_mispred         (rob_retire_inst0_bht_mispred        ),
   .rob_retire_inst0_bju                 (rob_retire_inst0_bju                ),
@@ -2694,34 +2308,6 @@ ct_rtu_retire  x_ct_rtu_retire (
   .rob_retire_inst2_vlmul               (rob_retire_inst2_vlmul              ),
   .rob_retire_inst2_vsetvli             (rob_retire_inst2_vsetvli            ),
   .rob_retire_inst2_vsew                (rob_retire_inst2_vsew               ),
-  // &&*
-  .rob_retire_inst3_bju                 (rob_retire_inst3_bju                ),
-  .rob_retire_inst3_chk_idx             (rob_retire_inst3_chk_idx            ),
-  .rob_retire_inst3_condbr              (rob_retire_inst3_condbr             ),
-  .rob_retire_inst3_condbr_taken        (rob_retire_inst3_condbr_taken       ),
-  .rob_retire_inst3_cur_pc              (rob_retire_inst3_cur_pc             ),
-  .rob_retire_inst3_fp_dirty            (rob_retire_inst3_fp_dirty           ),
-  .rob_retire_inst3_jmp                 (rob_retire_inst3_jmp                ),
-  .rob_retire_inst3_load                (rob_retire_inst3_load               ),
-  .rob_retire_inst3_next_pc             (rob_retire_inst3_next_pc            ),
-  .rob_retire_inst3_no_spec_hit         (rob_retire_inst3_no_spec_hit        ),
-  .rob_retire_inst3_no_spec_mispred     (rob_retire_inst3_no_spec_mispred    ),
-  .rob_retire_inst3_no_spec_miss        (rob_retire_inst3_no_spec_miss       ),
-  .rob_retire_inst3_num                 (rob_retire_inst3_num                ),
-  .rob_retire_inst3_pc_offset           (rob_retire_inst3_pc_offset          ),
-  .rob_retire_inst3_pst_ereg_vld        (rob_retire_inst3_pst_ereg_vld       ),
-  .rob_retire_inst3_pst_preg_vld        (rob_retire_inst3_pst_preg_vld       ),
-  .rob_retire_inst3_pst_vreg_vld        (rob_retire_inst3_pst_vreg_vld       ),
-  .rob_retire_inst3_split               (rob_retire_inst3_split              ),
-  .rob_retire_inst3_store               (rob_retire_inst3_store              ),
-  .rob_retire_inst3_vec_dirty           (rob_retire_inst3_vec_dirty          ),
-  .rob_retire_inst3_vl                  (rob_retire_inst3_vl                 ),
-  .rob_retire_inst3_vl_pred             (rob_retire_inst3_vl_pred            ),
-  .rob_retire_inst3_vld                 (rob_retire_inst3_vld                ),
-  .rob_retire_inst3_vlmul               (rob_retire_inst3_vlmul              ),
-  .rob_retire_inst3_vsetvli             (rob_retire_inst3_vsetvli            ),
-  .rob_retire_inst3_vsew                (rob_retire_inst3_vsew               ),
-  // &&*
   .rob_retire_int_srt_en                (rob_retire_int_srt_en               ),
   .rob_retire_rob_cur_pc                (rob_retire_rob_cur_pc               ),
   .rob_retire_split_spec_fail_srt       (rob_retire_split_spec_fail_srt      ),
@@ -2770,15 +2356,6 @@ ct_rtu_retire  x_ct_rtu_retire (
   .rtu_had_xx_pcfifo_inst2_next_pc      (rtu_had_xx_pcfifo_inst2_next_pc     ),
   .rtu_had_xx_pcfifo_inst2_pcall        (rtu_had_xx_pcfifo_inst2_pcall       ),
   .rtu_had_xx_pcfifo_inst2_preturn      (rtu_had_xx_pcfifo_inst2_preturn     ),
-  // &&*
-  .rtu_had_xx_pcfifo_inst3_chgflow      (rtu_had_xx_pcfifo_inst3_chgflow     ),
-  .rtu_had_xx_pcfifo_inst3_condbr       (rtu_had_xx_pcfifo_inst3_condbr      ),
-  .rtu_had_xx_pcfifo_inst3_condbr_taken (rtu_had_xx_pcfifo_inst3_condbr_taken),
-  .rtu_had_xx_pcfifo_inst3_jmp          (rtu_had_xx_pcfifo_inst3_jmp         ),
-  .rtu_had_xx_pcfifo_inst3_next_pc      (rtu_had_xx_pcfifo_inst3_next_pc     ),
-  .rtu_had_xx_pcfifo_inst3_pcall        (rtu_had_xx_pcfifo_inst3_pcall       ),
-  .rtu_had_xx_pcfifo_inst3_preturn      (rtu_had_xx_pcfifo_inst3_preturn     ),
-  // &&*
   .rtu_had_xx_split_inst                (rtu_had_xx_split_inst               ),
   .rtu_hpcp_inst0_ack_int               (rtu_hpcp_inst0_ack_int              ),
   .rtu_hpcp_inst0_bht_mispred           (rtu_hpcp_inst0_bht_mispred          ),
@@ -2805,25 +2382,12 @@ ct_rtu_retire  x_ct_rtu_retire (
   .rtu_hpcp_inst2_split                 (rtu_hpcp_inst2_split                ),
   .rtu_hpcp_inst2_store                 (rtu_hpcp_inst2_store                ),
   .rtu_hpcp_inst2_vld                   (rtu_hpcp_inst2_vld                  ),
-  // &&* mu :
-  .rtu_hpcp_inst3_condbr                (rtu_hpcp_inst3_condbr               ),
-  .rtu_hpcp_inst3_jmp                   (rtu_hpcp_inst3_jmp                  ),
-  .rtu_hpcp_inst3_num                   (rtu_hpcp_inst3_num                  ),
-  .rtu_hpcp_inst3_pc_offset             (rtu_hpcp_inst3_pc_offset            ),
-  .rtu_hpcp_inst3_split                 (rtu_hpcp_inst3_split                ),
-  .rtu_hpcp_inst3_store                 (rtu_hpcp_inst3_store                ),
-  .rtu_hpcp_inst3_vld                   (rtu_hpcp_inst3_vld                  ),
-  // &&*
   .rtu_hpcp_trace_inst0_chgflow         (rtu_hpcp_trace_inst0_chgflow        ),
   .rtu_hpcp_trace_inst0_next_pc         (rtu_hpcp_trace_inst0_next_pc        ),
   .rtu_hpcp_trace_inst1_chgflow         (rtu_hpcp_trace_inst1_chgflow        ),
   .rtu_hpcp_trace_inst1_next_pc         (rtu_hpcp_trace_inst1_next_pc        ),
   .rtu_hpcp_trace_inst2_chgflow         (rtu_hpcp_trace_inst2_chgflow        ),
   .rtu_hpcp_trace_inst2_next_pc         (rtu_hpcp_trace_inst2_next_pc        ),
-  // &&*
-  .rtu_hpcp_trace_inst3_chgflow         (rtu_hpcp_trace_inst3_chgflow        ),
-  .rtu_hpcp_trace_inst3_next_pc         (rtu_hpcp_trace_inst3_next_pc        ),
-  // &&*
   .rtu_idu_flush_fe                     (rtu_idu_flush_fe                    ),
   .rtu_idu_flush_is                     (rtu_idu_flush_is                    ),
   .rtu_idu_flush_stall                  (rtu_idu_flush_stall                 ),
@@ -2850,12 +2414,6 @@ ct_rtu_retire  x_ct_rtu_retire (
   .rtu_ifu_retire2_condbr               (rtu_ifu_retire2_condbr              ),
   .rtu_ifu_retire2_condbr_taken         (rtu_ifu_retire2_condbr_taken        ),
   .rtu_ifu_retire2_jmp                  (rtu_ifu_retire2_jmp                 ),
-  // &&* mu
-  .rtu_ifu_retire3_chk_idx              (rtu_ifu_retire3_chk_idx             ),
-  .rtu_ifu_retire3_condbr               (rtu_ifu_retire3_condbr              ),
-  .rtu_ifu_retire3_condbr_taken         (rtu_ifu_retire3_condbr_taken        ),
-  .rtu_ifu_retire3_jmp                  (rtu_ifu_retire3_jmp                 ),
-  // &&*
   .rtu_ifu_retire_inst0_cur_pc          (rtu_ifu_retire_inst0_cur_pc         ),
   .rtu_ifu_retire_inst0_load            (rtu_ifu_retire_inst0_load           ),
   .rtu_ifu_retire_inst0_no_spec_hit     (rtu_ifu_retire_inst0_no_spec_hit    ),
@@ -2880,15 +2438,6 @@ ct_rtu_retire  x_ct_rtu_retire (
   .rtu_ifu_retire_inst2_no_spec_miss    (rtu_ifu_retire_inst2_no_spec_miss   ),
   .rtu_ifu_retire_inst2_store           (rtu_ifu_retire_inst2_store          ),
   .rtu_ifu_retire_inst2_vl_pred         (rtu_ifu_retire_inst2_vl_pred        ),
-  // &&* mu :
-  .rtu_ifu_retire_inst3_cur_pc          (rtu_ifu_retire_inst3_cur_pc         ),
-  .rtu_ifu_retire_inst3_load            (rtu_ifu_retire_inst3_load           ),
-  .rtu_ifu_retire_inst3_no_spec_hit     (rtu_ifu_retire_inst3_no_spec_hit    ),
-  .rtu_ifu_retire_inst3_no_spec_mispred (rtu_ifu_retire_inst3_no_spec_mispred),
-  .rtu_ifu_retire_inst3_no_spec_miss    (rtu_ifu_retire_inst3_no_spec_miss   ),
-  .rtu_ifu_retire_inst3_store           (rtu_ifu_retire_inst3_store          ),
-  .rtu_ifu_retire_inst3_vl_pred         (rtu_ifu_retire_inst3_vl_pred        ),
-  // &&*
   .rtu_ifu_xx_dbgon                     (rtu_ifu_xx_dbgon                    ),
   .rtu_ifu_xx_expt_vec                  (rtu_ifu_xx_expt_vec                 ),
   .rtu_ifu_xx_expt_vld                  (rtu_ifu_xx_expt_vld                 ),

@@ -2144,7 +2144,6 @@ assign rob_retire_inst3_pst_ereg_vld = retire_pst_ereg_inst3_vld; // &&* mu
 
 assign retire_expt_inst0_vld = retire_inst0_vld;
 //Jeremy fixed begin
-
 //==========================================================
 //                 PCFIFO Pop Data select
 //==========================================================
@@ -2154,7 +2153,6 @@ assign rob_read0_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
 assign rob_read1_pcfifo_data[PCFIFO_POP_WIDTH-1:0] =
          (rob_read0_data[ROB_PCFIFO]) ? iu_rtu_pcfifo_pop1_data[PCFIFO_POP_WIDTH-1:0]
                             : iu_rtu_pcfifo_pop0_data[PCFIFO_POP_WIDTH-1:0];
-//Jeremy : need to do begin
 always @( rob_read1_data[10]
        or iu_rtu_pcfifo_pop0_data[47:0]
        or iu_rtu_pcfifo_pop1_data[47:0]
@@ -2666,7 +2664,7 @@ end
 assign rob_retire_inst0_inst_bkpt    = retire_inst0_inst_bkpt;
 //Jeremy : hard begin 
 //==========================================================
-//                Retire inst 0/1/2 Current PC
+//                Retire inst 0/1/2 /3 Current PC
 //==========================================================
 //----------------------------------------------------------
 //                 prepare pc maintain signals
@@ -2678,7 +2676,7 @@ assign rob_read2_pc_offset[4:0] = {2'b0,rob_read2_data[ROB_PC_OFFSET:ROB_PC_OFFS
 assign rob_read3_pc_offset[4:0] = {2'b0,rob_read3_data[ROB_PC_OFFSET:ROB_PC_OFFSET-2]}; 
 
 //----------------------------------------------------------
-//                 ROB Read 0/1/2 Current PC
+//                 ROB Read 0/1/2 /3 Current PC
 //             (Retire inst 0/1/2 cur pc updt val)
 //----------------------------------------------------------
 //when split fof flush, ifu change flow pc should be next pc of split
