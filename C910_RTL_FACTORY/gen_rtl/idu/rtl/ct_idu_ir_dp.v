@@ -53,6 +53,16 @@ module ct_idu_ir_dp(
   dp_ctrl_ir_inst3_dstf_vld,
   dp_ctrl_ir_inst3_dstv_vld,
   dp_ctrl_ir_inst3_hpcp_type,
+  //addnew logic byxlx
+  dp_ctrl_ir_inst4_bar,
+  dp_ctrl_ir_inst4_ctrl_info,
+  dp_ctrl_ir_inst4_dst_vld,
+  dp_ctrl_ir_inst4_dst_x0,
+  dp_ctrl_ir_inst4_dste_vld,
+  dp_ctrl_ir_inst4_dstf_vld,
+  dp_ctrl_ir_inst4_dstv_vld,
+  dp_ctrl_ir_inst4_hpcp_type,
+
   dp_frt_inst0_dst_ereg,
   dp_frt_inst0_dst_freg,
   dp_frt_inst0_dste_vld,
@@ -104,11 +114,27 @@ module ct_idu_ir_dp(
   dp_frt_inst3_srcf1_vld,
   dp_frt_inst3_srcf2_reg,
   dp_frt_inst3_srcf2_vld,
+//add new logic by xlx
+  dp_frt_inst4_dst_ereg,
+  dp_frt_inst4_dst_freg,
+  dp_frt_inst4_dste_vld,
+  dp_frt_inst4_dstf_reg,
+  dp_frt_inst4_dstf_vld,
+  dp_frt_inst4_fmla,
+  dp_frt_inst4_srcf0_reg,
+  dp_frt_inst4_srcf0_vld,
+  dp_frt_inst4_srcf1_reg,
+  dp_frt_inst4_srcf1_vld,
+  dp_frt_inst4_srcf2_reg,
+  dp_frt_inst4_srcf2_vld,
+
+
   dp_id_pipedown_dep_info,
   dp_id_pipedown_inst0_data,
   dp_id_pipedown_inst1_data,
   dp_id_pipedown_inst2_data,
   dp_id_pipedown_inst3_data,
+  dp_id_pipedown_inst4_data,//add uop4 by xlx
   dp_ir_inst01_src_match,
   dp_ir_inst02_src_match,
   dp_ir_inst03_src_match,
@@ -119,6 +145,7 @@ module ct_idu_ir_dp(
   dp_ir_inst23_src_match,
   dp_ir_inst2_data,
   dp_ir_inst3_data,
+    dp_ir_inst4_data,//add  new logic by xlx
   dp_rt_dep_info,
   dp_rt_inst0_dst_preg,
   dp_rt_inst0_dst_reg,
@@ -150,6 +177,7 @@ module ct_idu_ir_dp(
   dp_rt_inst2_src1_reg,
   dp_rt_inst2_src1_vld,
   dp_rt_inst2_src2_vld,
+
   dp_rt_inst3_dst_preg,
   dp_rt_inst3_dst_reg,
   dp_rt_inst3_dst_vld,
@@ -159,6 +187,17 @@ module ct_idu_ir_dp(
   dp_rt_inst3_src1_reg,
   dp_rt_inst3_src1_vld,
   dp_rt_inst3_src2_vld,
+
+  dp_rt_inst4_dst_preg,
+  dp_rt_inst4_dst_reg,
+  dp_rt_inst4_dst_vld,
+  dp_rt_inst4_mla,
+  dp_rt_inst4_src0_reg,
+  dp_rt_inst4_src0_vld,
+  dp_rt_inst4_src1_reg,
+  dp_rt_inst4_src1_vld,
+  dp_rt_inst4_src2_vld,
+
   dp_vrt_inst0_dst_vreg,
   dp_vrt_inst0_dstv_reg,
   dp_vrt_inst0_dstv_vld,
@@ -199,6 +238,18 @@ module ct_idu_ir_dp(
   dp_vrt_inst3_srcv2_vld,
   dp_vrt_inst3_srcvm_vld,
   dp_vrt_inst3_vmla,
+
+  dp_vrt_inst4_dst_vreg,
+  dp_vrt_inst4_dstv_reg,
+  dp_vrt_inst4_dstv_vld,
+  dp_vrt_inst4_srcv0_reg,
+  dp_vrt_inst4_srcv0_vld,
+  dp_vrt_inst4_srcv1_reg,
+  dp_vrt_inst4_srcv1_vld,
+  dp_vrt_inst4_srcv2_vld,
+  dp_vrt_inst4_srcvm_vld,
+  dp_vrt_inst4_vmla,
+
   forever_cpuclk,
   frt_dp_inst01_srcf2_match,
   frt_dp_inst02_srcf2_match,
@@ -226,6 +277,14 @@ module ct_idu_ir_dp(
   frt_dp_inst3_srcf0_data,
   frt_dp_inst3_srcf1_data,
   frt_dp_inst3_srcf2_data,
+//add new logic byxlx
+  frt_dp_inst4_rel_ereg,
+  frt_dp_inst4_rel_freg,
+  frt_dp_inst4_srcf0_data,
+  frt_dp_inst4_srcf1_data,
+  frt_dp_inst4_srcf2_data,
+
+
   pad_yy_icg_scan_en,
   rt_dp_inst01_src_match,
   rt_dp_inst02_src_match,
@@ -249,23 +308,34 @@ module ct_idu_ir_dp(
   rt_dp_inst3_src0_data,
   rt_dp_inst3_src1_data,
   rt_dp_inst3_src2_data,
-  //Jeremy preg allocate
+//add new logic by xlx
+  rt_dp_inst4_rel_preg,
+  rt_dp_inst4_src0_data,
+  rt_dp_inst4_src1_data,
+  rt_dp_inst4_src2_data,
+
   rtu_idu_alloc_ereg0,
   rtu_idu_alloc_ereg1,
   rtu_idu_alloc_ereg2,
   rtu_idu_alloc_ereg3,
+  rtu_idu_alloc_ereg4,//add newlogic by xlx
   rtu_idu_alloc_freg0,
   rtu_idu_alloc_freg1,
   rtu_idu_alloc_freg2,
   rtu_idu_alloc_freg3,
+  rtu_idu_alloc_freg4,//add newlogic by xlx
   rtu_idu_alloc_preg0,
   rtu_idu_alloc_preg1,
   rtu_idu_alloc_preg2,
   rtu_idu_alloc_preg3,
+  rtu_idu_alloc_preg4,//add newlogic by xlx
+
   rtu_idu_alloc_vreg0,
   rtu_idu_alloc_vreg1,
   rtu_idu_alloc_vreg2,
   rtu_idu_alloc_vreg3,
+  rtu_idu_alloc_vreg4,//add newlogic by xlx
+
   vrt_dp_inst01_srcv2_match,
   vrt_dp_inst02_srcv2_match,
   vrt_dp_inst03_srcv2_match,
@@ -291,7 +361,13 @@ module ct_idu_ir_dp(
   vrt_dp_inst3_srcv0_data,
   vrt_dp_inst3_srcv1_data,
   vrt_dp_inst3_srcv2_data,
-  vrt_dp_inst3_srcvm_data
+  vrt_dp_inst3_srcvm_data,
+//add new logic by xlx
+  vrt_dp_inst4_rel_vreg,
+  vrt_dp_inst4_srcv0_data,
+  vrt_dp_inst4_srcv1_data,
+  vrt_dp_inst4_srcv2_data,
+  vrt_dp_inst4_srcvm_data
 );
 
 // &Ports; @27
@@ -306,6 +382,7 @@ input   [177:0]  dp_id_pipedown_inst0_data;
 input   [177:0]  dp_id_pipedown_inst1_data; 
 input   [177:0]  dp_id_pipedown_inst2_data; 
 input   [177:0]  dp_id_pipedown_inst3_data; 
+input   [177:0]  dp_id_pipedown_inst4_data; //add new logic by xlx
 input            forever_cpuclk;            
 input            frt_dp_inst01_srcf2_match; 
 input            frt_dp_inst02_srcf2_match; 
@@ -333,6 +410,13 @@ input   [6  :0]  frt_dp_inst3_rel_freg;
 input   [8  :0]  frt_dp_inst3_srcf0_data;   
 input   [8  :0]  frt_dp_inst3_srcf1_data;   
 input   [9  :0]  frt_dp_inst3_srcf2_data;   
+//add new logic by xlx
+input   [4  :0]  frt_dp_inst4_rel_ereg;     
+input   [6  :0]  frt_dp_inst4_rel_freg;     
+input   [8  :0]  frt_dp_inst4_srcf0_data;   
+input   [8  :0]  frt_dp_inst4_srcf1_data;   
+input   [9  :0]  frt_dp_inst4_srcf2_data;   
+
 input            pad_yy_icg_scan_en;        
 input   [2  :0]  rt_dp_inst01_src_match;    
 input   [2  :0]  rt_dp_inst02_src_match;    
@@ -356,22 +440,32 @@ input   [6  :0]  rt_dp_inst3_rel_preg;
 input   [8  :0]  rt_dp_inst3_src0_data;     
 input   [8  :0]  rt_dp_inst3_src1_data;     
 input   [9  :0]  rt_dp_inst3_src2_data;     
+//add new logic by xlx
+input   [6  :0]  rt_dp_inst4_rel_preg;      
+input   [8  :0]  rt_dp_inst4_src0_data;     
+input   [8  :0]  rt_dp_inst4_src1_data;     
+input   [9  :0]  rt_dp_inst4_src2_data;    
+
 input   [4  :0]  rtu_idu_alloc_ereg0;       
 input   [4  :0]  rtu_idu_alloc_ereg1;       
 input   [4  :0]  rtu_idu_alloc_ereg2;       
-input   [4  :0]  rtu_idu_alloc_ereg3;       
+input   [4  :0]  rtu_idu_alloc_ereg3;    
+input   [4  :0]  rtu_idu_alloc_ereg4;    //add new logic by xlx
 input   [5  :0]  rtu_idu_alloc_freg0;       
 input   [5  :0]  rtu_idu_alloc_freg1;       
 input   [5  :0]  rtu_idu_alloc_freg2;       
-input   [5  :0]  rtu_idu_alloc_freg3;       
+input   [5  :0]  rtu_idu_alloc_freg3;      
+input   [5  :0]  rtu_idu_alloc_freg4;       //add new logic by xlx
 input   [6  :0]  rtu_idu_alloc_preg0;       
 input   [6  :0]  rtu_idu_alloc_preg1;       
 input   [6  :0]  rtu_idu_alloc_preg2;       
-input   [6  :0]  rtu_idu_alloc_preg3;       
+input   [6  :0]  rtu_idu_alloc_preg3;   
+input   [6  :0]  rtu_idu_alloc_preg4;     //add new logic by xlx
 input   [5  :0]  rtu_idu_alloc_vreg0;       
 input   [5  :0]  rtu_idu_alloc_vreg1;       
 input   [5  :0]  rtu_idu_alloc_vreg2;       
-input   [5  :0]  rtu_idu_alloc_vreg3;       
+input   [5  :0]  rtu_idu_alloc_vreg3;      
+input   [5  :0]  rtu_idu_alloc_vreg4;     //add new logic by xlx  
 input            vrt_dp_inst01_srcv2_match; 
 input            vrt_dp_inst02_srcv2_match; 
 input            vrt_dp_inst03_srcv2_match; 
@@ -398,6 +492,13 @@ input   [8  :0]  vrt_dp_inst3_srcv0_data;
 input   [8  :0]  vrt_dp_inst3_srcv1_data;   
 input   [9  :0]  vrt_dp_inst3_srcv2_data;   
 input   [8  :0]  vrt_dp_inst3_srcvm_data;   
+//add new logic by xlx
+input   [6  :0]  vrt_dp_inst4_rel_vreg;     
+input   [8  :0]  vrt_dp_inst4_srcv0_data;   
+input   [8  :0]  vrt_dp_inst4_srcv1_data;   
+input   [9  :0]  vrt_dp_inst4_srcv2_data;   
+input   [8  :0]  vrt_dp_inst4_srcvm_data;   
+
 output           dp_ctrl_ir_inst0_bar;      
 output  [12 :0]  dp_ctrl_ir_inst0_ctrl_info; 
 output           dp_ctrl_ir_inst0_dst_vld;  
@@ -422,6 +523,7 @@ output           dp_ctrl_ir_inst2_dste_vld;
 output           dp_ctrl_ir_inst2_dstf_vld; 
 output           dp_ctrl_ir_inst2_dstv_vld; 
 output  [6  :0]  dp_ctrl_ir_inst2_hpcp_type; 
+
 output           dp_ctrl_ir_inst3_bar;      
 output  [12 :0]  dp_ctrl_ir_inst3_ctrl_info; 
 output           dp_ctrl_ir_inst3_dst_vld;  
@@ -430,6 +532,16 @@ output           dp_ctrl_ir_inst3_dste_vld;
 output           dp_ctrl_ir_inst3_dstf_vld; 
 output           dp_ctrl_ir_inst3_dstv_vld; 
 output  [6  :0]  dp_ctrl_ir_inst3_hpcp_type; 
+//add new logic by xlx
+output           dp_ctrl_ir_inst4_bar;      
+output  [12 :0]  dp_ctrl_ir_inst4_ctrl_info; 
+output           dp_ctrl_ir_inst4_dst_vld;  
+output           dp_ctrl_ir_inst4_dst_x0;   
+output           dp_ctrl_ir_inst4_dste_vld; 
+output           dp_ctrl_ir_inst4_dstf_vld; 
+output           dp_ctrl_ir_inst4_dstv_vld; 
+output  [6  :0]  dp_ctrl_ir_inst4_hpcp_type; 
+
 output  [4  :0]  dp_frt_inst0_dst_ereg;     
 output  [5  :0]  dp_frt_inst0_dst_freg;     
 output           dp_frt_inst0_dste_vld;     
@@ -469,6 +581,7 @@ output  [5  :0]  dp_frt_inst2_srcf1_reg;
 output           dp_frt_inst2_srcf1_vld;    
 output  [5  :0]  dp_frt_inst2_srcf2_reg;    
 output           dp_frt_inst2_srcf2_vld;    
+
 output  [4  :0]  dp_frt_inst3_dst_ereg;     
 output  [5  :0]  dp_frt_inst3_dst_freg;     
 output           dp_frt_inst3_dste_vld;     
@@ -480,7 +593,21 @@ output           dp_frt_inst3_srcf0_vld;
 output  [5  :0]  dp_frt_inst3_srcf1_reg;    
 output           dp_frt_inst3_srcf1_vld;    
 output  [5  :0]  dp_frt_inst3_srcf2_reg;    
-output           dp_frt_inst3_srcf2_vld;    
+output           dp_frt_inst3_srcf2_vld;   
+
+output  [4  :0]  dp_frt_inst4_dst_ereg;     
+output  [5  :0]  dp_frt_inst4_dst_freg;     
+output           dp_frt_inst4_dste_vld;     
+output  [5  :0]  dp_frt_inst4_dstf_reg;     
+output           dp_frt_inst4_dstf_vld;     
+output           dp_frt_inst4_fmla;         
+output  [5  :0]  dp_frt_inst4_srcf0_reg;    
+output           dp_frt_inst4_srcf0_vld;    
+output  [5  :0]  dp_frt_inst4_srcf1_reg;    
+output           dp_frt_inst4_srcf1_vld;    
+output  [5  :0]  dp_frt_inst4_srcf2_reg;    
+output           dp_frt_inst4_srcf2_vld;    
+
 output  [3  :0]  dp_ir_inst01_src_match;    
 output  [3  :0]  dp_ir_inst02_src_match;    
 output  [3  :0]  dp_ir_inst03_src_match;    
@@ -490,7 +617,8 @@ output  [3  :0]  dp_ir_inst13_src_match;
 output  [270:0]  dp_ir_inst1_data;          
 output  [3  :0]  dp_ir_inst23_src_match;    
 output  [270:0]  dp_ir_inst2_data;          
-output  [270:0]  dp_ir_inst3_data;          
+output  [270:0]  dp_ir_inst3_data;     
+     output  [270:0]  dp_ir_inst4_data;   //add new logic by xlx
 output  [16 :0]  dp_rt_dep_info;            
 output  [6  :0]  dp_rt_inst0_dst_preg;      
 output  [5  :0]  dp_rt_inst0_dst_reg;       
@@ -530,7 +658,19 @@ output  [5  :0]  dp_rt_inst3_src0_reg;
 output           dp_rt_inst3_src0_vld;      
 output  [5  :0]  dp_rt_inst3_src1_reg;      
 output           dp_rt_inst3_src1_vld;      
-output           dp_rt_inst3_src2_vld;      
+output           dp_rt_inst3_src2_vld;  
+//add new logic byxlx
+output  [6  :0]  dp_rt_inst4_dst_preg;      
+output  [5  :0]  dp_rt_inst4_dst_reg;       
+output             dp_rt_inst4_dst_vld;       
+output             dp_rt_inst4_mla;           
+output  [5  :0]  dp_rt_inst4_src0_reg;      
+output           dp_rt_inst4_src0_vld;      
+output  [5  :0]  dp_rt_inst4_src1_reg;      
+output           dp_rt_inst4_src1_vld;      
+output           dp_rt_inst4_src2_vld;  
+
+
 output  [5  :0]  dp_vrt_inst0_dst_vreg;     
 output  [5  :0]  dp_vrt_inst0_dstv_reg;     
 output           dp_vrt_inst0_dstv_vld;     
@@ -562,7 +702,7 @@ output           dp_vrt_inst2_srcv2_vld;
 output           dp_vrt_inst2_srcvm_vld;    
 output           dp_vrt_inst2_vmla;         
 output  [5  :0]  dp_vrt_inst3_dst_vreg;     
-output  [5  :0]  dp_vrt_inst3_dstv_reg;     
+output  [5  :0]  dp_vrt_inst3_dstv_reg     ;
 output           dp_vrt_inst3_dstv_vld;     
 output  [5  :0]  dp_vrt_inst3_srcv0_reg;    
 output           dp_vrt_inst3_srcv0_vld;    
@@ -571,13 +711,26 @@ output           dp_vrt_inst3_srcv1_vld;
 output           dp_vrt_inst3_srcv2_vld;    
 output           dp_vrt_inst3_srcvm_vld;    
 output           dp_vrt_inst3_vmla;         
+//add by xlx
+output  [5  :0]  dp_vrt_inst4_dst_vreg;     
+output  [5  :0]  dp_vrt_inst4_dstv_reg     ;
+output           dp_vrt_inst4_dstv_vld;     
+output  [5  :0]  dp_vrt_inst4_srcv0_reg;    
+output           dp_vrt_inst4_srcv0_vld;    
+output  [5  :0]  dp_vrt_inst4_srcv1_reg;    
+output           dp_vrt_inst4_srcv1_vld;    
+output           dp_vrt_inst4_srcv2_vld;    
+output           dp_vrt_inst4_srcvm_vld;    
+output           dp_vrt_inst4_vmla;         
+
 
 // &Regs; @28
 reg     [16 :0]  ir_dep_info;               
 reg     [177:0]  ir_inst0_data;             
 reg     [177:0]  ir_inst1_data;             
 reg     [177:0]  ir_inst2_data;             
-reg     [177:0]  ir_inst3_data;             
+reg     [177:0]  ir_inst3_data;   
+reg     [177:0]  ir_inst4_data;      //add uop4 logic by xlx       
 
 // &Wires; @29
 wire             cp0_idu_icg_en;            
@@ -618,6 +771,19 @@ wire             dp_ctrl_ir_inst3_dste_vld;
 wire             dp_ctrl_ir_inst3_dstf_vld; 
 wire             dp_ctrl_ir_inst3_dstv_vld; 
 wire    [6  :0]  dp_ctrl_ir_inst3_hpcp_type; 
+
+wire             dp_ctrl_ir_inst4_bar;      
+wire    [12 :0]  dp_ctrl_ir_inst4_ctrl_info; 
+wire             dp_ctrl_ir_inst4_dst_vld;  
+wire             dp_ctrl_ir_inst4_dst_x0;   
+wire             dp_ctrl_ir_inst4_dste_vld; 
+wire             dp_ctrl_ir_inst4_dstf_vld; 
+wire             dp_ctrl_ir_inst4_dstv_vld; 
+wire    [6  :0]  dp_ctrl_ir_inst4_hpcp_type; 
+
+
+
+
 wire    [4  :0]  dp_frt_inst0_dst_ereg;     
 wire    [5  :0]  dp_frt_inst0_dst_freg;     
 wire             dp_frt_inst0_dste_vld;     
@@ -668,12 +834,27 @@ wire             dp_frt_inst3_srcf0_vld;
 wire    [5  :0]  dp_frt_inst3_srcf1_reg;    
 wire             dp_frt_inst3_srcf1_vld;    
 wire    [5  :0]  dp_frt_inst3_srcf2_reg;    
-wire             dp_frt_inst3_srcf2_vld;    
+wire             dp_frt_inst3_srcf2_vld; 
+
+wire    [4  :0]  dp_frt_inst4_dst_ereg;     
+wire    [5  :0]  dp_frt_inst4_dst_freg;     
+wire             dp_frt_inst4_dste_vld;     
+wire    [5  :0]  dp_frt_inst4_dstf_reg;     
+wire             dp_frt_inst4_dstf_vld;     
+wire             dp_frt_inst4_fmla;         
+wire    [5  :0]  dp_frt_inst4_srcf0_reg;    
+wire             dp_frt_inst4_srcf0_vld;    
+wire    [5  :0]  dp_frt_inst4_srcf1_reg;    
+wire             dp_frt_inst4_srcf1_vld;    
+wire    [5  :0]  dp_frt_inst4_srcf2_reg;    
+wire             dp_frt_inst4_srcf2_vld; 
+
 wire    [16 :0]  dp_id_pipedown_dep_info;   
 wire    [177:0]  dp_id_pipedown_inst0_data; 
 wire    [177:0]  dp_id_pipedown_inst1_data; 
 wire    [177:0]  dp_id_pipedown_inst2_data; 
 wire    [177:0]  dp_id_pipedown_inst3_data; 
+wire    [177:0]  dp_id_pipedown_inst4_data; //add new logic by xlx
 wire    [3  :0]  dp_ir_inst01_src_match;    
 wire    [3  :0]  dp_ir_inst02_src_match;    
 wire    [3  :0]  dp_ir_inst03_src_match;    
@@ -683,7 +864,8 @@ wire    [3  :0]  dp_ir_inst13_src_match;
 wire    [270:0]  dp_ir_inst1_data;          
 wire    [3  :0]  dp_ir_inst23_src_match;    
 wire    [270:0]  dp_ir_inst2_data;          
-wire    [270:0]  dp_ir_inst3_data;          
+wire    [270:0]  dp_ir_inst3_data;   
+       wire    [270:0]  dp_ir_inst4_data;   //add ne wlogic byx lx 
 wire    [16 :0]  dp_rt_dep_info;            
 wire    [6  :0]  dp_rt_inst0_dst_preg;      
 wire    [5  :0]  dp_rt_inst0_dst_reg;       
@@ -723,7 +905,18 @@ wire    [5  :0]  dp_rt_inst3_src0_reg;
 wire             dp_rt_inst3_src0_vld;      
 wire    [5  :0]  dp_rt_inst3_src1_reg;      
 wire             dp_rt_inst3_src1_vld;      
-wire             dp_rt_inst3_src2_vld;      
+wire             dp_rt_inst3_src2_vld;     
+//add new logi cby xlx
+wire    [6  :0]  dp_rt_inst4_dst_preg;      
+wire    [5  :0]  dp_rt_inst4_dst_reg;       
+wire             dp_rt_inst4_dst_vld;       
+wire             dp_rt_inst4_mla;           
+wire    [5  :0]  dp_rt_inst4_src0_reg;      
+wire             dp_rt_inst4_src0_vld;      
+wire    [5  :0]  dp_rt_inst4_src1_reg;      
+wire             dp_rt_inst4_src1_vld;      
+wire             dp_rt_inst4_src2_vld;    
+ 
 wire    [5  :0]  dp_vrt_inst0_dst_vreg;     
 wire    [5  :0]  dp_vrt_inst0_dstv_reg;     
 wire             dp_vrt_inst0_dstv_vld;     
@@ -753,7 +946,8 @@ wire    [5  :0]  dp_vrt_inst2_srcv1_reg;
 wire             dp_vrt_inst2_srcv1_vld;    
 wire             dp_vrt_inst2_srcv2_vld;    
 wire             dp_vrt_inst2_srcvm_vld;    
-wire             dp_vrt_inst2_vmla;         
+wire             dp_vrt_inst2_vmla;        
+
 wire    [5  :0]  dp_vrt_inst3_dst_vreg;     
 wire    [5  :0]  dp_vrt_inst3_dstv_reg;     
 wire             dp_vrt_inst3_dstv_vld;     
@@ -763,7 +957,21 @@ wire    [5  :0]  dp_vrt_inst3_srcv1_reg;
 wire             dp_vrt_inst3_srcv1_vld;    
 wire             dp_vrt_inst3_srcv2_vld;    
 wire             dp_vrt_inst3_srcvm_vld;    
-wire             dp_vrt_inst3_vmla;         
+wire             dp_vrt_inst3_vmla;     
+//add new logic by xlx
+wire    [5  :0]  dp_vrt_inst4_dst_vreg;     
+wire    [5  :0]  dp_vrt_inst4_dstv_reg;     
+wire             dp_vrt_inst4_dstv_vld;     
+wire    [5  :0]  dp_vrt_inst4_srcv0_reg;    
+wire             dp_vrt_inst4_srcv0_vld;    
+wire    [5  :0]  dp_vrt_inst4_srcv1_reg;    
+wire             dp_vrt_inst4_srcv1_vld;    
+wire             dp_vrt_inst4_srcv2_vld;    
+wire             dp_vrt_inst4_srcvm_vld;    
+wire             dp_vrt_inst4_vmla;     
+
+
+
 wire             forever_cpuclk;            
 wire             frt_dp_inst01_srcf2_match; 
 wire             frt_dp_inst02_srcf2_match; 
@@ -791,6 +999,13 @@ wire    [6  :0]  frt_dp_inst3_rel_freg;
 wire    [8  :0]  frt_dp_inst3_srcf0_data;   
 wire    [8  :0]  frt_dp_inst3_srcf1_data;   
 wire    [9  :0]  frt_dp_inst3_srcf2_data;   
+//add new logic by xlx
+wire    [4  :0]  frt_dp_inst4_rel_ereg;     
+wire    [6  :0]  frt_dp_inst4_rel_freg;     
+wire    [8  :0]  frt_dp_inst4_srcf0_data;   
+wire    [8  :0]  frt_dp_inst4_srcf1_data;   
+wire    [9  :0]  frt_dp_inst4_srcf2_data;   
+
 wire             ir_inst0_alu_short;        
 wire             ir_inst0_bar;              
 wire    [3  :0]  ir_inst0_bar_type;         
@@ -904,7 +1119,8 @@ wire             ir_inst2_vmul;
 wire             ir_inst2_vmul_unsplit;     
 wire             ir_inst2_vsetvl;           
 wire             ir_inst2_vsetvli;          
-wire    [2  :0]  ir_inst2_vsew;             
+wire    [2  :0]  ir_inst2_vsew;        
+
 wire             ir_inst3_alu_short;        
 wire             ir_inst3_bar;              
 wire    [3  :0]  ir_inst3_bar_type;         
@@ -942,13 +1158,54 @@ wire             ir_inst3_vmul;
 wire             ir_inst3_vmul_unsplit;     
 wire             ir_inst3_vsetvl;           
 wire             ir_inst3_vsetvli;          
-wire    [2  :0]  ir_inst3_vsew;             
+wire    [2  :0]  ir_inst3_vsew;    
+
+wire             ir_inst4_alu_short;        
+wire             ir_inst4_bar;              
+wire    [3  :0]  ir_inst4_bar_type;         
+wire             ir_inst4_csr;              
+wire    [4  :0]  ir_inst4_dst_ereg;         
+wire    [5  :0]  ir_inst4_dst_freg;         
+wire    [6  :0]  ir_inst4_dst_preg;         
+wire    [5  :0]  ir_inst4_dst_vreg;         
+wire             ir_inst4_dstv_imp;         
+wire             ir_inst4_ecall;            
+wire             ir_inst4_fp;               
+wire             ir_inst4_illegal;          
+wire             ir_inst4_lch_preg;         
+wire             ir_inst4_load;             
+wire             ir_inst4_mfvr;             
+wire             ir_inst4_mtvr;             
+wire    [31 :0]  ir_inst4_opcode;           
+wire             ir_inst4_pcall;            
+wire             ir_inst4_pcfifo;           
+wire             ir_inst4_rts;              
+wire             ir_inst4_store;            
+wire             ir_inst4_str;              
+wire             ir_inst4_sync;             
+wire             ir_inst4_type_alu;         
+wire             ir_inst4_type_staddr;      
+wire             ir_inst4_type_vload;       
+wire             ir_inst4_unit_stride;      
+wire             ir_inst4_vamo;             
+wire             ir_inst4_vdiv;             
+wire             ir_inst4_vec;              
+wire             ir_inst4_viq_srcv12_switch; 
+wire             ir_inst4_vmla_short;       
+wire    [2  :0]  ir_inst4_vmla_type;        
+wire             ir_inst4_vmul;             
+wire             ir_inst4_vmul_unsplit;     
+wire             ir_inst4_vsetvl;           
+wire             ir_inst4_vsetvli;          
+wire    [2  :0]  ir_inst4_vsew;    
+
 wire             ir_inst_clk;               
 wire             ir_inst_clk_en;            
 wire    [6  :0]  ir_pipedown_inst0_dst_preg; 
 wire    [6  :0]  ir_pipedown_inst1_dst_preg; 
 wire    [6  :0]  ir_pipedown_inst2_dst_preg; 
 wire    [6  :0]  ir_pipedown_inst3_dst_preg; 
+wire    [6  :0]  ir_pipedown_inst4_dst_preg; //Add by xlx
 wire    [4  :0]  ir_rt_inst0_dst_ereg;      
 wire    [6  :0]  ir_rt_inst0_dst_vreg;      
 wire             ir_rt_inst0_dste_vld;      
@@ -1012,7 +1269,27 @@ wire    [9  :0]  ir_rt_inst3_srcv2_data;
 wire             ir_rt_inst3_srcv2_vld;     
 wire    [8  :0]  ir_rt_inst3_srcvm_data;    
 wire             ir_rt_inst3_srcvm_vld;     
-wire             ir_rt_inst3_vmla;          
+wire             ir_rt_inst3_vmla;        
+
+//add new logic by xlx
+wire    [4  :0]  ir_rt_inst4_dst_ereg;      
+wire    [6  :0]  ir_rt_inst4_dst_vreg;      
+wire             ir_rt_inst4_dste_vld;      
+wire    [4  :0]  ir_rt_inst4_dstv_reg;      
+wire             ir_rt_inst4_dstv_vld;      
+wire    [4  :0]  ir_rt_inst4_rel_ereg;      
+wire    [6  :0]  ir_rt_inst4_rel_vreg;      
+wire    [8  :0]  ir_rt_inst4_srcv0_data;    
+wire             ir_rt_inst4_srcv0_vld;     
+wire    [8  :0]  ir_rt_inst4_srcv1_data;    
+wire             ir_rt_inst4_srcv1_vld;     
+wire    [9  :0]  ir_rt_inst4_srcv2_data;    
+wire             ir_rt_inst4_srcv2_vld;     
+wire    [8  :0]  ir_rt_inst4_srcvm_data;    
+wire             ir_rt_inst4_srcvm_vld;     
+wire             ir_rt_inst4_vmla;       
+
+
 wire             pad_yy_icg_scan_en;        
 wire    [2  :0]  rt_dp_inst01_src_match;    
 wire    [2  :0]  rt_dp_inst02_src_match;    
@@ -1036,22 +1313,33 @@ wire    [6  :0]  rt_dp_inst3_rel_preg;
 wire    [8  :0]  rt_dp_inst3_src0_data;     
 wire    [8  :0]  rt_dp_inst3_src1_data;     
 wire    [9  :0]  rt_dp_inst3_src2_data;     
+//add new logic by xlx
+wire    [6  :0]  rt_dp_inst4_rel_preg;      
+wire    [8  :0]  rt_dp_inst4_src0_data;     
+wire    [8  :0]  rt_dp_inst4_src1_data;     
+wire    [9  :0]  rt_dp_inst4_src2_data;     
+
+
 wire    [4  :0]  rtu_idu_alloc_ereg0;       
 wire    [4  :0]  rtu_idu_alloc_ereg1;       
 wire    [4  :0]  rtu_idu_alloc_ereg2;       
-wire    [4  :0]  rtu_idu_alloc_ereg3;       
+wire    [4  :0]  rtu_idu_alloc_ereg3;   
+wire    [4  :0]  rtu_idu_alloc_ereg4;   //add new logic by xlx
 wire    [5  :0]  rtu_idu_alloc_freg0;       
 wire    [5  :0]  rtu_idu_alloc_freg1;       
 wire    [5  :0]  rtu_idu_alloc_freg2;       
 wire    [5  :0]  rtu_idu_alloc_freg3;       
+wire    [5  :0]  rtu_idu_alloc_freg4;     //add new logic by xlx  
 wire    [6  :0]  rtu_idu_alloc_preg0;       
 wire    [6  :0]  rtu_idu_alloc_preg1;       
 wire    [6  :0]  rtu_idu_alloc_preg2;       
-wire    [6  :0]  rtu_idu_alloc_preg3;       
+wire    [6  :0]  rtu_idu_alloc_preg3;   
+wire    [6  :0]  rtu_idu_alloc_preg4;  //add new logic by xlx  
 wire    [5  :0]  rtu_idu_alloc_vreg0;       
 wire    [5  :0]  rtu_idu_alloc_vreg1;       
 wire    [5  :0]  rtu_idu_alloc_vreg2;       
-wire    [5  :0]  rtu_idu_alloc_vreg3;       
+wire    [5  :0]  rtu_idu_alloc_vreg3;      
+wire    [5  :0]  rtu_idu_alloc_vreg4;      //add new logic by xlx  
 wire             vrt_dp_inst01_srcv2_match; 
 wire             vrt_dp_inst02_srcv2_match; 
 wire             vrt_dp_inst03_srcv2_match; 
@@ -1079,6 +1367,11 @@ wire    [8  :0]  vrt_dp_inst3_srcv1_data;
 wire    [9  :0]  vrt_dp_inst3_srcv2_data;   
 wire    [8  :0]  vrt_dp_inst3_srcvm_data;   
 
+wire    [6  :0]  vrt_dp_inst4_rel_vreg;     
+wire    [8  :0]  vrt_dp_inst4_srcv0_data;   
+wire    [8  :0]  vrt_dp_inst4_srcv1_data;   
+wire    [9  :0]  vrt_dp_inst4_srcv2_data;   
+wire    [8  :0]  vrt_dp_inst4_srcvm_data;   
 
 
 //==========================================================
@@ -1161,6 +1454,9 @@ parameter DEP_INST03_VREG_MASK  = 13;
 parameter DEP_INST01_SRCV1_MASK = 14;
 parameter DEP_INST12_SRCV1_MASK = 15;
 parameter DEP_INST23_SRCV1_MASK = 16;
+
+//add by  xlx
+//parameter DEP_INST23_SRCV1_MASK = 16;
 
 //----------------------------------------------------------
 //                 IS ctrl path parameters
@@ -1325,6 +1621,7 @@ begin
     ir_inst1_data[IR_WIDTH-1:0] <= {IR_WIDTH{1'b0}};
     ir_inst2_data[IR_WIDTH-1:0] <= {IR_WIDTH{1'b0}};
     ir_inst3_data[IR_WIDTH-1:0] <= {IR_WIDTH{1'b0}};
+    ir_inst4_data[IR_WIDTH-1:0] <= {IR_WIDTH{1'b0}};//add uop4 by xlx
     ir_dep_info[DEP_WIDTH-1:0]  <= {DEP_WIDTH{1'b0}};
   end
   else if(!ctrl_ir_stall) begin
@@ -1332,6 +1629,7 @@ begin
     ir_inst1_data[IR_WIDTH-1:0] <= dp_id_pipedown_inst1_data[IR_WIDTH-1:0];
     ir_inst2_data[IR_WIDTH-1:0] <= dp_id_pipedown_inst2_data[IR_WIDTH-1:0];
     ir_inst3_data[IR_WIDTH-1:0] <= dp_id_pipedown_inst3_data[IR_WIDTH-1:0];
+    ir_inst4_data[IR_WIDTH-1:0] <= dp_id_pipedown_inst4_data[IR_WIDTH-1:0];//add uop4 by xlx
     ir_dep_info[DEP_WIDTH-1:0]  <= dp_id_pipedown_dep_info[DEP_WIDTH-1:0];
   end
   else begin
@@ -1339,6 +1637,7 @@ begin
     ir_inst1_data[IR_WIDTH-1:0] <= ir_inst1_data[IR_WIDTH-1:0];
     ir_inst2_data[IR_WIDTH-1:0] <= ir_inst2_data[IR_WIDTH-1:0];
     ir_inst3_data[IR_WIDTH-1:0] <= ir_inst3_data[IR_WIDTH-1:0];
+    ir_inst4_data[IR_WIDTH-1:0] <= ir_inst4_data[IR_WIDTH-1:0];//add uop4 by xlx
     ir_dep_info[DEP_WIDTH-1:0]  <= ir_dep_info[DEP_WIDTH-1:0];
   end
 end
@@ -1350,91 +1649,109 @@ assign dp_ctrl_ir_inst0_dst_x0      = ir_inst0_data[IR_DST_X0];
 assign dp_ctrl_ir_inst1_dst_x0      = ir_inst1_data[IR_DST_X0];
 assign dp_ctrl_ir_inst2_dst_x0      = ir_inst2_data[IR_DST_X0];
 assign dp_ctrl_ir_inst3_dst_x0      = ir_inst3_data[IR_DST_X0];
+assign dp_ctrl_ir_inst4_dst_x0      = ir_inst4_data[IR_DST_X0];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_dst_vld     = ir_inst0_data[IR_DST_VLD];
 assign dp_ctrl_ir_inst1_dst_vld     = ir_inst1_data[IR_DST_VLD];
 assign dp_ctrl_ir_inst2_dst_vld     = ir_inst2_data[IR_DST_VLD];
 assign dp_ctrl_ir_inst3_dst_vld     = ir_inst3_data[IR_DST_VLD];
+assign dp_ctrl_ir_inst4_dst_vld     = ir_inst4_data[IR_DST_VLD];//add uop4 by xlx
                                                        
 assign dp_ctrl_ir_inst0_dstv_vld    = ir_inst0_data[IR_DSTV_VLD];
 assign dp_ctrl_ir_inst1_dstv_vld    = ir_inst1_data[IR_DSTV_VLD];
 assign dp_ctrl_ir_inst2_dstv_vld    = ir_inst2_data[IR_DSTV_VLD];
 assign dp_ctrl_ir_inst3_dstv_vld    = ir_inst3_data[IR_DSTV_VLD];
+assign dp_ctrl_ir_inst4_dstv_vld    = ir_inst4_data[IR_DSTV_VLD];//add uop4 by xlx
                                                        
 assign dp_ctrl_ir_inst0_dste_vld    = ir_inst0_data[IR_DSTE_VLD];
 assign dp_ctrl_ir_inst1_dste_vld    = ir_inst1_data[IR_DSTE_VLD];
 assign dp_ctrl_ir_inst2_dste_vld    = ir_inst2_data[IR_DSTE_VLD];
 assign dp_ctrl_ir_inst3_dste_vld    = ir_inst3_data[IR_DSTE_VLD];
+assign dp_ctrl_ir_inst4_dste_vld    = ir_inst4_data[IR_DSTE_VLD];//add uop4 by xlx
                                                        
 assign dp_ctrl_ir_inst0_dstf_vld    = ir_inst0_data[IR_DSTF_VLD];
 assign dp_ctrl_ir_inst1_dstf_vld    = ir_inst1_data[IR_DSTF_VLD];
 assign dp_ctrl_ir_inst2_dstf_vld    = ir_inst2_data[IR_DSTF_VLD];
 assign dp_ctrl_ir_inst3_dstf_vld    = ir_inst3_data[IR_DSTF_VLD];
+assign dp_ctrl_ir_inst4_dstf_vld    = ir_inst4_data[IR_DSTF_VLD];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_ALU]     = ir_inst0_data[IR_INST_TYPE-9];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_ALU]     = ir_inst1_data[IR_INST_TYPE-9];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_ALU]     = ir_inst2_data[IR_INST_TYPE-9];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_ALU]     = ir_inst3_data[IR_INST_TYPE-9];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_ALU]     = ir_inst4_data[IR_INST_TYPE-9];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_MULT]    = ir_inst0_data[IR_INST_TYPE-7];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_MULT]    = ir_inst1_data[IR_INST_TYPE-7];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_MULT]    = ir_inst2_data[IR_INST_TYPE-7];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_MULT]    = ir_inst3_data[IR_INST_TYPE-7];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_MULT]    = ir_inst4_data[IR_INST_TYPE-7];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_DIV]     = ir_inst0_data[IR_INST_TYPE-6];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_DIV]     = ir_inst1_data[IR_INST_TYPE-6];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_DIV]     = ir_inst2_data[IR_INST_TYPE-6];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_DIV]     = ir_inst3_data[IR_INST_TYPE-6];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_DIV]     = ir_inst4_data[IR_INST_TYPE-6];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_BJU]     = ir_inst0_data[IR_INST_TYPE-8];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_BJU]     = ir_inst1_data[IR_INST_TYPE-8];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_BJU]     = ir_inst2_data[IR_INST_TYPE-8];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_BJU]     = ir_inst3_data[IR_INST_TYPE-8];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_BJU]     = ir_inst4_data[IR_INST_TYPE-8];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_LSU]     = ir_inst0_data[IR_INST_TYPE-5];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_LSU]     = ir_inst1_data[IR_INST_TYPE-5];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_LSU]     = ir_inst2_data[IR_INST_TYPE-5];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_LSU]     = ir_inst3_data[IR_INST_TYPE-5];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_LSU]     = ir_inst4_data[IR_INST_TYPE-5];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_SPLIT]   = ir_inst0_data[IR_SPLIT];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_SPLIT]   = ir_inst1_data[IR_SPLIT];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_SPLIT]   = ir_inst2_data[IR_SPLIT];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_SPLIT]   = ir_inst3_data[IR_SPLIT];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_SPLIT]   = ir_inst4_data[IR_SPLIT];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_INTMASK] = ir_inst0_data[IR_INTMASK];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_INTMASK] = ir_inst1_data[IR_INTMASK];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_INTMASK] = ir_inst2_data[IR_INTMASK];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_INTMASK] = ir_inst3_data[IR_INTMASK];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_INTMASK] = ir_inst4_data[IR_INTMASK];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_STADDR]  = ir_inst0_data[IR_INST_TYPE-4];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_STADDR]  = ir_inst1_data[IR_INST_TYPE-4];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_STADDR]  = ir_inst2_data[IR_INST_TYPE-4];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_STADDR]  = ir_inst3_data[IR_INST_TYPE-4];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_STADDR]  = ir_inst4_data[IR_INST_TYPE-4];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_SPECIAL] = ir_inst0_data[IR_INST_TYPE];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_SPECIAL] = ir_inst1_data[IR_INST_TYPE];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_SPECIAL] = ir_inst2_data[IR_INST_TYPE];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_SPECIAL] = ir_inst3_data[IR_INST_TYPE];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_SPECIAL] = ir_inst4_data[IR_INST_TYPE];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_PIPE67]  = ir_inst0_data[IR_INST_TYPE-3];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_PIPE67]  = ir_inst1_data[IR_INST_TYPE-3];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_PIPE67]  = ir_inst2_data[IR_INST_TYPE-3];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_PIPE67]  = ir_inst3_data[IR_INST_TYPE-3];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_PIPE67]  = ir_inst4_data[IR_INST_TYPE-3];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_PIPE6]   = ir_inst0_data[IR_INST_TYPE-2];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_PIPE6]   = ir_inst1_data[IR_INST_TYPE-2];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_PIPE6]   = ir_inst2_data[IR_INST_TYPE-2];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_PIPE6]   = ir_inst3_data[IR_INST_TYPE-2];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_PIPE6]   = ir_inst4_data[IR_INST_TYPE-2];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_PIPE7]   = ir_inst0_data[IR_INST_TYPE-1];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_PIPE7]   = ir_inst1_data[IR_INST_TYPE-1];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_PIPE7]   = ir_inst2_data[IR_INST_TYPE-1];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_PIPE7]   = ir_inst3_data[IR_INST_TYPE-1];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_PIPE7]   = ir_inst4_data[IR_INST_TYPE-1];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_ctrl_info[IS_CTRL_VMB]     = ir_inst0_data[IR_VMB];
 assign dp_ctrl_ir_inst1_ctrl_info[IS_CTRL_VMB]     = ir_inst1_data[IR_VMB];
 assign dp_ctrl_ir_inst2_ctrl_info[IS_CTRL_VMB]     = ir_inst2_data[IR_VMB];
 assign dp_ctrl_ir_inst3_ctrl_info[IS_CTRL_VMB]     = ir_inst3_data[IR_VMB];
+assign dp_ctrl_ir_inst4_ctrl_info[IS_CTRL_VMB]     = ir_inst4_data[IR_VMB];//add uop4 by xlx
 //alu
 assign dp_ctrl_ir_inst0_hpcp_type[0] = ir_inst0_data[IR_INST_TYPE-9]
                                     || ir_inst0_data[IR_INST_TYPE-7]
@@ -1448,36 +1765,46 @@ assign dp_ctrl_ir_inst2_hpcp_type[0] = ir_inst2_data[IR_INST_TYPE-9]
 assign dp_ctrl_ir_inst3_hpcp_type[0] = ir_inst3_data[IR_INST_TYPE-9]
                                     || ir_inst3_data[IR_INST_TYPE-7]
                                     || ir_inst3_data[IR_INST_TYPE-6];
+assign dp_ctrl_ir_inst4_hpcp_type[0] = ir_inst4_data[IR_INST_TYPE-9]//add uop4 by xlx
+                                    || ir_inst4_data[IR_INST_TYPE-7]
+                                    || ir_inst4_data[IR_INST_TYPE-6];                         
+
 //lsu
 assign dp_ctrl_ir_inst0_hpcp_type[1] = ir_inst0_data[IR_INST_TYPE-5];
 assign dp_ctrl_ir_inst1_hpcp_type[1] = ir_inst1_data[IR_INST_TYPE-5];
 assign dp_ctrl_ir_inst2_hpcp_type[1] = ir_inst2_data[IR_INST_TYPE-5];
 assign dp_ctrl_ir_inst3_hpcp_type[1] = ir_inst3_data[IR_INST_TYPE-5];
+assign dp_ctrl_ir_inst4_hpcp_type[1] = ir_inst4_data[IR_INST_TYPE-5];//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_hpcp_type[2] = ir_inst0_vec;
 assign dp_ctrl_ir_inst1_hpcp_type[2] = ir_inst1_vec;
 assign dp_ctrl_ir_inst2_hpcp_type[2] = ir_inst2_vec;
 assign dp_ctrl_ir_inst3_hpcp_type[2] = ir_inst3_vec;
+assign dp_ctrl_ir_inst4_hpcp_type[2] = ir_inst4_vec;//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_hpcp_type[3] = ir_inst0_csr;
 assign dp_ctrl_ir_inst1_hpcp_type[3] = ir_inst1_csr;
 assign dp_ctrl_ir_inst2_hpcp_type[3] = ir_inst2_csr;
 assign dp_ctrl_ir_inst3_hpcp_type[3] = ir_inst3_csr;
+assign dp_ctrl_ir_inst4_hpcp_type[3] = ir_inst4_csr;//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_hpcp_type[4] = ir_inst0_ecall;
 assign dp_ctrl_ir_inst1_hpcp_type[4] = ir_inst1_ecall;
 assign dp_ctrl_ir_inst2_hpcp_type[4] = ir_inst2_ecall;
 assign dp_ctrl_ir_inst3_hpcp_type[4] = ir_inst3_ecall;
+assign dp_ctrl_ir_inst4_hpcp_type[4] = ir_inst3_ecall;//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_hpcp_type[5] = ir_inst0_sync;
 assign dp_ctrl_ir_inst1_hpcp_type[5] = ir_inst1_sync;
 assign dp_ctrl_ir_inst2_hpcp_type[5] = ir_inst2_sync;
 assign dp_ctrl_ir_inst3_hpcp_type[5] = ir_inst3_sync;
+assign dp_ctrl_ir_inst4_hpcp_type[5] = ir_inst4_sync;//add uop4 by xlx
 
 assign dp_ctrl_ir_inst0_hpcp_type[6] = ir_inst0_fp;
 assign dp_ctrl_ir_inst1_hpcp_type[6] = ir_inst1_fp;
 assign dp_ctrl_ir_inst2_hpcp_type[6] = ir_inst2_fp;
 assign dp_ctrl_ir_inst3_hpcp_type[6] = ir_inst3_fp;
+assign dp_ctrl_ir_inst4_hpcp_type[6] = ir_inst4_fp;//add uop4 by xlx
 
 //==========================================================
 //               Assign ptag, creg and lsu pc
@@ -1486,27 +1813,32 @@ assign ir_inst0_dst_preg[6:0]       = {7{!ir_inst0_data[IR_DST_X0]}} & rtu_idu_a
 assign ir_inst1_dst_preg[6:0]       = {7{!ir_inst1_data[IR_DST_X0]}} & rtu_idu_alloc_preg1[6:0];
 assign ir_inst2_dst_preg[6:0]       = {7{!ir_inst2_data[IR_DST_X0]}} & rtu_idu_alloc_preg2[6:0];
 assign ir_inst3_dst_preg[6:0]       = {7{!ir_inst3_data[IR_DST_X0]}} & rtu_idu_alloc_preg3[6:0];
+assign ir_inst4_dst_preg[6:0]       = {7{!ir_inst4_data[IR_DST_X0]}} & rtu_idu_alloc_preg4[6:0];//add uop4 by xlx
 
 assign ir_inst0_dst_vreg[5:0]       = rtu_idu_alloc_vreg0[5:0];
 assign ir_inst1_dst_vreg[5:0]       = rtu_idu_alloc_vreg1[5:0];
 assign ir_inst2_dst_vreg[5:0]       = rtu_idu_alloc_vreg2[5:0];
 assign ir_inst3_dst_vreg[5:0]       = rtu_idu_alloc_vreg3[5:0];
+assign ir_inst4_dst_vreg[5:0]       = rtu_idu_alloc_vreg4[5:0];//add uop4 by xlx
 
 assign ir_inst0_dst_freg[5:0]       = rtu_idu_alloc_freg0[5:0];
 assign ir_inst1_dst_freg[5:0]       = rtu_idu_alloc_freg1[5:0];
 assign ir_inst2_dst_freg[5:0]       = rtu_idu_alloc_freg2[5:0];
 assign ir_inst3_dst_freg[5:0]       = rtu_idu_alloc_freg3[5:0];
+assign ir_inst4_dst_freg[5:0]       = rtu_idu_alloc_freg4[5:0];//add uop4 by xlx
 
 assign ir_inst0_dst_ereg[4:0]       = rtu_idu_alloc_ereg0[4:0];
 assign ir_inst1_dst_ereg[4:0]       = rtu_idu_alloc_ereg1[4:0];
 assign ir_inst2_dst_ereg[4:0]       = rtu_idu_alloc_ereg2[4:0];
 assign ir_inst3_dst_ereg[4:0]       = rtu_idu_alloc_ereg3[4:0];
+assign ir_inst4_dst_ereg[4:0]       = rtu_idu_alloc_ereg4[4:0];//add uop4 by xlx
 
 //power optimization: mask pipedown index if dst not valid
 assign ir_pipedown_inst0_dst_preg[6:0]  = {7{ir_inst0_data[IR_DST_VLD]}} & ir_inst0_dst_preg[6:0];
 assign ir_pipedown_inst1_dst_preg[6:0]  = {7{ir_inst1_data[IR_DST_VLD]}} & ir_inst1_dst_preg[6:0];
 assign ir_pipedown_inst2_dst_preg[6:0]  = {7{ir_inst2_data[IR_DST_VLD]}} & ir_inst2_dst_preg[6:0];
 assign ir_pipedown_inst3_dst_preg[6:0]  = {7{ir_inst3_data[IR_DST_VLD]}} & ir_inst3_dst_preg[6:0];
+assign ir_pipedown_inst4_dst_preg[6:0]  = {7{ir_inst4_data[IR_DST_VLD]}} & ir_inst4_dst_preg[6:0];//add uop4 by xlx
 
 //==========================================================
 //                Prepare Rename Table data
@@ -1524,6 +1856,9 @@ assign ir_inst2_dstv_imp              = ir_inst2_data[IR_DSTF_REG]
                                         || ir_inst2_data[IR_DSTV_REG];
 assign ir_inst3_dstv_imp              = ir_inst3_data[IR_DSTF_REG]
                                         || ir_inst3_data[IR_DSTV_REG];
+assign ir_inst4_dstv_imp              = ir_inst4_data[IR_DSTF_REG]//add uop4 by xlx
+                                        || ir_inst4_data[IR_DSTV_REG];
+
 
 //----------------------------------------------------------
 //                       RT signals
@@ -1532,50 +1867,60 @@ assign dp_rt_inst0_dst_vld            = ir_inst0_data[IR_DST_VLD];
 assign dp_rt_inst1_dst_vld            = ir_inst1_data[IR_DST_VLD];
 assign dp_rt_inst2_dst_vld            = ir_inst2_data[IR_DST_VLD];
 assign dp_rt_inst3_dst_vld            = ir_inst3_data[IR_DST_VLD];
+assign dp_rt_inst4_dst_vld            = ir_inst4_data[IR_DST_VLD];//add uop4 by xlx
 
 assign dp_rt_inst0_dst_reg[5:0]       = ir_inst0_data[IR_DST_REG:IR_DST_REG-5];
 assign dp_rt_inst1_dst_reg[5:0]       = ir_inst1_data[IR_DST_REG:IR_DST_REG-5];
 assign dp_rt_inst2_dst_reg[5:0]       = ir_inst2_data[IR_DST_REG:IR_DST_REG-5];
 assign dp_rt_inst3_dst_reg[5:0]       = ir_inst3_data[IR_DST_REG:IR_DST_REG-5];
+assign dp_rt_inst4_dst_reg[5:0]       = ir_inst4_data[IR_DST_REG:IR_DST_REG-5];//add uop4 by xlx
 
 assign dp_rt_inst0_dst_preg[6:0]      = ir_inst0_dst_preg[6:0];
 assign dp_rt_inst1_dst_preg[6:0]      = ir_inst1_dst_preg[6:0];
 assign dp_rt_inst2_dst_preg[6:0]      = ir_inst2_dst_preg[6:0];
 assign dp_rt_inst3_dst_preg[6:0]      = ir_inst3_dst_preg[6:0];
+assign dp_rt_inst4_dst_preg[6:0]      = ir_inst4_dst_preg[6:0];//add uop4 by xlx
 
 assign dp_rt_inst0_src0_vld           = ir_inst0_data[IR_SRC0_VLD];
 assign dp_rt_inst1_src0_vld           = ir_inst1_data[IR_SRC0_VLD];
 assign dp_rt_inst2_src0_vld           = ir_inst2_data[IR_SRC0_VLD];
 assign dp_rt_inst3_src0_vld           = ir_inst3_data[IR_SRC0_VLD];
+assign dp_rt_inst4_src0_vld           = ir_inst4_data[IR_SRC0_VLD];//add uop4 by xlx
 
 assign dp_rt_inst0_src0_reg[5:0]      = ir_inst0_data[IR_SRC0_REG:IR_SRC0_REG-5];
 assign dp_rt_inst1_src0_reg[5:0]      = ir_inst1_data[IR_SRC0_REG:IR_SRC0_REG-5];
 assign dp_rt_inst2_src0_reg[5:0]      = ir_inst2_data[IR_SRC0_REG:IR_SRC0_REG-5];
 assign dp_rt_inst3_src0_reg[5:0]      = ir_inst3_data[IR_SRC0_REG:IR_SRC0_REG-5];
+assign dp_rt_inst4_src0_reg[5:0]      = ir_inst4_data[IR_SRC0_REG:IR_SRC0_REG-5];//add uop4 by xlx
 
 assign dp_rt_inst0_src1_vld           = ir_inst0_data[IR_SRC1_VLD];
 assign dp_rt_inst1_src1_vld           = ir_inst1_data[IR_SRC1_VLD];
 assign dp_rt_inst2_src1_vld           = ir_inst2_data[IR_SRC1_VLD];
 assign dp_rt_inst3_src1_vld           = ir_inst3_data[IR_SRC1_VLD];
+assign dp_rt_inst4_src1_vld           = ir_inst4_data[IR_SRC1_VLD];//add uop4 by xlx
 
 assign dp_rt_inst0_src1_reg[5:0]      = ir_inst0_data[IR_SRC1_REG:IR_SRC1_REG-5];
 assign dp_rt_inst1_src1_reg[5:0]      = ir_inst1_data[IR_SRC1_REG:IR_SRC1_REG-5];
 assign dp_rt_inst2_src1_reg[5:0]      = ir_inst2_data[IR_SRC1_REG:IR_SRC1_REG-5];
 assign dp_rt_inst3_src1_reg[5:0]      = ir_inst3_data[IR_SRC1_REG:IR_SRC1_REG-5];
+assign dp_rt_inst4_src1_reg[5:0]      = ir_inst4_data[IR_SRC1_REG:IR_SRC1_REG-5];//add uop4 by xlx
 
 assign dp_rt_inst0_src2_vld           = ir_inst0_data[IR_SRC2_VLD];
 assign dp_rt_inst1_src2_vld           = ir_inst1_data[IR_SRC2_VLD];
 assign dp_rt_inst2_src2_vld           = ir_inst2_data[IR_SRC2_VLD];
 assign dp_rt_inst3_src2_vld           = ir_inst3_data[IR_SRC2_VLD];
+assign dp_rt_inst4_src2_vld           = ir_inst4_data[IR_SRC2_VLD];//add uop4 by xlx
 
 assign dp_rt_inst0_mla                = ir_inst0_data[IR_MLA];
 assign dp_rt_inst1_mla                = ir_inst1_data[IR_MLA];
 assign dp_rt_inst2_mla                = ir_inst2_data[IR_MLA];
 assign dp_rt_inst3_mla                = ir_inst3_data[IR_MLA];
+assign dp_rt_inst4_mla                = ir_inst4_data[IR_MLA];//add uop4 by xlx
 
 assign dp_rt_inst0_mov                = ir_inst0_data[IR_MOV];
 assign dp_rt_inst1_mov                = ir_inst1_data[IR_MOV];
 assign dp_rt_inst2_mov                = ir_inst2_data[IR_MOV];
+assign dp_rt_inst3_mov                = ir_inst3_data[IR_MOV];//add inst3 by xlx
 
 //----------------------------------------------------------
 //                      FRT signals
@@ -1584,65 +1929,79 @@ assign dp_frt_inst0_dstf_vld           = ir_inst0_data[IR_DSTF_VLD];
 assign dp_frt_inst1_dstf_vld           = ir_inst1_data[IR_DSTF_VLD];
 assign dp_frt_inst2_dstf_vld           = ir_inst2_data[IR_DSTF_VLD];
 assign dp_frt_inst3_dstf_vld           = ir_inst3_data[IR_DSTF_VLD];
+assign dp_frt_inst4_dstf_vld           = ir_inst4_data[IR_DSTF_VLD];//add uop4 by xlx
 
 assign dp_frt_inst0_dstf_reg[5:0]      = ir_inst0_data[IR_DSTF_REG:IR_DSTF_REG-5];
 assign dp_frt_inst1_dstf_reg[5:0]      = ir_inst1_data[IR_DSTF_REG:IR_DSTF_REG-5];
 assign dp_frt_inst2_dstf_reg[5:0]      = ir_inst2_data[IR_DSTF_REG:IR_DSTF_REG-5];
 assign dp_frt_inst3_dstf_reg[5:0]      = ir_inst3_data[IR_DSTF_REG:IR_DSTF_REG-5];
+assign dp_frt_inst4_dstf_reg[5:0]      = ir_inst4_data[IR_DSTF_REG:IR_DSTF_REG-5];//add uop4 by xlx
+
 
 assign dp_frt_inst0_dst_freg[5:0]      = ir_inst0_dst_freg[5:0];
 assign dp_frt_inst1_dst_freg[5:0]      = ir_inst1_dst_freg[5:0];
 assign dp_frt_inst2_dst_freg[5:0]      = ir_inst2_dst_freg[5:0];
 assign dp_frt_inst3_dst_freg[5:0]      = ir_inst3_dst_freg[5:0];
+assign dp_frt_inst4_dst_freg[5:0]      = ir_inst4_dst_freg[5:0];//add uop4 by xlx
 
 assign dp_frt_inst0_dste_vld           = ir_inst0_data[IR_DSTE_VLD];
 assign dp_frt_inst1_dste_vld           = ir_inst1_data[IR_DSTE_VLD];
 assign dp_frt_inst2_dste_vld           = ir_inst2_data[IR_DSTE_VLD];
 assign dp_frt_inst3_dste_vld           = ir_inst3_data[IR_DSTE_VLD];
+assign dp_frt_inst4_dste_vld           = ir_inst4_data[IR_DSTE_VLD];//add uop4 by xlx
 
 assign dp_frt_inst0_dst_ereg[4:0]      = ir_inst0_dst_ereg[4:0];
 assign dp_frt_inst1_dst_ereg[4:0]      = ir_inst1_dst_ereg[4:0];
 assign dp_frt_inst2_dst_ereg[4:0]      = ir_inst2_dst_ereg[4:0];
 assign dp_frt_inst3_dst_ereg[4:0]      = ir_inst3_dst_ereg[4:0];
+assign dp_frt_inst4_dst_ereg[4:0]      = ir_inst4_dst_ereg[4:0];//add uop4 by xlx
 
 assign dp_frt_inst0_srcf0_vld          = ir_inst0_data[IR_SRCF0_VLD];
 assign dp_frt_inst1_srcf0_vld          = ir_inst1_data[IR_SRCF0_VLD];
 assign dp_frt_inst2_srcf0_vld          = ir_inst2_data[IR_SRCF0_VLD];
 assign dp_frt_inst3_srcf0_vld          = ir_inst3_data[IR_SRCF0_VLD];
+assign dp_frt_inst4_srcf0_vld          = ir_inst4_data[IR_SRCF0_VLD];//add uop4 by xlx
 
 assign dp_frt_inst0_srcf0_reg[5:0]     = ir_inst0_data[IR_SRCF0_REG:IR_SRCF0_REG-5];
 assign dp_frt_inst1_srcf0_reg[5:0]     = ir_inst1_data[IR_SRCF0_REG:IR_SRCF0_REG-5];
 assign dp_frt_inst2_srcf0_reg[5:0]     = ir_inst2_data[IR_SRCF0_REG:IR_SRCF0_REG-5];
 assign dp_frt_inst3_srcf0_reg[5:0]     = ir_inst3_data[IR_SRCF0_REG:IR_SRCF0_REG-5];
+assign dp_frt_inst4_srcf0_reg[5:0]     = ir_inst4_data[IR_SRCF0_REG:IR_SRCF0_REG-5];//add uop4 by xlx
 
 assign dp_frt_inst0_srcf1_vld          = ir_inst0_data[IR_SRCF1_VLD];
 assign dp_frt_inst1_srcf1_vld          = ir_inst1_data[IR_SRCF1_VLD];
 assign dp_frt_inst2_srcf1_vld          = ir_inst2_data[IR_SRCF1_VLD];
 assign dp_frt_inst3_srcf1_vld          = ir_inst3_data[IR_SRCF1_VLD];
+assign dp_frt_inst4_srcf1_vld          = ir_inst4_data[IR_SRCF1_VLD];//add uop4 by xlx
 
 assign dp_frt_inst0_srcf1_reg[5:0]     = ir_inst0_data[IR_SRCF1_REG:IR_SRCF1_REG-5];
 assign dp_frt_inst1_srcf1_reg[5:0]     = ir_inst1_data[IR_SRCF1_REG:IR_SRCF1_REG-5];
 assign dp_frt_inst2_srcf1_reg[5:0]     = ir_inst2_data[IR_SRCF1_REG:IR_SRCF1_REG-5];
 assign dp_frt_inst3_srcf1_reg[5:0]     = ir_inst3_data[IR_SRCF1_REG:IR_SRCF1_REG-5];
+assign dp_frt_inst4_srcf1_reg[5:0]     = ir_inst4_data[IR_SRCF1_REG:IR_SRCF1_REG-5];//add uop4 by xlx
 
 assign dp_frt_inst0_srcf2_vld          = ir_inst0_data[IR_SRCF2_VLD];
 assign dp_frt_inst1_srcf2_vld          = ir_inst1_data[IR_SRCF2_VLD];
 assign dp_frt_inst2_srcf2_vld          = ir_inst2_data[IR_SRCF2_VLD];
 assign dp_frt_inst3_srcf2_vld          = ir_inst3_data[IR_SRCF2_VLD];
+assign dp_frt_inst4_srcf2_vld          = ir_inst4_data[IR_SRCF2_VLD];//add uop4 by xlx
 
 assign dp_frt_inst0_srcf2_reg[5:0]     = ir_inst0_data[IR_SRCF2_REG:IR_SRCF2_REG-5];
 assign dp_frt_inst1_srcf2_reg[5:0]     = ir_inst1_data[IR_SRCF2_REG:IR_SRCF2_REG-5];
 assign dp_frt_inst2_srcf2_reg[5:0]     = ir_inst2_data[IR_SRCF2_REG:IR_SRCF2_REG-5];
 assign dp_frt_inst3_srcf2_reg[5:0]     = ir_inst3_data[IR_SRCF2_REG:IR_SRCF2_REG-5];
+assign dp_frt_inst4_srcf2_reg[5:0]     = ir_inst4_data[IR_SRCF2_REG:IR_SRCF2_REG-5];//add uop4 by xlx
 
 assign dp_frt_inst0_fmla               = ir_inst0_data[IR_FMLA];
 assign dp_frt_inst1_fmla               = ir_inst1_data[IR_FMLA];
 assign dp_frt_inst2_fmla               = ir_inst2_data[IR_FMLA];
 assign dp_frt_inst3_fmla               = ir_inst3_data[IR_FMLA];
+assign dp_frt_inst4_fmla               = ir_inst4_data[IR_FMLA];//add uop4 by xlx
 
 assign dp_frt_inst0_fmov               = ir_inst0_data[IR_FMOV];
 assign dp_frt_inst1_fmov               = ir_inst1_data[IR_FMOV];
 assign dp_frt_inst2_fmov               = ir_inst2_data[IR_FMOV];
+assign dp_frt_inst3_fmov               = ir_inst3_data[IR_FMOV];//add uop4 by xlx
 
 //----------------------------------------------------------
 //                      VRT signals
@@ -1651,51 +2010,62 @@ assign dp_vrt_inst0_dstv_vld           = ir_inst0_data[IR_DSTV_VLD];
 assign dp_vrt_inst1_dstv_vld           = ir_inst1_data[IR_DSTV_VLD];
 assign dp_vrt_inst2_dstv_vld           = ir_inst2_data[IR_DSTV_VLD];
 assign dp_vrt_inst3_dstv_vld           = ir_inst3_data[IR_DSTV_VLD];
+assign dp_vrt_inst4_dstv_vld           = ir_inst4_data[IR_DSTV_VLD];//add uop4 by xlx
 
 assign dp_vrt_inst0_dstv_reg[5:0]      = ir_inst0_data[IR_DSTV_REG:IR_DSTV_REG-5];
 assign dp_vrt_inst1_dstv_reg[5:0]      = ir_inst1_data[IR_DSTV_REG:IR_DSTV_REG-5];
 assign dp_vrt_inst2_dstv_reg[5:0]      = ir_inst2_data[IR_DSTV_REG:IR_DSTV_REG-5];
 assign dp_vrt_inst3_dstv_reg[5:0]      = ir_inst3_data[IR_DSTV_REG:IR_DSTV_REG-5];
+assign dp_vrt_inst4_dstv_reg[5:0]      = ir_inst4_data[IR_DSTV_REG:IR_DSTV_REG-5];//add uop4 by xlx
 
 assign dp_vrt_inst0_dst_vreg[5:0]      = ir_inst0_dst_vreg[5:0];
 assign dp_vrt_inst1_dst_vreg[5:0]      = ir_inst1_dst_vreg[5:0];
 assign dp_vrt_inst2_dst_vreg[5:0]      = ir_inst2_dst_vreg[5:0];
 assign dp_vrt_inst3_dst_vreg[5:0]      = ir_inst3_dst_vreg[5:0];
+assign dp_vrt_inst4_dst_vreg[5:0]      = ir_inst4_dst_vreg[5:0];//add uop4 by xlx
 
 assign dp_vrt_inst0_srcv0_vld          = ir_inst0_data[IR_SRCV0_VLD];
 assign dp_vrt_inst1_srcv0_vld          = ir_inst1_data[IR_SRCV0_VLD];
 assign dp_vrt_inst2_srcv0_vld          = ir_inst2_data[IR_SRCV0_VLD];
 assign dp_vrt_inst3_srcv0_vld          = ir_inst3_data[IR_SRCV0_VLD];
+assign dp_vrt_inst4_srcv0_vld          = ir_inst4_data[IR_SRCV0_VLD];//add uop4 by xlx
 
 assign dp_vrt_inst0_srcv0_reg[5:0]     = ir_inst0_data[IR_SRCV0_REG:IR_SRCV0_REG-5];
 assign dp_vrt_inst1_srcv0_reg[5:0]     = ir_inst1_data[IR_SRCV0_REG:IR_SRCV0_REG-5];
 assign dp_vrt_inst2_srcv0_reg[5:0]     = ir_inst2_data[IR_SRCV0_REG:IR_SRCV0_REG-5];
 assign dp_vrt_inst3_srcv0_reg[5:0]     = ir_inst3_data[IR_SRCV0_REG:IR_SRCV0_REG-5];
+assign dp_vrt_inst4_srcv0_reg[5:0]     = ir_inst4_data[IR_SRCV0_REG:IR_SRCV0_REG-5];//add uop4 by xlx
+
 
 assign dp_vrt_inst0_srcv1_vld          = ir_inst0_data[IR_SRCV1_VLD];
 assign dp_vrt_inst1_srcv1_vld          = ir_inst1_data[IR_SRCV1_VLD];
 assign dp_vrt_inst2_srcv1_vld          = ir_inst2_data[IR_SRCV1_VLD];
 assign dp_vrt_inst3_srcv1_vld          = ir_inst3_data[IR_SRCV1_VLD];
+assign dp_vrt_inst4_srcv1_vld          = ir_inst4_data[IR_SRCV1_VLD];//add uop4 by xlx
 
 assign dp_vrt_inst0_srcv1_reg[5:0]     = ir_inst0_data[IR_SRCV1_REG:IR_SRCV1_REG-5];
 assign dp_vrt_inst1_srcv1_reg[5:0]     = ir_inst1_data[IR_SRCV1_REG:IR_SRCV1_REG-5];
 assign dp_vrt_inst2_srcv1_reg[5:0]     = ir_inst2_data[IR_SRCV1_REG:IR_SRCV1_REG-5];
 assign dp_vrt_inst3_srcv1_reg[5:0]     = ir_inst3_data[IR_SRCV1_REG:IR_SRCV1_REG-5];
+assign dp_vrt_inst4_srcv1_reg[5:0]     = ir_inst4_data[IR_SRCV1_REG:IR_SRCV1_REG-5];//add uop4 by xlx
 
 assign dp_vrt_inst0_srcv2_vld          = ir_inst0_data[IR_SRCV2_VLD];
 assign dp_vrt_inst1_srcv2_vld          = ir_inst1_data[IR_SRCV2_VLD];
 assign dp_vrt_inst2_srcv2_vld          = ir_inst2_data[IR_SRCV2_VLD];
 assign dp_vrt_inst3_srcv2_vld          = ir_inst3_data[IR_SRCV2_VLD];
+assign dp_vrt_inst4_srcv2_vld          = ir_inst4_data[IR_SRCV2_VLD];//add uop4 by xlx
 
 assign dp_vrt_inst0_srcvm_vld          = ir_inst0_data[IR_SRCVM_VLD];
 assign dp_vrt_inst1_srcvm_vld          = ir_inst1_data[IR_SRCVM_VLD];
 assign dp_vrt_inst2_srcvm_vld          = ir_inst2_data[IR_SRCVM_VLD];
 assign dp_vrt_inst3_srcvm_vld          = ir_inst3_data[IR_SRCVM_VLD];
+assign dp_vrt_inst4_srcvm_vld          = ir_inst4_data[IR_SRCVM_VLD];//add uop4 by xlx
 
 assign dp_vrt_inst0_vmla               = ir_inst0_data[IR_VMLA];
 assign dp_vrt_inst1_vmla               = ir_inst1_data[IR_VMLA];
 assign dp_vrt_inst2_vmla               = ir_inst2_data[IR_VMLA];
 assign dp_vrt_inst3_vmla               = ir_inst3_data[IR_VMLA];
+assign dp_vrt_inst4_vmla               = ir_inst4_data[IR_VMLA];//add uop4 by xlx
 
 //==========================================================
 //                    FRT / VRT MUX
@@ -1837,6 +2207,43 @@ assign ir_rt_inst3_dst_ereg[4:0]    = {5{ir_inst3_data[IR_DSTE_VLD]}}
                                       & ir_inst3_dst_ereg[4:0];
 assign ir_rt_inst3_rel_ereg[4:0]    = frt_dp_inst3_rel_ereg[4:0];
 
+//add inst4  by xlx
+//----------------------------------------------------------
+//                      IR Inst 3
+//----------------------------------------------------------
+assign ir_rt_inst4_srcv0_vld        = ir_inst4_data[IR_SRCF0_VLD] || ir_inst4_data[IR_SRCV0_VLD];
+assign ir_rt_inst4_srcv1_vld        = ir_inst4_data[IR_SRCF1_VLD] || ir_inst4_data[IR_SRCV1_VLD];
+assign ir_rt_inst4_srcv2_vld        = ir_inst4_data[IR_SRCF2_VLD] || ir_inst4_data[IR_SRCV2_VLD];
+assign ir_rt_inst4_srcvm_vld        = ir_inst4_data[IR_SRCVM_VLD];
+assign ir_rt_inst4_dstv_vld         = ir_inst4_data[IR_DSTF_VLD] || ir_inst4_data[IR_DSTV_VLD];
+assign ir_rt_inst4_dste_vld         = ir_inst4_data[IR_DSTE_VLD];
+assign ir_rt_inst4_vmla             = ir_inst4_data[IR_FMLA] || ir_inst4_data[IR_VMLA];
+
+assign ir_rt_inst4_srcv0_data[8:0]  = ir_inst4_data[IR_SRCV0_VLD]
+                                      ? vrt_dp_inst4_srcv0_data[8:0]
+                                      : frt_dp_inst4_srcf0_data[8:0];
+assign ir_rt_inst4_srcv1_data[8:0]  = ir_inst4_data[IR_SRCV1_VLD]
+                                      ? vrt_dp_inst4_srcv1_data[8:0]
+                                      : frt_dp_inst4_srcf1_data[8:0];
+assign ir_rt_inst4_srcv2_data[9:0]  = ir_inst4_data[IR_SRCV2_VLD]
+                                      ? vrt_dp_inst4_srcv2_data[9:0]
+                                      : frt_dp_inst4_srcf2_data[9:0];
+assign ir_rt_inst4_srcvm_data[8:0]  = vrt_dp_inst4_srcvm_data[8:0];
+assign ir_rt_inst4_dstv_reg[4:0]    = ir_inst4_data[IR_DSTV_VLD]
+                                      ? ir_inst4_data[IR_DSTV_REG-1:IR_DSTV_REG-5]
+                                      : ir_inst4_data[IR_DSTF_REG-1:IR_DSTF_REG-5];
+assign ir_rt_inst4_dst_vreg[6:0]    = 
+         {7{ir_inst4_data[IR_DSTV_VLD]}} & {1'b1, ir_inst4_dst_vreg[5:0]}
+       | {7{ir_inst4_data[IR_DSTF_VLD]}} & {1'b0, ir_inst4_dst_freg[5:0]};
+assign ir_rt_inst4_rel_vreg[6:0]    = ir_inst4_data[IR_DSTV_VLD]
+                                      ? vrt_dp_inst4_rel_vreg[6:0]
+                                      : frt_dp_inst4_rel_freg[6:0];
+assign ir_rt_inst4_dst_ereg[4:0]    = {5{ir_inst4_data[IR_DSTE_VLD]}}
+                                      & ir_inst4_dst_ereg[4:0];
+assign ir_rt_inst4_rel_ereg[4:0]    = frt_dp_inst4_rel_ereg[4:0];
+
+
+
 //----------------------------------------------------------
 //                      source match
 //----------------------------------------------------------
@@ -1846,6 +2253,8 @@ assign dp_ir_inst03_src_match[3] = frt_dp_inst03_srcf2_match || vrt_dp_inst03_sr
 assign dp_ir_inst12_src_match[3] = frt_dp_inst12_srcf2_match || vrt_dp_inst12_srcv2_match;
 assign dp_ir_inst13_src_match[3] = frt_dp_inst13_srcf2_match || vrt_dp_inst13_srcv2_match;
 assign dp_ir_inst23_src_match[3] = frt_dp_inst23_srcf2_match || vrt_dp_inst23_srcv2_match;
+
+//add new src match      ir_frt.v  tudo
 
 assign dp_ir_inst01_src_match[2:0] = rt_dp_inst01_src_match[2:0];
 assign dp_ir_inst02_src_match[2:0] = rt_dp_inst02_src_match[2:0];
@@ -1861,32 +2270,40 @@ assign ir_inst0_opcode[31:0]     = ir_inst0_data[IR_OPCODE:IR_OPCODE-31];
 assign ir_inst1_opcode[31:0]     = ir_inst1_data[IR_OPCODE:IR_OPCODE-31];
 assign ir_inst2_opcode[31:0]     = ir_inst2_data[IR_OPCODE:IR_OPCODE-31];
 assign ir_inst3_opcode[31:0]     = ir_inst3_data[IR_OPCODE:IR_OPCODE-31];
+assign ir_inst4_opcode[31:0]     = ir_inst4_data[IR_OPCODE:IR_OPCODE-31];//add uop4 by xlx
 
 assign ir_inst0_illegal          = ir_inst0_data[IR_ILLEGAL];
 assign ir_inst1_illegal          = ir_inst1_data[IR_ILLEGAL];
 assign ir_inst2_illegal          = ir_inst2_data[IR_ILLEGAL];
 assign ir_inst3_illegal          = ir_inst3_data[IR_ILLEGAL];
+assign ir_inst4_illegal          = ir_inst4_data[IR_ILLEGAL];//add uop4 by xlx
 
 assign ir_inst0_type_staddr      = ir_inst0_data[IR_INST_TYPE-4];
 assign ir_inst1_type_staddr      = ir_inst1_data[IR_INST_TYPE-4];
 assign ir_inst2_type_staddr      = ir_inst2_data[IR_INST_TYPE-4];
 assign ir_inst3_type_staddr      = ir_inst3_data[IR_INST_TYPE-4];
+assign ir_inst4_type_staddr      = ir_inst4_data[IR_INST_TYPE-4];//add uop4 by xlx
+
 
 assign ir_inst0_type_alu         = ir_inst0_data[IR_INST_TYPE-9];
 assign ir_inst1_type_alu         = ir_inst1_data[IR_INST_TYPE-9];
 assign ir_inst2_type_alu         = ir_inst2_data[IR_INST_TYPE-9];
 assign ir_inst3_type_alu         = ir_inst3_data[IR_INST_TYPE-9];
+assign ir_inst4_type_alu         = ir_inst4_data[IR_INST_TYPE-9];//add uop4 by xlx
 //amo vload
 
 assign ir_inst0_type_vload       = ir_inst0_data[IR_VMB];
 assign ir_inst1_type_vload       = ir_inst1_data[IR_VMB];
 assign ir_inst2_type_vload       = ir_inst2_data[IR_VMB];
 assign ir_inst3_type_vload       = ir_inst3_data[IR_VMB];
+assign ir_inst4_type_vload       = ir_inst4_data[IR_VMB];//add uop4 by xlx
 
 assign ir_inst0_vsew[2:0]        = ir_inst0_data[IR_VSEW:IR_VSEW-2];
 assign ir_inst1_vsew[2:0]        = ir_inst1_data[IR_VSEW:IR_VSEW-2];
 assign ir_inst2_vsew[2:0]        = ir_inst2_data[IR_VSEW:IR_VSEW-2];
 assign ir_inst3_vsew[2:0]        = ir_inst3_data[IR_VSEW:IR_VSEW-2];
+assign ir_inst4_vsew[2:0]        = ir_inst3_data[IR_VSEW:IR_VSEW-2];//add uop4 by xlx
+
 
 // &ConnRule(s/^x_/ir_inst0_/); @829
 // &Instance("ct_idu_ir_decd", "x_ct_idu_ir_decd0"); @830
@@ -2035,7 +2452,41 @@ ct_idu_ir_decd  x_ct_idu_ir_decd3 (
   .x_vsetvli                  (ir_inst3_vsetvli          ),
   .x_vsew                     (ir_inst3_vsew             )
 );
-
+//add decd4 by xlx
+ct_idu_ir_decd  x_ct_idu_ir_decd4 (
+  .x_alu_short                (ir_inst4_alu_short        ),
+  .x_bar                      (ir_inst4_bar              ),
+  .x_bar_type                 (ir_inst4_bar_type         ),
+  .x_csr                      (ir_inst4_csr              ),
+  .x_ecall                    (ir_inst4_ecall            ),
+  .x_fp                       (ir_inst4_fp               ),
+  .x_illegal                  (ir_inst4_illegal          ),
+  .x_load                     (ir_inst4_load             ),
+  .x_mfvr                     (ir_inst4_mfvr             ),
+  .x_mtvr                     (ir_inst4_mtvr             ),
+  .x_opcode                   (ir_inst4_opcode           ),
+  .x_pcall                    (ir_inst4_pcall            ),
+  .x_pcfifo                   (ir_inst4_pcfifo           ),
+  .x_rts                      (ir_inst4_rts              ),
+  .x_store                    (ir_inst4_store            ),
+  .x_str                      (ir_inst4_str              ),
+  .x_sync                     (ir_inst4_sync             ),
+  .x_type_alu                 (ir_inst4_type_alu         ),
+  .x_type_staddr              (ir_inst4_type_staddr      ),
+  .x_type_vload               (ir_inst4_type_vload       ),
+  .x_unit_stride              (ir_inst4_unit_stride      ),
+  .x_vamo                     (ir_inst4_vamo             ),
+  .x_vdiv                     (ir_inst4_vdiv             ),
+  .x_vec                      (ir_inst4_vec              ),
+  .x_viq_srcv12_switch        (ir_inst4_viq_srcv12_switch),
+  .x_vmla_short               (ir_inst4_vmla_short       ),
+  .x_vmla_type                (ir_inst4_vmla_type        ),
+  .x_vmul                     (ir_inst4_vmul             ),
+  .x_vmul_unsplit             (ir_inst4_vmul_unsplit     ),
+  .x_vsetvl                   (ir_inst4_vsetvl           ),
+  .x_vsetvli                  (ir_inst4_vsetvli          ),
+  .x_vsew                     (ir_inst4_vsew             )
+);
 
 //==========================================================
 //                 Rename for IS data path
@@ -2047,6 +2498,7 @@ assign dp_ctrl_ir_inst0_bar      = ir_inst0_bar;
 assign dp_ctrl_ir_inst1_bar      = ir_inst1_bar;
 assign dp_ctrl_ir_inst2_bar      = ir_inst2_bar;
 assign dp_ctrl_ir_inst3_bar      = ir_inst3_bar;
+assign dp_ctrl_ir_inst4_bar      = ir_inst4_bar;//add uop4 by xlx
 
 //==========================================================
 //               Prepare RF Launch Signal
@@ -2065,6 +2517,10 @@ assign ir_inst2_lch_preg = ir_inst2_data[IR_DST_VLD]
 assign ir_inst3_lch_preg = ir_inst3_data[IR_DST_VLD]
                            && (ir_inst3_data[IR_INST_TYPE-9] //alu
                             || ir_inst3_data[IR_INST_TYPE]); //special
+assign ir_inst4_lch_preg = ir_inst4_data[IR_DST_VLD]
+                           && (ir_inst4_data[IR_INST_TYPE-9] //alu
+                            || ir_inst4_data[IR_INST_TYPE]); //special
+                            //add uop4 by xlx
 
 //==========================================================
 //                 Rename for IS data path
@@ -2439,6 +2895,109 @@ assign dp_ir_inst3_data[IS_SRC2_VLD]                       = ir_inst3_data[IR_SR
 assign dp_ir_inst3_data[IS_SRC1_VLD]                       = ir_inst3_data[IR_SRC1_VLD];
 assign dp_ir_inst3_data[IS_SRC0_VLD]                       = ir_inst3_data[IR_SRC0_VLD];
 assign dp_ir_inst3_data[IS_OPCODE:IS_OPCODE-31]            = ir_inst3_data[IR_OPCODE:IR_OPCODE-31];
+
+//add inst4 data by xlx
+assign dp_ir_inst4_data[IS_VL_PRED]                        = ir_inst4_data[IR_VL_PRED];
+assign dp_ir_inst4_data[IS_VL:IS_VL-7]                     = ir_inst4_data[IR_VL:IR_VL-7];
+assign dp_ir_inst4_data[IS_LCH_PREG]                       = ir_inst4_lch_preg;
+assign dp_ir_inst4_data[IS_VAMO]                           = ir_inst4_vamo;
+assign dp_ir_inst4_data[IS_UNIT_STRIDE]                    = ir_inst4_unit_stride;
+assign dp_ir_inst4_data[IS_VMB]                            = ir_inst4_data[IR_VMB];
+assign dp_ir_inst4_data[IS_DSTV_IMP]                       = ir_inst4_dstv_imp;
+assign dp_ir_inst4_data[IS_VIQ_SRCV12_SWITCH]              = ir_inst4_viq_srcv12_switch;
+assign dp_ir_inst4_data[IS_VSETVL]                         = ir_inst4_vsetvl;
+assign dp_ir_inst4_data[IS_VSETVLI]                        = ir_inst4_vsetvli;
+assign dp_ir_inst4_data[IS_VSEW:IS_VSEW-2]                 = ir_inst4_data[IR_VSEW:IR_VSEW-2];
+assign dp_ir_inst4_data[IS_VLMUL:IS_VLMUL-1]               = ir_inst4_data[IR_VLMUL:IR_VLMUL-1];
+assign dp_ir_inst4_data[IS_VMUL]                           = ir_inst4_vmul;
+assign dp_ir_inst4_data[IS_VMUL_UNSPLIT]                   = ir_inst4_vmul_unsplit;
+assign dp_ir_inst4_data[IS_VMLA_SHORT]                     = ir_inst4_vmla_short;
+assign dp_ir_inst4_data[IS_VMLA_TYPE:IS_VMLA_TYPE-2]       = ir_inst4_vmla_type[2:0];
+assign dp_ir_inst4_data[IS_SPLIT_NUM:IS_SPLIT_NUM-6]       = ir_inst4_data[IR_SPLIT_NUM:IR_SPLIT_NUM-6];
+assign dp_ir_inst4_data[IS_NO_SPEC]                        = ir_inst4_data[IR_NO_SPEC];
+assign dp_ir_inst4_data[IS_ALU_SHORT]                      = ir_inst4_alu_short;
+assign dp_ir_inst4_data[IS_MLA]                            = ir_inst4_data[IR_MLA];
+assign dp_ir_inst4_data[IS_STR]                            = ir_inst4_str;
+assign dp_ir_inst4_data[IS_SPLIT_LAST]                     = ir_inst4_data[IR_SPLIT_LAST];
+assign dp_ir_inst4_data[IS_MFVR]                           = ir_inst4_mfvr;
+assign dp_ir_inst4_data[IS_MTVR]                           = ir_inst4_mtvr;
+assign dp_ir_inst4_data[IS_VMLA]                           = ir_rt_inst4_vmla;
+assign dp_ir_inst4_data[IS_VDIV]                           = ir_inst4_vdiv;
+assign dp_ir_inst4_data[IS_PIPE7]                          = ir_inst4_data[IR_INST_TYPE-1];//pipe7
+assign dp_ir_inst4_data[IS_PIPE6]                          = ir_inst4_data[IR_INST_TYPE-2];//pipe6
+assign dp_ir_inst4_data[IS_PIPE67]                         = ir_inst4_data[IR_INST_TYPE-3];//pipe67
+assign dp_ir_inst4_data[IS_IID_PLUS:IS_IID_PLUS-3]         = ir_inst4_data[IR_IID_PLUS:IR_IID_PLUS-3];
+assign dp_ir_inst4_data[IS_BKPTB_INST]                     = ir_inst4_data[IR_BKPTB_INST];
+assign dp_ir_inst4_data[IS_BKPTA_INST]                     = ir_inst4_data[IR_BKPTA_INST];
+assign dp_ir_inst4_data[IS_EXPT:IS_EXPT-6]                 = ir_inst4_data[IR_EXPT:IR_EXPT-6];
+assign dp_ir_inst4_data[IS_RTS]                            = ir_inst4_rts;
+assign dp_ir_inst4_data[IS_SPECIAL]                        = ir_inst4_data[IR_INST_TYPE];//special
+assign dp_ir_inst4_data[IS_LSU]                            = ir_inst4_data[IR_INST_TYPE-5];//lsu
+assign dp_ir_inst4_data[IS_DIV]                            = ir_inst4_data[IR_INST_TYPE-6];//div
+assign dp_ir_inst4_data[IS_MULT]                           = ir_inst4_data[IR_INST_TYPE-7];//mult
+assign dp_ir_inst4_data[IS_INTMASK]                        = ir_inst4_data[IR_INTMASK];
+assign dp_ir_inst4_data[IS_SPLIT]                          = ir_inst4_data[IR_SPLIT];
+assign dp_ir_inst4_data[IS_LENGTH]                         = ir_inst4_data[IR_LENGTH];
+assign dp_ir_inst4_data[IS_PCFIFO]                         = ir_inst4_pcfifo;
+assign dp_ir_inst4_data[IS_PCALL]                          = ir_inst4_pcall;
+assign dp_ir_inst4_data[IS_BJU]                            = ir_inst4_data[IR_INST_TYPE-8];//bju
+assign dp_ir_inst4_data[IS_LSU_PC:IS_LSU_PC-14]            = ir_inst4_data[IR_PC:IR_PC-14];
+assign dp_ir_inst4_data[IS_BAR_TYPE:IS_BAR_TYPE-3]         = ir_inst4_bar_type[3:0];
+assign dp_ir_inst4_data[IS_BAR]                            = ir_inst4_bar;
+assign dp_ir_inst4_data[IS_STADDR]                         = ir_inst4_data[IR_INST_TYPE-4];//staddr
+assign dp_ir_inst4_data[IS_STORE]                          = ir_inst4_store;
+assign dp_ir_inst4_data[IS_LOAD]                           = ir_inst4_load;
+assign dp_ir_inst4_data[IS_ALU]                            = ir_inst4_data[IR_INST_TYPE-9];//alu
+assign dp_ir_inst4_data[IS_DST_REL_EREG:IS_DST_REL_EREG-4] = ir_rt_inst4_rel_ereg[4:0];
+assign dp_ir_inst4_data[IS_DST_EREG:IS_DST_EREG-4]         = ir_rt_inst4_dst_ereg[4:0];
+assign dp_ir_inst4_data[IS_DST_REL_VREG:IS_DST_REL_VREG-6] = ir_rt_inst4_rel_vreg[6:0];
+assign dp_ir_inst4_data[IS_DST_VREG:IS_DST_VREG-6]         = ir_rt_inst4_dst_vreg[6:0];
+assign dp_ir_inst4_data[IS_DSTV_REG:IS_DSTV_REG-4]         = ir_rt_inst4_dstv_reg[4:0];
+assign dp_ir_inst4_data[IS_SRCVM_LSU_MATCH]                = 1'b0; //srcvm lsu match for issue
+assign dp_ir_inst4_data[IS_SRCVM_BP_RDY:IS_SRCVM_BP_RDY-1] = 2'b0; //srcvm rdy for issue/bypass
+assign dp_ir_inst4_data[IS_SRCVM_DATA:IS_SRCVM_DATA-8]     = ir_rt_inst4_srcvm_data[8:0];
+assign dp_ir_inst4_data[IS_SRCV2_LSU_MATCH]                = 1'b0; //srcv2 lsu match for issue
+assign dp_ir_inst4_data[IS_SRCV2_BP_RDY:IS_SRCV2_BP_RDY-1] = 2'b0; //srcv2 rdy for issue/bypass
+assign dp_ir_inst4_data[IS_SRCV2_DATA:IS_SRCV2_DATA-9]     = ir_rt_inst4_srcv2_data[9:0];
+assign dp_ir_inst4_data[IS_SRCV1_LSU_MATCH]                = 1'b0; //srcv1 lsu match for issue
+assign dp_ir_inst4_data[IS_SRCV1_BP_RDY:IS_SRCV1_BP_RDY-1] = 2'b0; //srcv1 rdy for issue/bypass
+assign dp_ir_inst4_data[IS_SRCV1_DATA:IS_SRCV1_DATA-8]     = ir_rt_inst4_srcv1_data[8:0];
+assign dp_ir_inst4_data[IS_SRCV0_LSU_MATCH]                = 1'b0; //srcv0 lsu match for issue
+assign dp_ir_inst4_data[IS_SRCV0_BP_RDY:IS_SRCV0_BP_RDY-1] = 2'b0; //srcv0 rdy for issue/bypass
+assign dp_ir_inst4_data[IS_SRCV0_DATA:IS_SRCV0_DATA-8]     = ir_rt_inst4_srcv0_data[8:0];
+assign dp_ir_inst4_data[IS_DSTE_VLD]                       = ir_rt_inst4_dste_vld;
+assign dp_ir_inst4_data[IS_DSTV_VLD]                       = ir_rt_inst4_dstv_vld;
+assign dp_ir_inst4_data[IS_SRCVM_VLD]                      = ir_rt_inst4_srcvm_vld;
+assign dp_ir_inst4_data[IS_SRCV2_VLD]                      = ir_rt_inst4_srcv2_vld;
+assign dp_ir_inst4_data[IS_SRCV1_VLD]                      = ir_rt_inst4_srcv1_vld;
+assign dp_ir_inst4_data[IS_SRCV0_VLD]                      = ir_rt_inst4_srcv0_vld;
+assign dp_ir_inst4_data[IS_DST_REL_PREG:IS_DST_REL_PREG-6] = rt_dp_inst4_rel_preg[6:0];
+assign dp_ir_inst4_data[IS_DST_PREG:IS_DST_PREG-6]         = ir_pipedown_inst3_dst_preg[6:0];
+assign dp_ir_inst4_data[IS_DST_REG:IS_DST_REG-4]           = ir_inst4_data[IR_DST_REG-1:IR_DST_REG-5];
+assign dp_ir_inst4_data[IS_SRC2_LSU_MATCH]                 = 1'b0; //src2 lsu match for issue
+assign dp_ir_inst4_data[IS_SRC2_BP_RDY:IS_SRC2_BP_RDY-1]   = 2'b0; //src2 rdy for issue/bypass
+assign dp_ir_inst4_data[IS_SRC2_DATA:IS_SRC2_DATA-9]       = rt_dp_inst4_src2_data[9:0];
+assign dp_ir_inst4_data[IS_SRC1_LSU_MATCH]                 = 1'b0; //src1 lsu match for issue
+assign dp_ir_inst4_data[IS_SRC1_BP_RDY:IS_SRC1_BP_RDY-1]   = 2'b0; //src1 rdy for issue/bypass
+assign dp_ir_inst4_data[IS_SRC1_DATA:IS_SRC1_DATA-8]       = rt_dp_inst4_src1_data[8:0];
+assign dp_ir_inst4_data[IS_SRC0_LSU_MATCH]                 = 1'b0; //src0 lsu match for issue
+assign dp_ir_inst4_data[IS_SRC0_BP_RDY:IS_SRC0_BP_RDY-1]   = 2'b0; //src0 rdy for issue/bypass
+assign dp_ir_inst4_data[IS_SRC0_DATA:IS_SRC0_DATA-8]       = rt_dp_inst4_src0_data[8:0];
+assign dp_ir_inst4_data[IS_DST_VLD]                        = ir_inst4_data[IR_DST_VLD];
+assign dp_ir_inst4_data[IS_SRC2_VLD]                       = ir_inst4_data[IR_SRC2_VLD];
+assign dp_ir_inst4_data[IS_SRC1_VLD]                       = ir_inst4_data[IR_SRC1_VLD];
+assign dp_ir_inst4_data[IS_SRC0_VLD]                       = ir_inst4_data[IR_SRC0_VLD];
+assign dp_ir_inst4_data[IS_OPCODE:IS_OPCODE-31]            = ir_inst4_data[IR_OPCODE:IR_OPCODE-31];
+
+
+
+
+
+
+
+
+
+
 
 // &ModuleEnd; @1241
 endmodule

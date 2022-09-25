@@ -26,7 +26,9 @@ module ct_had_pcfifo(
   rtu_had_xx_pcfifo_inst1_chgflow,
   rtu_had_xx_pcfifo_inst1_next_pc,
   rtu_had_xx_pcfifo_inst2_chgflow,
-  rtu_had_xx_pcfifo_inst2_next_pc
+  rtu_had_xx_pcfifo_inst2_next_pc,
+  rtu_had_xx_pcfifo_inst3_chgflow,//Jeremy add 
+  rtu_had_xx_pcfifo_inst3_next_pc//Jeremy add 
 );
 
 // &Ports; @24
@@ -41,20 +43,23 @@ input           rtu_had_xx_pcfifo_inst1_chgflow;
 input   [38:0]  rtu_had_xx_pcfifo_inst1_next_pc; 
 input           rtu_had_xx_pcfifo_inst2_chgflow; 
 input   [38:0]  rtu_had_xx_pcfifo_inst2_next_pc; 
+input           rtu_had_xx_pcfifo_inst3_chgflow; 
+input   [38:0]  rtu_had_xx_pcfifo_inst3_next_pc; 
 output  [63:0]  pcfifo_regs_data;               
 
 // &Regs; @25
-reg     [2 :0]  chgflow_valid;                  
+reg     [2 :0]  chgflow_valid[3:0] ;                  
 reg             ctrl_pcfifo_wen_flop;           
 reg     [39:0]  pcfifo_din_0;                   
 reg     [39:0]  pcfifo_din_1;                   
 reg     [39:0]  pcfifo_din_2;                   
+reg     [39:0]  pcfifo_din_3; //Jeremy add                  
 reg     [39:0]  pcfifo_dout;                    
 reg     [4 :0]  rptr;                           
 reg     [4 :0]  wptr;                           
 
 // &Wires; @26
-wire    [2 :0]  chgflow_valid_pre;              
+wire    [3 :0]  chgflow_valid_pre;              
 wire            cpuclk;                         
 wire            cpurst_b;                       
 wire            create_one;                     
@@ -81,6 +86,8 @@ wire            rtu_had_xx_pcfifo_inst1_chgflow;
 wire    [38:0]  rtu_had_xx_pcfifo_inst1_next_pc; 
 wire            rtu_had_xx_pcfifo_inst2_chgflow; 
 wire    [38:0]  rtu_had_xx_pcfifo_inst2_next_pc; 
+wire            rtu_had_xx_pcfifo_inst3_chgflow; 
+wire    [38:0]  rtu_had_xx_pcfifo_inst3_next_pc; 
 wire            two_entry_left;                 
 wire    [4 :0]  wptr_0;                         
 wire    [4 :0]  wptr_1;                         
@@ -115,7 +122,8 @@ parameter PTR_WIDTH     = 5;
 // &Force("nonport","wptr_sel_1_for_create_two"); @48
 // &Force("nonport","wptr_sel_2"); @49
 
-assign chgflow_valid_pre[2:0] = {rtu_had_xx_pcfifo_inst2_chgflow,
+assign chgflow_valid_pre[3:0] = {rtu_had_xx_pcfifo_inst3_chgflow,
+                                 rtu_had_xx_pcfifo_inst2_chgflow,
                                  rtu_had_xx_pcfifo_inst1_chgflow,
                                  rtu_had_xx_pcfifo_inst0_chgflow};
 
@@ -130,11 +138,11 @@ end
 always@(posedge cpuclk or negedge cpurst_b)
 begin
   if (!cpurst_b)
-    chgflow_valid[2:0] <= 3'b0;
-  else if (|chgflow_valid_pre[2:0])
-    chgflow_valid[2:0] <= chgflow_valid_pre[2:0];
+    chgflow_valid[3:0] [3:0] <= 3'b0;
+  else if (|chgflow_valid_pre[3:0])
+    chgflow_valid[3:0] [3:0] <= chgflow_valid_pre[3:0];
   else
-    chgflow_valid[2:0] <= 3'b0;
+    chgflow_valid[3:0] [3:0] <= 3'b0;
 end
 
 always@(posedge cpuclk)
@@ -154,28 +162,35 @@ begin
   if (chgflow_valid_pre[2])
     pcfifo_din_2[WIDTH-1:0] <= {rtu_had_xx_pcfifo_inst2_next_pc[38:0], 1'b0};
 end
+//Jeremy add this logic
+always@(posedge cpuclk)
+begin
+  if (chgflow_valid_pre[3])
+    pcfifo_din_3[WIDTH-1:0] <= {rtu_had_xx_pcfifo_inst3_next_pc[38:0], 1'b0};
+end
 
-assign inst0_chgflow_vld  = chgflow_valid[0] && ctrl_pcfifo_wen_flop;
-assign inst1_chgflow_vld  = chgflow_valid[1] && ctrl_pcfifo_wen_flop;
-assign inst2_chgflow_vld  = chgflow_valid[2] && ctrl_pcfifo_wen_flop;
+assign inst0_chgflow_vld  = chgflow_valid[3:0] [0] && ctrl_pcfifo_wen_flop;
+assign inst1_chgflow_vld  = chgflow_valid[3:0] [1] && ctrl_pcfifo_wen_flop;
+assign inst2_chgflow_vld  = chgflow_valid[3:0] [2] && ctrl_pcfifo_wen_flop;
+assign inst3_chgflow_vld  = chgflow_valid[3:0] [3] && ctrl_pcfifo_wen_flop;//Jeremy add
 
-assign create_vld   = |chgflow_valid[2:0] && ctrl_pcfifo_wen_flop;
+assign create_vld   = |chgflow_valid[3:0] [3:0] && ctrl_pcfifo_wen_flop;
                       
-assign create_three = &chgflow_valid[2:0];
+assign create_three = &chgflow_valid[3:0] [2:0];
 
-assign create_two   = (chgflow_valid[2:0] == 3'b110) ||
-                      (chgflow_valid[2:0] == 3'b101) ||
-                      (chgflow_valid[2:0] == 3'b011);
+assign create_two   = (chgflow_valid[3:0] [3:0] == 3'b110) ||
+                      (chgflow_valid[3:0] [3:0] == 3'b101) ||
+                      (chgflow_valid[3:0] [3:0] == 3'b011);
 
-assign create_one   = (chgflow_valid[2:0] == 3'b100) ||
-                      (chgflow_valid[2:0] == 3'b010) ||
-                      (chgflow_valid[2:0] == 3'b001);
+assign create_one   = (chgflow_valid[3:0] [3:0] == 3'b100) ||
+                      (chgflow_valid[3:0] [3:0] == 3'b010) ||
+                      (chgflow_valid[3:0] [3:0] == 3'b001);
 
 assign wptr_sel_0[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_0[PTR_WIDTH-2:0];
 assign wptr_sel_1[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_1[PTR_WIDTH-2:0];
 assign wptr_sel_2[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_2[PTR_WIDTH-2:0];
 
-assign wptr_sel_1_for_create_two[DEPTH-1:0] = chgflow_valid[0] ? wptr_sel_1[DEPTH-1:0] : wptr_sel_0[DEPTH-1:0];
+assign wptr_sel_1_for_create_two[DEPTH-1:0] = chgflow_valid[3:0] [0] ? wptr_sel_1[DEPTH-1:0] : wptr_sel_0[DEPTH-1:0];
 
 //csky vperl_off
 reg     [WIDTH-1:0]  pcfifo_reg  [DEPTH-1:0];
@@ -192,6 +207,8 @@ begin
     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_1[WIDTH-1:0];
   else if (inst2_chgflow_vld && (create_three && wptr_sel_2[i] || create_two && wptr_sel_1[i] || create_one && wptr_sel_0[i]))
     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_2[WIDTH-1:0];
+  else if (inst3_chgflow_vld && (create_three && wptr_sel_3[i] || create_two && wptr_sel_1[i] || create_one && wptr_sel_0[i]))//Jeremy add
+    pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_3[WIDTH-1:0];
   else 
     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_reg[i][WIDTH-1:0];
 end

@@ -1,11 +1,8 @@
 /*Copyright 2019-2021 T-Head Semiconductor Co., Ltd.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,21 +16,18 @@ module ct_idu_id_ctrl(
   cp0_yy_clk_en,
   cpurst_b,
   ctrl_dp_id_debug_id_pipedown3,
-
   ctrl_dp_id_inst0_vld,
   ctrl_dp_id_inst1_vld,
   ctrl_dp_id_inst2_vld,
-//ctrl_dp_id_inst3_vld
+  ctrl_dp_id_inst3_vld,//add ib--id inst4  add by xlx
   ctrl_dp_id_pipedown_1_inst,
   ctrl_dp_id_pipedown_2_inst,
   ctrl_dp_id_pipedown_3_inst,
-//ctrl_dp_id_pipedown_4_inst
-
+  ctrl_dp_id_pipedown_4_inst,//add id pipedown4 inst add by xlx
   ctrl_dp_id_stall,
   ctrl_fence_id_inst_vld,
   ctrl_fence_id_stall,
   ctrl_id_pipedown_gateclk,
-
   ctrl_id_pipedown_inst0_vld,
   ctrl_id_pipedown_inst1_vld,
   ctrl_id_pipedown_inst2_vld,
@@ -41,14 +35,13 @@ module ct_idu_id_ctrl(
 
   ctrl_ir_stage_stall,
   ctrl_ir_stall,
-
   ctrl_split_long_id_inst_vld,
   ctrl_split_long_id_stall,
 
   ctrl_top_id_inst0_vld,
   ctrl_top_id_inst1_vld,
   ctrl_top_id_inst2_vld,
-//ctrl_top_id_inst3_vld
+  ctrl_top_id_inst3_vld,//add id--top  add by xlx
 
   dp_ctrl_id_inst0_fence,
   dp_ctrl_id_inst0_normal,
@@ -64,19 +57,18 @@ module ct_idu_id_ctrl(
   dp_ctrl_id_inst2_normal,
   dp_ctrl_id_inst2_split_long,
   dp_ctrl_id_inst2_split_short,
-
-/*dp_ctrl_id_inst3_fence,
+//add  inst3 decode add by xlx
+  dp_ctrl_id_inst3_fence,
   dp_ctrl_id_inst3_normal,
   dp_ctrl_id_inst3_split_long,
   dp_ctrl_id_inst3_split_short,
-  */
+  
 
   fence_ctrl_id_stall,
   fence_ctrl_inst0_vld,
   fence_ctrl_inst1_vld,
   fence_ctrl_inst2_vld,
-//fence_ctrl_inst3_vld,
-
+  fence_ctrl_inst3_vld,//add inst3 fence vld signal  add by xlx
 
   forever_cpuclk,
   had_idu_debug_id_inst_en,
@@ -85,7 +77,7 @@ module ct_idu_id_ctrl(
   idu_had_id_inst0_vld,
   idu_had_id_inst1_vld,
   idu_had_id_inst2_vld,
-//idu_had_id_inst3_vld
+  idu_had_id_inst3_vld,//add inst 3 debug   add by xlx
 
   idu_had_pipe_stall,
   idu_hpcp_backend_stall,
@@ -95,7 +87,8 @@ module ct_idu_id_ctrl(
   ifu_idu_ib_inst0_vld,
   ifu_idu_ib_inst1_vld,
   ifu_idu_ib_inst2_vld,
-//ifu_idu_ib_inst3_vld
+  ifu_idu_ib_inst3_vld,//add ib inst3 vld signal  add by xlx
+
   ifu_idu_ib_pipedown_gateclk,
   iu_yy_xx_cancel,
   pad_yy_icg_scan_en,
@@ -109,7 +102,8 @@ input          cp0_idu_icg_en;
 input          cp0_yy_clk_en;                     
 input          cpurst_b;                          
 input          ctrl_ir_stage_stall;               
-input          ctrl_ir_stall;                     
+input          ctrl_ir_stall; 
+
 input          dp_ctrl_id_inst0_fence;            
 input          dp_ctrl_id_inst0_normal;           
 input          dp_ctrl_id_inst0_split_long;       
@@ -124,22 +118,17 @@ input          dp_ctrl_id_inst2_fence;
 input          dp_ctrl_id_inst2_normal;           
 input          dp_ctrl_id_inst2_split_long;       
 input          dp_ctrl_id_inst2_split_short;
-
-input          dp_ctrl_id_inst2_fence;            
-input          dp_ctrl_id_inst2_normal;           
-input          dp_ctrl_id_inst2_split_long;       
-input          dp_ctrl_id_inst2_split_short;
-/*
+//add inst3 ctrl-dp add by xlx
 input          dp_ctrl_id_inst3_fence;            
 input          dp_ctrl_id_inst3_normal;           
 input          dp_ctrl_id_inst3_split_long;       
 input          dp_ctrl_id_inst3_split_short;
-*/
+
 input          fence_ctrl_id_stall;               
 input          fence_ctrl_inst0_vld;              
 input          fence_ctrl_inst1_vld;              
 input          fence_ctrl_inst2_vld;
-//input          fence_ctrl_inst3_vld;
+input          fence_ctrl_inst3_vld;//add input add by xlx
 
 input          forever_cpuclk;                    
 input          had_idu_debug_id_inst_en;          
@@ -148,7 +137,7 @@ input          hpcp_idu_cnt_en;
 input          ifu_idu_ib_inst0_vld;              
 input          ifu_idu_ib_inst1_vld;              
 input          ifu_idu_ib_inst2_vld;
-//input          ifu_idu_ib_inst3_vld;      
+input          ifu_idu_ib_inst3_vld;      
 input          ifu_idu_ib_pipedown_gateclk;       
 input          iu_yy_xx_cancel;                   
 input          pad_yy_icg_scan_en;                
@@ -162,12 +151,12 @@ output         ctrl_dp_id_debug_id_pipedown3;  //？
 output         ctrl_dp_id_inst0_vld;              
 output         ctrl_dp_id_inst1_vld;              
 output         ctrl_dp_id_inst2_vld; 
-//output         ctrl_dp_id_inst3_vld;
+output         ctrl_dp_id_inst3_vld;
 
 output         ctrl_dp_id_pipedown_1_inst;        
 output         ctrl_dp_id_pipedown_2_inst;        
 output         ctrl_dp_id_pipedown_3_inst; 
-//output         ctrl_dp_id_pipedown_4_inst; 
+output         ctrl_dp_id_pipedown_4_inst; 
 
 output         ctrl_dp_id_stall;                  
 output         ctrl_fence_id_inst_vld;            
@@ -185,12 +174,12 @@ output         ctrl_split_long_id_stall;
 output         ctrl_top_id_inst0_vld;             
 output         ctrl_top_id_inst1_vld;             
 output         ctrl_top_id_inst2_vld;  
-//output         ctrl_top_id_inst3_vld;   
+output         ctrl_top_id_inst3_vld;   
 
 output         idu_had_id_inst0_vld;              
 output         idu_had_id_inst1_vld;              
 output         idu_had_id_inst2_vld;
-output         idu_had_id_inst3_vld;
+output         idu_had_id_inst3_vld;//debug signal add by xlx
 
 output         idu_had_pipe_stall;                
 output         idu_hpcp_backend_stall;            
@@ -201,34 +190,36 @@ output         idu_ifu_id_stall;
 reg            ctrl_id_pipedown_inst1_vld;        
 reg            ctrl_id_pipedown_inst2_vld;        
 reg            ctrl_id_pipedown_inst3_vld;   
-//reg            ctrl_id_pipedown_inst3_vld; 
+reg            ctrl_id_pipedown_inst4_vld; //id -- ir  inst4 vld add by xlx
 
 reg            debug_id_inst0_vld;                
 reg            debug_id_inst1_vld;                
 reg            debug_id_inst2_vld; 
-//reg            debug_id_inst3_vld; 
+reg            debug_id_inst3_vld; //add inst3 debug add by xlx
 
 reg            debug_id_pipedown3;                
 reg            id_inst0_vld;                      
 reg            id_inst1_vld;                      
 reg            id_inst2_vld; 
-//reg            id_inst3_vld;                     
+reg            id_inst3_vld; //add id inst3 vld  add by xlx           
 
 // &Wires; @30
 wire           cp0_idu_icg_en;                    
 wire           cp0_yy_clk_en;                     
 wire           cpurst_b;
 
-wire           ctrl_dp_id_debug_id_pipedown3; 
+wire           ctrl_dp_id_debug_id_pipedown3; //
 
 wire           ctrl_dp_id_inst0_vld;              
 wire           ctrl_dp_id_inst1_vld;              
 wire           ctrl_dp_id_inst2_vld; 
-//wire           ctrl_dp_id_inst3_vld;            
+wire           ctrl_dp_id_inst3_vld; //add inst3 vld   add by xlx
+
 wire           ctrl_dp_id_pipedown_1_inst;        
 wire           ctrl_dp_id_pipedown_2_inst;        
 wire           ctrl_dp_id_pipedown_3_inst; 
-//wire           ctrl_dp_id_pipedown_4_inst;          
+wire           ctrl_dp_id_pipedown_4_inst; //add pipedown 4 inst signal add by xlx
+
 wire           ctrl_dp_id_stall;                  
 wire           ctrl_fence_id_inst_vld;            
 wire           ctrl_fence_id_stall;
@@ -236,7 +227,7 @@ wire           ctrl_fence_id_stall;
 wire           ctrl_ib_pipedown_inst0_vld;        
 wire           ctrl_ib_pipedown_inst1_vld;        
 wire           ctrl_ib_pipedown_inst2_vld; 
-//wire         ctrl_ib_pipedown_inst3_vld; 
+wire         ctrl_ib_pipedown_inst3_vld; //add id pipedown vld add by xlx
 
 wire           ctrl_id_1_fence_inst;              
 wire           ctrl_id_1_split_long_inst;         
@@ -255,17 +246,19 @@ wire           ctrl_id_inst2_fence;
 wire           ctrl_id_inst2_normal;              
 wire           ctrl_id_inst2_split_long;          
 wire           ctrl_id_inst2_split_short; 
-/*
+//add inst3 decode add by xlx
 wire           ctrl_id_inst3_fence;               
 wire           ctrl_id_inst3_normal;              
 wire           ctrl_id_inst3_split_long;          
 wire           ctrl_id_inst3_split_short; 
-*/
+
 wire           ctrl_id_pipedown_1_inst;           
 wire           ctrl_id_pipedown_2_inst;           
 wire           ctrl_id_pipedown_3_inst;
-//wire         ctrl_id_pipedown_4_inst;
-wire           ctrl_id_pipedown_3_inst_for_bypass; //?
+wire           ctrl_id_pipedown_4_inst;//add add by xlx
+
+//wire           ctrl_id_pipedown_3_inst_for_bypass; 
+wire           ctrl_id_pipedown_4_inst_for_bypass; //add new signal by xlx
 
 wire           ctrl_id_pipedown_gateclk;          
 wire           ctrl_id_pipedown_inst0_vld;        
@@ -281,7 +274,7 @@ wire           ctrl_split_long_id_stall;
 wire           ctrl_top_id_inst0_vld;             
 wire           ctrl_top_id_inst1_vld;             
 wire           ctrl_top_id_inst2_vld; 
-//wire           ctrl_top_id_inst3_vld; 
+wire           ctrl_top_id_inst3_vld; //add add by xlx
 
 wire           debug_id_inst_clk;                 
 wire           debug_id_inst_clk_en;              
@@ -301,17 +294,17 @@ wire           dp_ctrl_id_inst2_fence;
 wire           dp_ctrl_id_inst2_normal;           
 wire           dp_ctrl_id_inst2_split_long;       
 wire           dp_ctrl_id_inst2_split_short;  
-/*
+//add inst3  add by xlx
 wire           dp_ctrl_id_inst3_fence;            
 wire           dp_ctrl_id_inst3_normal;           
 wire           dp_ctrl_id_inst3_split_long;       
 wire           dp_ctrl_id_inst3_split_short;  
-*/
+
 wire           fence_ctrl_id_stall;               
 wire           fence_ctrl_inst0_vld;              
 wire           fence_ctrl_inst1_vld;              
 wire           fence_ctrl_inst2_vld;
-//wire           fence_ctrl_inst3_vld;
+wire           fence_ctrl_inst3_vld;//add fence3 add by xlx
 
 wire           forever_cpuclk;                    
 wire           had_idu_debug_id_inst_en;          
@@ -322,7 +315,7 @@ wire           id_inst_clk_en;
 wire           idu_had_id_inst0_vld;              
 wire           idu_had_id_inst1_vld;              
 wire           idu_had_id_inst2_vld;
-//wire           idu_had_id_inst3_vld;
+wire           idu_had_id_inst3_vld;//add add by xlx
 
 wire           idu_had_pipe_stall;                
 wire           idu_hpcp_backend_stall;            
@@ -332,7 +325,8 @@ wire           idu_ifu_id_stall;
 wire           ifu_idu_ib_inst0_vld;              
 wire           ifu_idu_ib_inst1_vld;              
 wire           ifu_idu_ib_inst2_vld; 
-//wire           ifu_idu_ib_inst3_vld;       
+wire           ifu_idu_ib_inst3_vld;//add    add by xlx
+
 wire           ifu_idu_ib_pipedown_gateclk;       
 wire           iu_yy_xx_cancel;                   
 wire           pad_yy_icg_scan_en;                
@@ -349,26 +343,53 @@ wire    [3:0]  split_long_ctrl_inst_vld;
 //            IB Pipedown Instruction selection
 //----------------------------------------------------------
 // ib -- id
+
+
+
+/* origin logic
+assign ctrl_ib_pipedown_inst0_vld =
+            ctrl_id_pipedown_1_inst && id_inst1_vld
+         || ctrl_id_pipedown_2_inst && id_inst2_vld
+         || ctrl_id_pipedown_3_inst && ifu_idu_ib_inst0_vld;
+         */
+//add by xlx
 assign ctrl_ib_pipedown_inst0_vld =
             ctrl_id_pipedown_1_inst && id_inst1_vld
          || ctrl_id_pipedown_2_inst && id_inst2_vld
          || ctrl_id_pipedown_3_inst && id_inst3_vld
        || ctrl_id_pipedown_4_inst && ifu_idu_ib_inst0_vld;
-//
+
+/*
+assign ctrl_ib_pipedown_inst1_vld =
+            ctrl_id_pipedown_1_inst && id_inst2_vld
+         || ctrl_id_pipedown_2_inst && 1'b0
+         || ctrl_id_pipedown_3_inst && ifu_idu_ib_inst1_vld;
+*/
+//add by xlx
 assign ctrl_ib_pipedown_inst1_vld =
             ctrl_id_pipedown_1_inst && id_inst2_vld
          || ctrl_id_pipedown_2_inst && id_inst3_vld
-         || ctrl_id_pipedown_3_inst && 1'b0;
+         || ctrl_id_pipedown_3_inst && 1'b0
        || ctrl_id_pipedown_4_inst && ifu_idu_ib_inst1_vld;
 //
 
+/* origin logic
+assign ctrl_ib_pipedown_inst2_vld =
+            ctrl_id_pipedown_1_inst && 1'b0
+         || ctrl_id_pipedown_2_inst && 1'b0
+         || ctrl_id_pipedown_3_inst && ifu_idu_ib_inst2_vld;
+*/
+// new logic //add by xlx
 assign ctrl_ib_pipedown_inst2_vld = 
             ctrl_id_pipedown_1_inst && id_inst3_vld
          || ctrl_id_pipedown_2_inst && 1'b0
          || ctrl_id_pipedown_3_inst && 1'b0
          || ctrl_id_pipedown_4_inst && ifu_idu_ib_inst2_vld;
 
-//
+/*
+add ib pipedown inst3 signal logic
+*/
+//add by xlx
 assign ctrl_ib_pipedown_inst3_vld =
             ctrl_id_pipedown_1_inst && 1'b0
          || ctrl_id_pipedown_2_inst && 1'b0
@@ -382,7 +403,8 @@ assign ctrl_ib_pipedown_inst3_vld =
 assign id_inst_clk_en = ifu_idu_ib_pipedown_gateclk
                         || id_inst0_vld
                         || id_inst1_vld
-                        || id_inst2_vld;
+                        || id_inst2_vld
+                        || id_inst3_vld;//add inst 3 signal //add by xlx
 // &Instance("gated_clk_cell", "x_id_inst_gated_clk"); @60
 gated_clk_cell  x_id_inst_gated_clk (
   .clk_in             (forever_cpuclk    ),
@@ -410,39 +432,40 @@ begin
     id_inst0_vld <= 1'b0;
     id_inst1_vld <= 1'b0;
     id_inst2_vld <= 1'b0;
-    id_inst3_vld <= 1'b0;//
+    id_inst3_vld <= 1'b0;//add inst3 //add by xlx
 
   end
   else if(rtu_idu_flush_fe || iu_yy_xx_cancel) begin
     id_inst0_vld <= 1'b0;
     id_inst1_vld <= 1'b0;
     id_inst2_vld <= 1'b0;
-    id_inst3_vld <= 1'b0;//
+    id_inst3_vld <= 1'b0;//add inst3 //add by xlx
   end
   else if(!ctrl_id_pipedown_stall) begin
     id_inst0_vld <= ctrl_ib_pipedown_inst0_vld;
     id_inst1_vld <= ctrl_ib_pipedown_inst1_vld;
     id_inst2_vld <= ctrl_ib_pipedown_inst2_vld;
-    id_inst3_vld <= ctrl_ib_pipedown_inst3_vld;//
+    id_inst3_vld <= ctrl_ib_pipedown_inst3_vld;//add inst3 //add by xlx
   end
   else begin
     id_inst0_vld <= id_inst0_vld;
     id_inst1_vld <= id_inst1_vld;
     id_inst2_vld <= id_inst2_vld;
-    id_inst3_vld <= id_inst3_vld;//
+    id_inst3_vld <= id_inst3_vld;//add inst3 //add by xlx
   end
 end
 
 assign ctrl_dp_id_inst0_vld     = id_inst0_vld;
 assign ctrl_dp_id_inst1_vld     = id_inst1_vld;
 assign ctrl_dp_id_inst2_vld     = id_inst2_vld;
-assign ctrl_dp_id_inst3_vld     = id_inst3_vld;//
-
+assign ctrl_dp_id_inst3_vld     = id_inst3_vld;//add inst 3 //add by xlx
+ 
 assign ctrl_id_pipedown_gateclk = id_inst0_vld;
+
 assign ctrl_top_id_inst0_vld    = id_inst0_vld;
 assign ctrl_top_id_inst1_vld    = id_inst1_vld;
-assign ctrl_top_id_inst2_vld    = id_inst2_vld;
-assign ctrl_top_id_inst3_vld    = id_inst3_vld;//
+assign ctrl_top_id_inst2_vld    = id_inst2_vld; 
+assign ctrl_top_id_inst3_vld    = id_inst3_vld;//add inst3 //add by xlx
 
 //----------------------------------------------------------
 //                 Instance of Gated Cell
@@ -450,7 +473,7 @@ assign ctrl_top_id_inst3_vld    = id_inst3_vld;//
 
 //???
 assign debug_id_inst_clk_en = debug_id_inst_vld
-                              || debug_id_pipedown3
+                              || debug_id_pipedown3//debug  todo
                               || debug_id_inst0_vld;
 // &Instance("gated_clk_cell", "x_debug_id_inst_gated_clk"); @109
 gated_clk_cell  x_debug_id_inst_gated_clk (
@@ -473,6 +496,8 @@ gated_clk_cell  x_debug_id_inst_gated_clk (
 //----------------------------------------------------------
 //               Pipeline register implement
 //----------------------------------------------------------
+
+//debug todo
 assign debug_id_inst_vld = id_inst0_vld
                            && (had_idu_debug_id_inst_en
                             || hpcp_idu_cnt_en);
@@ -524,23 +549,23 @@ assign idu_had_id_inst2_vld = debug_id_inst2_vld;
 assign ctrl_id_inst0_fence       = id_inst0_vld && dp_ctrl_id_inst0_fence;
 assign ctrl_id_inst1_fence       = id_inst1_vld && dp_ctrl_id_inst1_fence;
 assign ctrl_id_inst2_fence       = id_inst2_vld && dp_ctrl_id_inst2_fence;
-assign ctrl_id_inst3_fence       = id_inst3_vld && dp_ctrl_id_inst3_fence;//
+assign ctrl_id_inst3_fence       = id_inst3_vld && dp_ctrl_id_inst3_fence;//add inst3 //add by xlx
 
 assign ctrl_id_inst0_split_short = id_inst0_vld && dp_ctrl_id_inst0_split_short;
 assign ctrl_id_inst1_split_short = id_inst1_vld && dp_ctrl_id_inst1_split_short;
 assign ctrl_id_inst2_split_short = id_inst2_vld && dp_ctrl_id_inst2_split_short;
-assign ctrl_id_inst3_split_short = id_inst3_vld && dp_ctrl_id_inst3_split_short;//
+assign ctrl_id_inst3_split_short = id_inst3_vld && dp_ctrl_id_inst3_split_short;//add inst3 //add by xlx
 
 assign ctrl_id_inst0_split_long  = id_inst0_vld && dp_ctrl_id_inst0_split_long;
 assign ctrl_id_inst1_split_long  = id_inst1_vld && dp_ctrl_id_inst1_split_long;
 assign ctrl_id_inst2_split_long  = id_inst2_vld && dp_ctrl_id_inst2_split_long;
-assign ctrl_id_inst3_split_long  = id_inst3_vld && dp_ctrl_id_inst3_split_long;//
+assign ctrl_id_inst3_split_long  = id_inst3_vld && dp_ctrl_id_inst3_split_long;//add inst3 //add by xlx
 
 
 assign ctrl_id_inst0_normal      = id_inst0_vld && dp_ctrl_id_inst0_normal;
 assign ctrl_id_inst1_normal      = id_inst1_vld && dp_ctrl_id_inst1_normal;
 assign ctrl_id_inst2_normal      = id_inst2_vld && dp_ctrl_id_inst2_normal;
-assign ctrl_id_inst3_normal      = id_inst3_vld && dp_ctrl_id_inst3_normal;//
+assign ctrl_id_inst3_normal      = id_inst3_vld && dp_ctrl_id_inst3_normal;//add inst3 //add by xlx
 
 //----------------------------------------------------------
 //                 Fence Instruction Valid
@@ -558,6 +583,7 @@ assign ctrl_split_long_id_inst_vld = ctrl_id_inst0_split_long;
 //                 Pipedown control signals
 //==========================================================
 //----------------------------------------------------------
+// uop vld signal
 //            IR Pipedown Instruction 0 valid
 //----------------------------------------------------------
 assign ctrl_id_pipedown_inst0_vld =
@@ -667,8 +693,16 @@ always @( ctrl_id_inst1_fence
        or split_long_ctrl_inst_vld[3]
        or ctrl_id_inst1_split_short
        or ctrl_id_inst2_split_short
-       or ctrl_id_pipedown_1_inst)
-begin
+       or ctrl_id_pipedown_1_inst
+       //add new signal      check sensitive signal  //add by xlx
+       or ctrl_id_inst2_fence
+       or ctrl_id_inst2_split_long
+       or ctrl_id_inst2_split_short
+       or ctrl_id_inst0_normal
+       or ctrl_id_inst1_normal
+       or id_inst3_vld
+       or ctrl_id_pipedown_3_inst
+       )begin
   //consider id inst0 type
   if(ctrl_id_inst0_fence)
     ctrl_id_pipedown_inst3_vld = 1'b0;
@@ -689,15 +723,15 @@ begin
     ctrl_id_pipedown_inst3_vld = id_inst2_vld
                                  && !ctrl_id_pipedown_1_inst
                                  && !ctrl_id_pipedown_2_inst;
-  //consider id inst2 type
+  //consider id inst2 type  
   else if (ctrl_id_inst2_fence)
     ctrl_id_pipedown_inst3_vld = 1'b0;
   else if(ctrl_id_inst2_split_long)
     ctrl_id_pipedown_inst3_vld = 1'b0;  
-  else if  (ctrl_id_inst2_split_short&&ctrl_id_inst0_normal&&ctrl_id_inst1_normal)
+  else if  (ctrl_id_inst2_split_short && ctrl_id_inst0_normal && ctrl_id_inst1_normal)
     ctrl_id_pipedown_inst3_vld = 1'b1;
 
- //consider id inst3 type
+ //consider id inst3 type //add new logic   //add by xlx
   else if (ctrl_id_inst3_fence)
     ctrl_id_pipedown_inst3_vld = 1'b0;
   else if(ctrl_id_inst3_split_long)
@@ -711,11 +745,12 @@ begin
                                  && !ctrl_id_pipedown_3_inst;
 // &CombEnd; @294
 end
+//add uop5 logic  xlx
+//----------------------------------------------------------
+//            IR Pipedown Instruction 4 valid   （uop5） //add by xlx
 
 //----------------------------------------------------------
-//            IR Pipedown Instruction 4 valid   （uop5）
-//----------------------------------------------------------
-//xlx todo
+//xlx todo need to check
 always @(ctrl_id_inst0_fence
        or ctrl_id_inst0_split_short
        or ctrl_id_inst0_split_long
@@ -726,11 +761,22 @@ always @(ctrl_id_inst0_fence
        or ctrl_id_pipedown_1_inst
        or ctrl_id_pipedown_2_inst
        or id_inst2_vld
-       or split_long_ctrl_inst_vld[3]）
+       or split_long_ctrl_inst_vld[3]
+       //add sensitive signal //add by xlx
+       or ctrl_id_inst1_normal
+       or ctrl_id_inst2_split_short
+       or ctrl_id_inst2_normal
+       or id_inst3_vld
+       or ctrl_id_pipedown_3_inst
+       or ctrl_id_inst2_fence
+       or ctrl_id_inst2_split_long
+       or ctrl_id_inst3_fence
+       or ctrl_id_inst3_split_long
+       or ctrl_id_inst3_split_short
+      )
 begin
 //todo
-
-//consider id inst0 type
+//consider id inst0 type //add by xlx
   if(ctrl_id_inst0_fence)
     ctrl_id_pipedown_inst4_vld = 1'b0;
   else if(ctrl_id_inst0_split_long)
@@ -740,9 +786,9 @@ begin
                                  && !ctrl_id_pipedown_1_inst
                                  && !ctrl_id_pipedown_2_inst;
   else if(ctrl_id_inst0_split_short && ctrl_id_inst1_normal && ctrl_id_inst2_split_short)
-    ctrl_id_pipedown_inst4_vld = 1'b1； 
+    ctrl_id_pipedown_inst4_vld = 1'b1; 
 
-  //consider id inst1 type
+  //consider id inst1 type //add by xlx
   else if(ctrl_id_inst1_fence)
     ctrl_id_pipedown_inst4_vld = 1'b0;
   else if(ctrl_id_inst1_split_long)
@@ -754,7 +800,7 @@ begin
                                  && !ctrl_id_pipedown_1_inst
                                  && !ctrl_id_pipedown_2_inst
                                  && !ctrl_id_pipedown_3_inst;
-  //consider id inst2 type
+  //consider id inst2 type //add by xlx
   else if(ctrl_id_inst2_fence)
    ctrl_id_pipedown_inst4_vld = 1'b0;
   else if(ctrl_id_inst2_split_long)
@@ -763,13 +809,13 @@ begin
     ctrl_id_pipedown_inst4_vld = id_inst3_vld
                                  && !ctrl_id_pipedown_1_inst
                                  && !ctrl_id_pipedown_2_inst
-                                 && !ctrl_id_pipedown_3_inst；
-  //consider id inst3 type
+                                 && !ctrl_id_pipedown_3_inst;
+  //consider id inst3 type //add by xlx
   else if (ctrl_id_inst3_fence)
    ctrl_id_pipedown_inst4_vld = 1'b0;
   else if(ctrl_id_inst3_split_long)
     ctrl_id_pipedown_inst4_vld = 1'b0;
-  else if (ctrl_id_inst2_split_short)
+  else if (ctrl_id_inst3_split_short)
     ctrl_id_pipedown_inst4_vld = 1'b1;
   else 
     ctrl_id_pipedown_inst4_vld = id_inst3_vld
@@ -789,16 +835,16 @@ end
 assign ctrl_id_1_fence_inst      = ctrl_id_inst0_fence 
                                 || ctrl_id_inst1_fence
                                 || ctrl_id_inst2_fence
-                                || ctrl_id_inst3_fence;
+                                || ctrl_id_inst3_fence;//add inst3 //add by xlx
                           
 assign ctrl_id_1_split_long_inst = ctrl_id_inst0_split_long
                                 || ctrl_id_inst1_split_long
                                 || ctrl_id_inst2_split_long
-                                || ctrl_id_inst3_split_long;
+                                || ctrl_id_inst3_split_long;//add inst3 //add by xlx
 
-//123
+
 //----------------------------------------------------------
-//                    Pipedown 1 Inst//
+//                    Pipedown 1 Inst
 //----------------------------------------------------------
 //pipedown 1 inst when:
 //   inst0 can pipedown (not a stall long split, fence stall deal in id stall)
@@ -810,7 +856,7 @@ assign ctrl_id_pipedown_1_inst =
              || ctrl_id_inst0_fence && !fence_ctrl_id_stall);
 
 //----------------------------------------------------------
-//                    Pipedown 2 Inst//
+//                    Pipedown 2 Inst
 
 //----------------------------------------------------------
 //pipedown 2 inst when:
@@ -819,31 +865,72 @@ assign ctrl_id_pipedown_1_inst =
 assign ctrl_id_pipedown_2_inst =
             (ctrl_id_inst0_normal || ctrl_id_inst0_split_short)
          && (ctrl_id_inst1_normal || ctrl_id_inst1_split_short)
-         && (ctrl_id_inst2_normal 
+//delete this logic         //add by xlx
+/*         && (ctrl_id_inst2_normal 
              && ctrl_id_inst0_split_short && ctrl_id_inst1_split_short
           || ctrl_id_inst2_split_short
-             && (ctrl_id_inst0_split_short || ctrl_id_inst1_split_short)
+             && (ctrl_id_inst0_split_short || ctrl_id_inst1_split_short)*/
           || ctrl_id_inst2_split_long
-          || ctrl_id_inst2_fence);
+          || ctrl_id_inst2_fence;
 
 //----------------------------------------------------------
 //                    Pipedown 3 Inst
 //----------------------------------------------------------
-//pipedown 3 inst when:
-//1. no fence inst and no long split inst and no 2 or more short split inst
-//   (except inst0/1 are short split insts and inst 2 is normal inst)
+//pipedown 3 inst logic
+//origin logic
+/*
 assign ctrl_id_pipedown_3_inst =
             !ctrl_id_1_fence_inst
          && !ctrl_id_1_split_long_inst
          && !(ctrl_id_inst2_split_short
               && (ctrl_id_inst0_split_short || ctrl_id_inst1_split_short))
          && !(id_inst2_vld
-              && (ctrl_id_inst0_split_short && ctrl_id_inst1_split_short));
+              && (ctrl_id_inst0_split_short && ctrl_id_inst1_split_short));*/
+// new logic //add by xlx
+assign pipedown3_1 = 
+              (ctrl_id_inst0_split_short & ctrl_id_inst1_split_short & ctrl_id_inst2_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst1_split_short & ctrl_id_inst2_split_short)
+             ||(ctrl_id_inst0_split_short & ctrl_id_inst1_normal & ctrl_id_inst2_split_short);
+
+assign pipedown3_2 = 
+              (ctrl_id_inst0_split_short & ctrl_id_inst1_normal & ctrl_id_inst2_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst1_split_short & ctrl_id_inst2_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst1_normal & ctrl_id_inst2_split_short)
+              && !ctrl_id_inst3_normal;
+  
+assign pipedown3_3 = 
+            (ctrl_id_inst0_normal & ctrl_id_inst1_normal & ctrl_id_inst2_normal)&
+            (ctrl_id_inst3_fence || ctrl_id_inst3_split_long);
+
+
+assign ctrl_id_pipedown_3_inst =
+            !ctrl_id_1_fence_inst
+         && !ctrl_id_1_split_long_inst
+         && (pipedown3_1 || pipedown3_2 || pipedown3_3);
+//----------------------------------------------------------
+//                    Pipedown 4 Inst
+//----------------------------------------------------------
+//add pipedown 4 inst logic //add by xlx
+assign pipedown4_1 =(ctrl_id_inst0_split_short & ctrl_id_inst1_normal & ctrl_id_inst2_normal & ctrl_id_inst3_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst1_split_short & ctrl_id_inst2_normal & ctrl_id_inst3_normal)
+             ||(ctrl_id_inst0_normal & ctrl_id_inst0_normal & ctrl_id_inst0_split_short & ctrl_id_inst3_normal)   
+             ||(ctrl_id_inst0_normal & ctrl_id_inst0_normal & ctrl_id_inst0_normal & ctrl_id_inst3_split_short);
+
+assign pipedown4_2 = ctrl_id_inst0_normal & ctrl_id_inst1_normal & ctrl_id_inst2_normal & ctrl_id_inst3_normal;
+
+assign ctrl_id_pipedown_4_inst = !ctrl_id_inst0_fence 
+                                  && !ctrl_id_inst1_fence 
+                                  && !ctrl_id_inst2_fence 
+                                  && !ctrl_id_inst3_fence 
+                                &&  (pipedown4_1 || pipedown4_2);
+
 
 //pipedown 3 inst signal for IFU ibuf bypass with timing optimization:
 //no timing optimization
-assign ctrl_id_pipedown_3_inst_for_bypass = ctrl_id_pipedown_3_inst;
 
+//tudo
+//assign ctrl_id_pipedown_3_inst_for_bypass = ctrl_id_pipedown_3_inst;
+assign ctrl_id_pipedown_4_inst_for_bypass = ctrl_id_pipedown_4_inst;
 //----------------------------------------------------------
 //                     ID inst Select
 //----------------------------------------------------------
@@ -851,6 +938,7 @@ assign ctrl_id_pipedown_3_inst_for_bypass = ctrl_id_pipedown_3_inst;
 assign ctrl_dp_id_pipedown_1_inst = ctrl_id_pipedown_1_inst;
 assign ctrl_dp_id_pipedown_2_inst = ctrl_id_pipedown_2_inst;
 assign ctrl_dp_id_pipedown_3_inst = ctrl_id_pipedown_3_inst;
+assign ctrl_dp_id_pipedown_4_inst = ctrl_id_pipedown_4_inst;//add pipedown4 inst //add by xlx
 
 //==========================================================
 //                     ID stage stall
@@ -868,14 +956,16 @@ assign ctrl_id_split_long_stall = ctrl_id_inst0_split_long
 //----------------------------------------------------------
 //                     ID stage Stall
 //----------------------------------------------------------
-// id stall for IFU
+// id stall for IFU //add by xlx
 assign ctrl_id_stall            = id_inst0_vld
                                   && (ctrl_ir_stall
-                                   || !ctrl_id_pipedown_3_inst);
-//bypass id stall for IFU bypass
+                                  // || !ctrl_id_pipedown_3_inst);
+                                  || !ctrl_id_pipedown_4_inst);
+//bypass id stall for IFU bypass //add by xlx 
 assign ctrl_id_bypass_stall     = id_inst0_vld
                                   && (ctrl_ir_stall
-                                   || !ctrl_id_pipedown_3_inst_for_bypass);
+                                  // || !ctrl_id_pipedown_3_inst_for_bypass);
+                                   || !ctrl_id_pipedown_4_inst_for_bypass);
 //pipedown stall for ID inst valid and data path
 assign ctrl_id_pipedown_stall   = id_inst0_vld
                                   && (ctrl_ir_stall
@@ -894,5 +984,4 @@ assign idu_had_pipe_stall       = id_inst0_vld && fence_ctrl_id_stall
 
 // &ModuleEnd; @403
 endmodule
-
 

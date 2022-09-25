@@ -62,6 +62,8 @@ module ct_idu_id_dp(
   dp_id_pipedown_inst1_data,
   dp_id_pipedown_inst2_data,
   dp_id_pipedown_inst3_data,
+  dp_id_pipedown_inst4_data,//add uop4 by xlx
+
   fence_dp_inst0_data,
   fence_dp_inst1_data,
   fence_dp_inst2_data,
@@ -138,7 +140,8 @@ output  [16 :0]  dp_id_pipedown_dep_info;
 output  [177:0]  dp_id_pipedown_inst0_data;      
 output  [177:0]  dp_id_pipedown_inst1_data;      
 output  [177:0]  dp_id_pipedown_inst2_data;      
-output  [177:0]  dp_id_pipedown_inst3_data;      
+output  [177:0]  dp_id_pipedown_inst3_data;  
+output  [177:0]  dp_id_pipedown_inst4_data;    //add uop4 logic    
 output  [39 :0]  idu_had_id_inst0_info;          
 output  [39 :0]  idu_had_id_inst1_info;          
 output  [39 :0]  idu_had_id_inst2_info;          
@@ -156,6 +159,7 @@ reg     [16 :0]  dp_id_pipedown_dep_info;
 reg     [177:0]  dp_id_pipedown_inst1_data;      
 reg     [177:0]  dp_id_pipedown_inst2_data;      
 reg     [177:0]  dp_id_pipedown_inst3_data;      
+reg     [177:0]  dp_id_pipedown_inst4_data;      //add uop4 by xlx
 reg     [177:0]  id_decd_inst0_data;             
 reg     [177:0]  id_decd_inst1_data;             
 reg     [177:0]  id_decd_inst2_data;             

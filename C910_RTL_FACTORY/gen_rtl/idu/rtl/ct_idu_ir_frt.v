@@ -23,6 +23,7 @@ module ct_idu_ir_frt(
   ctrl_rt_inst1_vld,
   ctrl_rt_inst2_vld,
   ctrl_rt_inst3_vld,
+  ctrl_rt_inst4_vld,//add new logic by xlx
   ctrl_xx_rf_pipe6_vmla_lch_vld_dupx,
   ctrl_xx_rf_pipe7_vmla_lch_vld_dupx,
   dp_frt_inst0_dst_ereg,
@@ -106,6 +107,18 @@ module ct_idu_ir_frt(
   frt_dp_inst3_srcf0_data,
   frt_dp_inst3_srcf1_data,
   frt_dp_inst3_srcf2_data,
+// add by xlx
+  frt_dp_inst4_rel_ereg,
+  frt_dp_inst4_rel_freg,
+  frt_dp_inst4_srcf0_data,
+  frt_dp_inst4_srcf1_data,
+  frt_dp_inst4_srcf2_data,
+frt_dp_inst34_srcf2_match,
+frt_dp_inst24_srcf2_match,
+frt_dp_inst14_srcf2_match,
+frt_dp_inst04_srcf2_match,
+
+
   ifu_xx_sync_reset,
   lsu_idu_ag_pipe3_vload_inst_vld,
   lsu_idu_ag_pipe3_vreg_dupx,
@@ -149,7 +162,8 @@ input            ctrl_ir_stall;
 input            ctrl_rt_inst0_vld;                    
 input            ctrl_rt_inst1_vld;                    
 input            ctrl_rt_inst2_vld;                    
-input            ctrl_rt_inst3_vld;                    
+input            ctrl_rt_inst3_vld;      
+input            ctrl_rt_inst4_vld;    //add new logic by xlx  
 input            ctrl_xx_rf_pipe6_vmla_lch_vld_dupx;   
 input            ctrl_xx_rf_pipe7_vmla_lch_vld_dupx;   
 input   [4  :0]  dp_frt_inst0_dst_ereg;                
@@ -266,6 +280,17 @@ output  [6  :0]  frt_dp_inst3_rel_freg;
 output  [8  :0]  frt_dp_inst3_srcf0_data;              
 output  [8  :0]  frt_dp_inst3_srcf1_data;              
 output  [9  :0]  frt_dp_inst3_srcf2_data;              
+//add new logic by xlx
+output  [4  :0]  frt_dp_inst4_rel_ereg;                
+output  [6  :0]  frt_dp_inst4_rel_freg;                
+output  [8  :0]  frt_dp_inst4_srcf0_data;              
+output  [8  :0]  frt_dp_inst4_srcf1_data;              
+output  [9  :0]  frt_dp_inst4_srcf2_data;              
+
+output frt_dp_inst34_srcf2_match;
+output frt_dp_inst24_srcf2_match;
+output frt_dp_inst14_srcf2_match;
+output frt_dp_inst04_srcf2_match;
 
 // &Regs; @27
 reg     [4  :0]  ereg;                                 
@@ -288,7 +313,20 @@ reg     [4  :0]  frt_dp_inst3_rel_ereg;
 reg     [6  :0]  frt_dp_inst3_rel_freg;                
 reg     [8  :0]  frt_dp_inst3_srcf0_data;              
 reg     [8  :0]  frt_dp_inst3_srcf1_data;              
-reg     [9  :0]  frt_dp_inst3_srcf2_data;              
+reg     [9  :0]  frt_dp_inst3_srcf2_data;          
+//add new logic by xlx
+reg     [4  :0]  frt_dp_inst4_rel_ereg;                
+reg     [6  :0]  frt_dp_inst4_rel_freg;                
+reg     [8  :0]  frt_dp_inst4_srcf0_data;              
+reg     [8  :0]  frt_dp_inst4_srcf1_data;              
+reg     [9  :0]  frt_dp_inst4_srcf2_data;     
+reg frt_dp_inst34_srcf2_match;
+reg frt_dp_inst24_srcf2_match;
+reg frt_dp_inst14_srcf2_match;
+reg frt_dp_inst04_srcf2_match;
+
+
+
 reg     [5  :0]  frt_inst1_fmov_dst_freg;              
 reg              frt_inst1_fmov_dst_match_inst0;       
 reg              frt_inst1_fmov_dst_mla_rdy;           
@@ -300,7 +338,23 @@ reg              frt_inst2_dst_rdy;
 reg              frt_inst2_dst_wb;                     
 reg              frt_inst2_fmov_match_inst0;           
 reg              frt_inst2_fmov_match_inst1;           
-reg              frt_inst2_fmov_match_inst2;           
+reg              frt_inst2_fmov_match_inst2; 
+//add new logic by xlx
+reg     [5  :0]  frt_inst3_dst_freg;                   
+reg              frt_inst3_dst_mla_rdy;                
+reg              frt_inst3_dst_rdy;                    
+reg              frt_inst3_dst_wb;                     
+reg              frt_inst3_fmov_match_inst0;           
+reg              frt_inst3_fmov_match_inst1;           
+reg              frt_inst3_fmov_match_inst2; 
+//add new logic byxlx
+reg              frt_inst3_fmov_match_inst3; 
+reg              frt_inst4_fmov_match_inst3; 
+reg              frt_inst4_fmov_match_inst2; 
+reg              frt_inst4_fmov_match_inst1; 
+reg              frt_inst4_fmov_match_inst0; 
+
+
 reg     [5  :0]  inst0_dstf_read_freg;                 
 reg     [12 :0]  inst0_srcf0_read_data;                
 reg     [12 :0]  inst0_srcf1_read_data;                
@@ -316,7 +370,13 @@ reg     [12 :0]  inst2_srcf2_read_data;
 reg     [12 :0]  inst3_dstf_read_data;                 
 reg     [12 :0]  inst3_srcf0_read_data;                
 reg     [12 :0]  inst3_srcf1_read_data;                
-reg     [12 :0]  inst3_srcf2_read_data;                
+reg     [12 :0]  inst3_srcf2_read_data;         
+
+reg     [12 :0]  inst4_dstf_read_data;                 
+reg     [12 :0]  inst4_srcf0_read_data;                
+reg     [12 :0]  inst4_srcf1_read_data;                
+reg     [12 :0]  inst4_srcf2_read_data;       
+
 reg     [5  :0]  reg_0_create_freg;                    
 reg     [5  :0]  reg_10_create_freg;                   
 reg     [5  :0]  reg_11_create_freg;                   
@@ -360,7 +420,8 @@ wire             ctrl_ir_stall;
 wire             ctrl_rt_inst0_vld;                    
 wire             ctrl_rt_inst1_vld;                    
 wire             ctrl_rt_inst2_vld;                    
-wire             ctrl_rt_inst3_vld;                    
+wire             ctrl_rt_inst3_vld;     
+wire             ctrl_rt_inst4_vld;  //add new logic by xlx          
 wire             ctrl_xx_rf_pipe6_vmla_lch_vld_dupx;   
 wire             ctrl_xx_rf_pipe7_vmla_lch_vld_dupx;   
 wire    [4  :0]  dp_frt_inst0_dst_ereg;                
@@ -421,7 +482,26 @@ wire             dp_frt_inst3_srcf0_vld;
 wire    [5  :0]  dp_frt_inst3_srcf1_reg;               
 wire             dp_frt_inst3_srcf1_vld;               
 wire    [5  :0]  dp_frt_inst3_srcf2_reg;               
-wire             dp_frt_inst3_srcf2_vld;               
+wire             dp_frt_inst3_srcf2_vld;     
+
+
+
+//add dnew logic by xlx
+wire    [4  :0]  dp_frt_inst4_dst_ereg;                
+wire    [5  :0]  dp_frt_inst4_dst_freg;                
+wire             dp_frt_inst4_dste_vld;                
+wire    [5  :0]  dp_frt_inst4_dstf_reg;                
+wire    [4  :0]  dp_frt_inst4_dstf_reg_lsb;            
+wire    [31 :0]  dp_frt_inst4_dstf_reg_lsb_expand;     
+wire             dp_frt_inst4_dstf_vld;                
+wire             dp_frt_inst4_fmla;                    
+wire    [5  :0]  dp_frt_inst4_srcf0_reg;               
+wire             dp_frt_inst4_srcf0_vld;               
+wire    [5  :0]  dp_frt_inst4_srcf1_reg;               
+wire             dp_frt_inst4_srcf1_vld;               
+wire    [5  :0]  dp_frt_inst4_srcf2_reg;               
+wire             dp_frt_inst4_srcf2_vld;     
+
 wire    [16 :0]  dp_rt_dep_info;                       
 wire    [6  :0]  dp_xx_rf_pipe6_dst_vreg_dupx;         
 wire    [6  :0]  dp_xx_rf_pipe7_dst_vreg_dupx;         
@@ -430,7 +510,8 @@ wire             e_clk_en;
 wire             e_write0_en;                          
 wire             e_write1_en;                          
 wire             e_write2_en;                          
-wire             e_write3_en;                          
+wire             e_write3_en;     
+wire             e_write4_en;    //add new logic by xlx                       
 wire             forever_cpuclk;                       
 wire             freg_entry_no_rdy;                    
 wire             frt_clk_en;                           
@@ -534,7 +615,22 @@ wire    [5  :0]  inst3_srcf2_read_freg;
 wire             inst3_srcf2_read_mla_rdy;             
 wire             inst3_srcf2_read_rdy;                 
 wire             inst3_srcf2_read_wb;                  
-wire             inst3_write_en;                       
+wire             inst3_write_en;    
+//add new logi cby xlx 
+wire    [5  :0]  inst4_dstf_read_freg;                 
+wire             inst4_gateclk_write_en;               
+wire    [5  :0]  inst4_srcf0_read_freg;                
+wire             inst4_srcf0_read_rdy;                 
+wire             inst4_srcf0_read_wb;                  
+wire    [5  :0]  inst4_srcf1_read_freg;                
+wire             inst4_srcf1_read_rdy;                 
+wire             inst4_srcf1_read_wb;                  
+wire    [5  :0]  inst4_srcf2_read_freg;                
+wire             inst4_srcf2_read_mla_rdy;             
+wire             inst4_srcf2_read_rdy;                 
+wire             inst4_srcf2_read_wb;                  
+wire             inst4_write_en;     
+
 wire             lsu_idu_ag_pipe3_vload_inst_vld;      
 wire    [6  :0]  lsu_idu_ag_pipe3_vreg_dupx;           
 wire             lsu_idu_dc_pipe3_vload_fwd_inst_vld;  
@@ -781,13 +877,16 @@ wire             reg_e_write_en;
 wire    [32 :0]  reg_gateclk_write0_en;                
 wire    [32 :0]  reg_gateclk_write1_en;                
 wire    [32 :0]  reg_gateclk_write2_en;                
-wire    [32 :0]  reg_gateclk_write3_en;                
+wire    [32 :0]  reg_gateclk_write3_en;      
+wire    [32 :0]  reg_gateclk_write4_en;    //add new logic byxlx           
 wire    [32 :0]  reg_gateclk_write_en;                 
 wire    [32 :0]  reg_read_rdy_bypass;                  
 wire    [32 :0]  reg_write0_en;                        
 wire    [32 :0]  reg_write1_en;                        
 wire    [32 :0]  reg_write2_en;                        
-wire    [32 :0]  reg_write3_en;                        
+wire    [32 :0]  reg_write3_en;    
+wire    [32 :0]  reg_write4_en;//add new logic by xlx    
+
 wire    [32 :0]  reg_write_en;                         
 wire             rtu_idu_flush_fe;                     
 wire             rtu_idu_flush_is;                     
@@ -843,7 +942,11 @@ parameter DEP_INST03_VREG_MASK  = 13;
 parameter DEP_INST01_SRCV1_MASK = 14;
 parameter DEP_INST12_SRCV1_MASK = 15;
 parameter DEP_INST23_SRCV1_MASK = 16;
+//moon
 
+parameter DEP_INST14_PREG_MASK = 17;//?
+parameter DEP_INST24_srcf0_MASK = 18;//?
+parameter DEP_INST34_srcf0_MASK =19;//?
 // &Force("bus","dp_rt_dep_info",DEP_WIDTH-1,0); @56
 
 //==========================================================
@@ -2818,6 +2921,8 @@ assign dp_frt_inst0_dstf_reg_lsb[4:0] = dp_frt_inst0_dstf_reg[4:0];
 assign dp_frt_inst1_dstf_reg_lsb[4:0] = dp_frt_inst1_dstf_reg[4:0];
 assign dp_frt_inst2_dstf_reg_lsb[4:0] = dp_frt_inst2_dstf_reg[4:0];
 assign dp_frt_inst3_dstf_reg_lsb[4:0] = dp_frt_inst3_dstf_reg[4:0];
+assign dp_frt_inst4_dstf_reg_lsb[4:0] = dp_frt_inst4_dstf_reg[4:0];//add uop4 by xlx
+
 
 // &ConnRule(s/^x_num/dp_frt_inst0_dstf_reg_lsb/); @328
 // &Instance("ct_rtu_expand_32","x_ct_rtu_expand_32_dp_frt_inst0_dstf_reg_lsb"); @329
@@ -2940,6 +3045,26 @@ assign e_write3_en                 = ctrl_rt_inst3_vld
                                      && !ctrl_ir_stall
                                      && dp_frt_inst3_dste_vld;
 
+//add uop5 logic by xlx
+//if no write back, write port 4 not enable
+assign inst4_write_en              = ctrl_rt_inst4_vld
+                                     && !ctrl_ir_stall
+                                     && !frt_recover_updt_vld
+                                     &&  dp_frt_inst4_dstf_vld;
+assign reg_write4_en[31:0]         = dp_frt_inst4_dstf_reg_lsb_expand[31:0]
+                                     & {32{inst4_write_en && !dp_frt_inst4_dstf_reg[5]}};
+assign reg_write4_en[32]           = dp_frt_inst4_dstf_reg_lsb_expand[0]
+                                     && inst4_write_en && dp_frt_inst4_dstf_reg[5];
+//gateclk write en ignore stall signal
+assign inst4_gateclk_write_en      = ctrl_rt_inst4_vld
+                                     && !frt_recover_updt_vld
+                                     &&  dp_frt_inst4_dstf_vld;
+assign reg_gateclk_write4_en[31:0] = dp_frt_inst4_dstf_reg_lsb_expand[31:0] 
+                                     & {32{inst4_gateclk_write_en && !dp_frt_inst4_dstf_reg[5]}};
+assign reg_gateclk_write4_en[32]   = dp_frt_inst4_dstf_reg_lsb_expand[0]
+                                     && inst4_gateclk_write_en && dp_frt_inst4_dstf_reg[5];
+
+
 //-------------flush and reset write enable-----------------
 //reset: build initial mappings (fr0~fr31 <-> f0~f31)
 //flush: recover mappings from rtu pst
@@ -2962,7 +3087,8 @@ assign reg_write_en[32:0] = {33{frt_recover_updt_vld}}
                             | reg_write0_en[32:0]
                             | reg_write1_en[32:0]
                             | reg_write2_en[32:0]
-                            | reg_write3_en[32:0];
+                            | reg_write3_en[32:0]
+                            | reg_write4_en[32:0];//add uop5 logic;
 
 assign reg_0_write_en  = reg_write_en[0];
 assign reg_1_write_en  = reg_write_en[1];
@@ -2999,7 +3125,8 @@ assign reg_31_write_en = reg_write_en[31];
 assign reg_32_write_en = reg_write_en[32];
 assign reg_e_write_en  = frt_recover_updt_vld
                          || e_write0_en || e_write1_en
-                         || e_write2_en || e_write3_en;
+                         || e_write2_en || e_write3_en
+                         || e_write4_en;//add new logic by xlx
 
 assign gateclk_entry_vld = 1'b1;
 //the gate cell enable write signal use gate clock instruction valid
@@ -3048,7 +3175,8 @@ assign reg_e_gateclk_write_en = frt_recover_updt_vld
                                 || ctrl_rt_inst0_vld && dp_frt_inst0_dste_vld
                                 || ctrl_rt_inst1_vld && dp_frt_inst1_dste_vld
                                 || ctrl_rt_inst2_vld && dp_frt_inst2_dste_vld
-                                || ctrl_rt_inst3_vld && dp_frt_inst3_dste_vld;
+                                || ctrl_rt_inst3_vld && dp_frt_inst3_dste_vld
+                                || ctrl_rt_inst3_vld && dp_frt_inst3_dste_vld;//add new logic by xlx
 
 assign reg_0_gateclk_idx_write_en  = reg_gateclk_write_en[0];
 assign reg_1_gateclk_idx_write_en  = reg_gateclk_write_en[1];
@@ -3097,9 +3225,14 @@ always @( reg_gateclk_write2_en[0]
        or frt_recover_updt_freg[5:0]
        or reg_gateclk_write3_en[0]
        or reg_gateclk_write0_en[0]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       or reg_gateclk_write4_en[0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[0])
+  if(reg_gateclk_write4_en[0])//add new logic by xlx
+    reg_0_create_freg[6:0] = dp_frt_inst4_dst_freg[6:0];
+  else if(reg_gateclk_write3_en[0])
     reg_0_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[0])
     reg_0_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3120,9 +3253,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or dp_frt_inst2_dst_freg[5:0]
        or reg_gateclk_write0_en[1]
        or reg_gateclk_write1_en[1]
-       or reg_gateclk_write3_en[1])
+       or reg_gateclk_write3_en[1]
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       or reg_gateclk_write4_en[1]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[1])
+  if(reg_gateclk_write4_en[1])//add new logic by xlx
+    reg_1_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[1])
     reg_1_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[1])
     reg_1_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3143,9 +3281,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or dp_frt_inst2_dst_freg[5:0]
        or reg_gateclk_write1_en[2]
        or frt_recover_updt_freg[17:12]
-       or reg_gateclk_write2_en[2])
+       or reg_gateclk_write2_en[2]
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       or reg_gateclk_write4_en[2]//add new logic by xlx
+)
 begin
-  if(reg_gateclk_write3_en[2])
+  if(reg_gateclk_write4_en[2])//add new logic by xlx
+    reg_2_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[2])//add else
     reg_2_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[2])
     reg_2_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3166,9 +3309,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write1_en[3]
        or reg_gateclk_write2_en[3]
        or dp_frt_inst2_dst_freg[5:0]
-       or frt_recover_updt_freg[23:18])
+       or frt_recover_updt_freg[23:18]
+       or reg_gateclk_write4_en[3]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[3])
+  if(reg_gateclk_write4_en[3])//add new logic by xlx
+    reg_3_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[3])//add else
     reg_3_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[3])
     reg_3_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3189,9 +3337,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write1_en[4]
        or reg_gateclk_write2_en[4]
        or frt_recover_updt_freg[29:24]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or reg_gateclk_write4_en[4]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[4])
+  if(reg_gateclk_write4_en[4])//add new logic by xlx
+    reg_4_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[4])//add else
     reg_4_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[4])
     reg_4_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3212,9 +3365,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write2_en[5]
        or reg_gateclk_write0_en[5]
        or frt_recover_updt_freg[35:30]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or reg_gateclk_write4_en[5]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+      )
 begin
-  if(reg_gateclk_write3_en[5])
+  if(reg_gateclk_write4_en[5])//add new logic by xlx
+    reg_5_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[5])//add else
     reg_5_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[5])
     reg_5_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3235,9 +3393,14 @@ always @( frt_recover_updt_freg[41:36]
        or reg_gateclk_write3_en[6]
        or reg_gateclk_write0_en[6]
        or dp_frt_inst2_dst_freg[5:0]
-       or reg_gateclk_write2_en[6])
+       or reg_gateclk_write2_en[6]
+       or reg_gateclk_write4_en[6]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[6])
+  if(reg_gateclk_write4_en[6])//add new logic by xlx
+    reg_6_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[6])//add else
     reg_6_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[6])
     reg_6_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3258,9 +3421,14 @@ always @( reg_gateclk_write1_en[7]
        or reg_gateclk_write0_en[7]
        or dp_frt_inst2_dst_freg[5:0]
        or frt_recover_updt_freg[47:42]
-       or reg_gateclk_write3_en[7])
+       or reg_gateclk_write3_en[7]
+       or reg_gateclk_write4_en[7]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[7])
+  if(reg_gateclk_write4_en[7])//add new logic by xlx
+    reg_7_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[7])//add else
     reg_7_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[7])
     reg_7_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3281,9 +3449,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or dp_frt_inst0_dst_freg[5:0]
        or reg_gateclk_write0_en[8]
        or reg_gateclk_write3_en[8]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or reg_gateclk_write4_en[8]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[8])
+  if(reg_gateclk_write4_en[8])//add new logic by xlx
+    reg_8_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[8])//add else
     reg_8_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[8])
     reg_8_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3304,9 +3477,14 @@ always @( reg_gateclk_write3_en[9]
        or reg_gateclk_write0_en[9]
        or dp_frt_inst2_dst_freg[5:0]
        or frt_recover_updt_freg[59:54]
-       or reg_gateclk_write2_en[9])
+       or reg_gateclk_write2_en[9]
+       or reg_gateclk_write4_en[9]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[9])
+  if(reg_gateclk_write4_en[9])//add new logic by xlx
+    reg_9_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[9])//add else
     reg_9_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[9])
     reg_9_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3327,9 +3505,14 @@ always @( reg_gateclk_write2_en[10]
        or reg_gateclk_write1_en[10]
        or dp_frt_inst0_dst_freg[5:0]
        or reg_gateclk_write3_en[10]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or reg_gateclk_write4_en[10]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[10])
+  if(reg_gateclk_write4_en[10])//add new logic by xlx
+    reg_10_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[10])//add else
     reg_10_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[10])
     reg_10_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3350,9 +3533,14 @@ always @( frt_recover_updt_freg[71:66]
        or dp_frt_inst2_dst_freg[5:0]
        or reg_gateclk_write0_en[11]
        or reg_gateclk_write1_en[11]
-       or reg_gateclk_write3_en[11])
+       or reg_gateclk_write3_en[11]
+       or reg_gateclk_write4_en[11]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[11])
+  if(reg_gateclk_write4_en[11])//add new logic by xlx
+    reg_11_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[11])//add else
     reg_11_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[11])
     reg_11_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3373,9 +3561,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write3_en[12]
        or reg_gateclk_write2_en[12]
        or dp_frt_inst2_dst_freg[5:0]
-       or reg_gateclk_write0_en[12])
+       or reg_gateclk_write0_en[12]
+       or reg_gateclk_write4_en[12]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[12])
+  if(reg_gateclk_write4_en[12])//add new logic by xlx
+    reg_12_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[12])//add else
     reg_12_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[12])
     reg_12_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3396,9 +3589,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write1_en[13]
        or reg_gateclk_write3_en[13]
        or reg_gateclk_write0_en[13]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or reg_gateclk_write4_en[13]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[13])
+  if(reg_gateclk_write4_en[13])//add new logic by xlx
+    reg_13_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[13])//add else
     reg_13_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[13])
     reg_13_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3419,9 +3617,14 @@ always @( reg_gateclk_write0_en[14]
        or dp_frt_inst0_dst_freg[5:0]
        or reg_gateclk_write1_en[14]
        or frt_recover_updt_freg[89:84]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or reg_gateclk_write4_en[14]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[14])
+  if(reg_gateclk_write4_en[14])//add new logic by xlx
+    reg_14_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[14])//add else
     reg_14_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[14])
     reg_14_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3442,9 +3645,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or dp_frt_inst2_dst_freg[5:0]
        or frt_recover_updt_freg[95:90]
        or reg_gateclk_write1_en[15]
-       or reg_gateclk_write3_en[15])
+       or reg_gateclk_write3_en[15]
+       or reg_gateclk_write4_en[15]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[15])
+  if(reg_gateclk_write4_en[15])//add new logic by xlx
+    reg_15_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[15])//add else
     reg_15_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[15])
     reg_15_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3465,9 +3673,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write3_en[16]
        or frt_recover_updt_freg[101:96]
        or dp_frt_inst2_dst_freg[5:0]
-       or reg_gateclk_write2_en[16])
+       or reg_gateclk_write2_en[16]
+       or reg_gateclk_write4_en[16]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[16])
+  if(reg_gateclk_write4_en[16])//add new logic by xlx
+    reg_16_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[16])//add else
     reg_16_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[16])
     reg_16_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3488,9 +3701,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write0_en[17]
        or dp_frt_inst2_dst_freg[5:0]
        or reg_gateclk_write3_en[17]
-       or frt_recover_updt_freg[107:102])
+       or frt_recover_updt_freg[107:102]
+       or reg_gateclk_write4_en[17]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[17])
+  if(reg_gateclk_write4_en[17])//add new logic by xlx
+    reg_17_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[17])//add else
     reg_17_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[17])
     reg_17_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3511,9 +3729,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or dp_frt_inst2_dst_freg[5:0]
        or reg_gateclk_write2_en[18]
        or reg_gateclk_write0_en[18]
-       or reg_gateclk_write1_en[18])
+       or reg_gateclk_write1_en[18]
+       or reg_gateclk_write4_en[18]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[18])
+  if(reg_gateclk_write4_en[18])//add new logic by xlx
+    reg_18_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[18])//add else
     reg_18_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[18])
     reg_18_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3534,9 +3757,14 @@ always @( reg_gateclk_write1_en[19]
        or frt_recover_updt_freg[119:114]
        or dp_frt_inst2_dst_freg[5:0]
        or reg_gateclk_write3_en[19]
-       or reg_gateclk_write2_en[19])
+       or reg_gateclk_write2_en[19]
+       or reg_gateclk_write4_en[19]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[19])
+  if(reg_gateclk_write4_en[19])//add new logic by xlx
+    reg_19_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[19])//add else
     reg_19_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[19])
     reg_19_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3557,9 +3785,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or frt_recover_updt_freg[125:120]
        or reg_gateclk_write1_en[20]
        or dp_frt_inst2_dst_freg[5:0]
-       or reg_gateclk_write2_en[20])
+       or reg_gateclk_write2_en[20]
+       or reg_gateclk_write4_en[20]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[20])
+  if(reg_gateclk_write4_en[20])//add new logic by xlx
+    reg_20_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[20])//add else
     reg_20_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[20])
     reg_20_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3580,9 +3813,14 @@ always @( reg_gateclk_write3_en[21]
        or dp_frt_inst0_dst_freg[5:0]
        or reg_gateclk_write1_en[21]
        or reg_gateclk_write2_en[21]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or reg_gateclk_write4_en[21]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[21])
+  if(reg_gateclk_write4_en[21])//add new logic by xlx
+    reg_21_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[21])//add else
     reg_21_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[21])
     reg_21_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3603,9 +3841,14 @@ always @( reg_gateclk_write1_en[22]
        or reg_gateclk_write0_en[22]
        or reg_gateclk_write3_en[22]
        or reg_gateclk_write2_en[22]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or reg_gateclk_write4_en[22]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[22])
+  if(reg_gateclk_write4_en[22])//add new logic by xlx
+    reg_22_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[22])//add else
     reg_22_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[22])
     reg_22_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3626,9 +3869,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or dp_frt_inst2_dst_freg[5:0]
        or frt_recover_updt_freg[143:138]
        or reg_gateclk_write2_en[23]
-       or reg_gateclk_write3_en[23])
+       or reg_gateclk_write3_en[23]
+       or reg_gateclk_write4_en[23]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[23])
+  if(reg_gateclk_write4_en[23])//add new logic by xlx
+    reg_23_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[23])//add else
     reg_23_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[23])
     reg_23_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3649,9 +3897,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or dp_frt_inst2_dst_freg[5:0]
        or reg_gateclk_write2_en[24]
        or reg_gateclk_write1_en[24]
-       or reg_gateclk_write3_en[24])
+       or reg_gateclk_write3_en[24]
+       or reg_gateclk_write4_en[24]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[24])
+  if(reg_gateclk_write4_en[24])//add new logic by xlx
+    reg_24_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[24])//add else
     reg_24_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[24])
     reg_24_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3672,9 +3925,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write1_en[25]
        or frt_recover_updt_freg[155:150]
        or dp_frt_inst2_dst_freg[5:0]
-       or reg_gateclk_write0_en[25])
+       or reg_gateclk_write0_en[25]
+       or reg_gateclk_write4_en[25]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[25])
+  if(reg_gateclk_write4_en[25])//add new logic by xlx
+    reg_25_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[25])//add else
     reg_25_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[25])
     reg_25_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3695,9 +3953,14 @@ always @( reg_gateclk_write1_en[26]
        or reg_gateclk_write3_en[26]
        or frt_recover_updt_freg[161:156]
        or reg_gateclk_write2_en[26]
-       or dp_frt_inst2_dst_freg[5:0])
+       or dp_frt_inst2_dst_freg[5:0]
+       or reg_gateclk_write4_en[26]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[26])
+  if(reg_gateclk_write4_en[26])//add new logic by xlx
+    reg_26_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[26])//add else
     reg_26_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[26])
     reg_26_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3718,9 +3981,14 @@ always @( reg_gateclk_write3_en[27]
        or frt_recover_updt_freg[167:162]
        or dp_frt_inst2_dst_freg[5:0]
        or reg_gateclk_write0_en[27]
-       or reg_gateclk_write2_en[27])
+       or reg_gateclk_write2_en[27]
+       or reg_gateclk_write4_en[27]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[27])
+  if(reg_gateclk_write4_en[27])//add new logic by xlx
+    reg_27_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[27])//add else
     reg_27_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[27])
     reg_27_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3741,9 +4009,13 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write0_en[28]
        or frt_recover_updt_freg[173:168]
        or dp_frt_inst2_dst_freg[5:0]
-       or reg_gateclk_write1_en[28])
+       or reg_gateclk_write4_en[28]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[28])
+  if(reg_gateclk_write4_en[28])//add new logic by xlx
+    reg_28_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[28])//add else
     reg_28_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[28])
     reg_28_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3764,9 +4036,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write2_en[29]
        or frt_recover_updt_freg[179:174]
        or dp_frt_inst2_dst_freg[5:0]
-       or reg_gateclk_write1_en[29])
+       or reg_gateclk_write1_en[29]
+       or reg_gateclk_write4_en[29]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[29])
+  if(reg_gateclk_write4_en[29])//add new logic by xlx
+    reg_29_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[29])//add else
     reg_29_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[29])
     reg_29_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3787,9 +4064,14 @@ always @( frt_recover_updt_freg[185:180]
        or dp_frt_inst2_dst_freg[5:0]
        or reg_gateclk_write1_en[30]
        or reg_gateclk_write0_en[30]
-       or reg_gateclk_write2_en[30])
+       or reg_gateclk_write2_en[30]
+       or reg_gateclk_write4_en[30]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[30])
+  if(reg_gateclk_write4_en[30])//add new logic by xlx
+    reg_30_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[30])//add else
     reg_30_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[30])
     reg_30_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3810,9 +4092,14 @@ always @( reg_gateclk_write2_en[31]
        or reg_gateclk_write0_en[31]
        or reg_gateclk_write1_en[31]
        or dp_frt_inst2_dst_freg[5:0]
-       or frt_recover_updt_freg[191:186])
+       or frt_recover_updt_freg[191:186]
+       or reg_gateclk_write4_en[31]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[31])
+  if(reg_gateclk_write4_en[31])//add new logic by xlx
+    reg_31_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[31])//add else
     reg_31_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[31])
     reg_31_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3832,9 +4119,14 @@ always @( dp_frt_inst3_dst_freg[5:0]
        or reg_gateclk_write2_en[32]
        or reg_gateclk_write3_en[32]
        or dp_frt_inst2_dst_freg[5:0]
-       or reg_gateclk_write1_en[32])
+       or reg_gateclk_write1_en[32]
+       or reg_gateclk_write4_en[32]//add new logic by xlx
+       or dp_frt_inst4_dst_freg[5:0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[32])
+  if(reg_gateclk_write4_en[32])//add new logic by xlx
+    reg_32_create_freg[5:0] = dp_frt_inst4_dst_freg[5:0];
+  else if(reg_gateclk_write3_en[32])//add else
     reg_32_create_freg[5:0] = dp_frt_inst3_dst_freg[5:0];
   else if(reg_gateclk_write2_en[32])
     reg_32_create_freg[5:0] = dp_frt_inst2_dst_freg[5:0];
@@ -3898,9 +4190,15 @@ always @( ctrl_rt_inst0_vld
        or dp_frt_inst3_dst_ereg[4:0]
        or dp_frt_inst0_dst_ereg[4:0]
        or dp_frt_inst1_dst_ereg[4:0]
-       or dp_frt_inst1_dste_vld)
+       or dp_frt_inst1_dste_vld
+       or ctrl_rt_inst4_vld//add new logic by xlx
+       or dp_frt_inst4_dste_vld//add new logic by xlx
+       or dp_frt_inst4_dst_ereg[4:0]////add new logic by xlx
+       )
 begin
-  if(ctrl_rt_inst3_vld && dp_frt_inst3_dste_vld && !frt_recover_updt_vld)
+  if(ctrl_rt_inst4_vld && dp_frt_inst4_dste_vld && !frt_recover_updt_vld)//add new logic by xlx
+    reg_e_create_ereg[4:0] = dp_frt_inst4_dst_ereg[4:0];
+  else if(ctrl_rt_inst3_vld && dp_frt_inst3_dste_vld && !frt_recover_updt_vld)
     reg_e_create_ereg[4:0] = dp_frt_inst3_dst_ereg[4:0];
   else if(ctrl_rt_inst2_vld && dp_frt_inst2_dste_vld && !frt_recover_updt_vld)
     reg_e_create_ereg[4:0] = dp_frt_inst2_dst_ereg[4:0];
@@ -5564,17 +5862,20 @@ assign frt_inst3_srcf0_match_inst2 =
 
 ////if inst2 dest is same with inst0 (mov) srcf0, inst2 may release mov srcf0
 ////before inst3 src gets mov srcf0 value, so disable mov bypass in this condition
-//assign frt_inst0_fmov_bypass_over_inst2 =
-//            dp_frt_inst0_fmov
-//         && !(dp_frt_inst2_dstf_vld
-//             && (dp_frt_inst0_srcf0_reg[5:0] == dp_frt_inst2_dstf_reg[5:0]));
-//
+
+//add new logic by xlx
+assign frt_inst0_fmov_bypass_over_inst2 =
+            dp_frt_inst0_fmov
+         && !(dp_frt_inst2_dstf_vld
+             && (dp_frt_inst0_srcf0_reg[5:0] == dp_frt_inst2_dstf_reg[5:0]));
+
 ////if inst2 dest is same with inst1 (mov) srcf0, inst2 may release mov srcf0
 ////before inst3 src gets mov srcf0 value, so disable mov bypass in this condition
-//assign frt_inst1_fmov_bypass_over_inst2 =
-//            dp_frt_inst1_fmov
-//         && !(dp_frt_inst2_dstf_vld
-//             && (dp_frt_inst1_srcf0_reg[5:0] == dp_frt_inst2_dstf_reg[5:0]));
+//add new logic by xlx
+assign frt_inst1_fmov_bypass_over_inst2 =
+            dp_frt_inst1_fmov
+         && !(dp_frt_inst2_dstf_vld
+             && (dp_frt_inst1_srcf0_reg[5:0] == dp_frt_inst2_dstf_reg[5:0]));
 
 // &CombBeg; @2078
 always @( inst3_srcf0_read_freg[5:0]
@@ -5595,22 +5896,25 @@ begin
     frt_dp_inst3_srcf0_data[1]   = frt_inst2_dst_wb;
     frt_dp_inst3_srcf0_data[8:2] = {1'b0,frt_inst2_dst_freg[5:0]};
   end
-//  else if(frt_inst3_srcf0_match_inst1 && frt_inst1_fmov_bypass_over_inst2) begin
-//    frt_dp_inst3_srcf0_data[0]   = frt_inst1_fmov_dst_rdy;
-//    frt_dp_inst3_srcf0_data[1]   = frt_inst1_fmov_dst_wb;
-//    frt_dp_inst3_srcf0_data[8:2] = {1'b0,frt_inst1_fmov_dst_freg[5:0]};
-//  end
+
+//add new logic by xlx
+  else if(frt_inst3_srcf0_match_inst1 && frt_inst1_fmov_bypass_over_inst2) begin
+    frt_dp_inst3_srcf0_data[0]   = frt_inst1_fmov_dst_rdy;
+    frt_dp_inst3_srcf0_data[1]   = frt_inst1_fmov_dst_wb;
+    frt_dp_inst3_srcf0_data[8:2] = {1'b0,frt_inst1_fmov_dst_freg[5:0]};
+  end
   else if(frt_inst3_srcf0_match_inst1) begin
     frt_dp_inst3_srcf0_data[0]   = 1'b0;
     frt_dp_inst3_srcf0_data[1]   = 1'b0;
     frt_dp_inst3_srcf0_data[8:2] = {1'b0,dp_frt_inst1_dst_freg[5:0]};
   end
-//  else if(frt_inst3_srcf0_match_inst0 && frt_inst0_fmov_bypass_over_inst1
-//                                     && frt_inst0_fmov_bypass_over_inst2) begin
-//    frt_dp_inst3_srcf0_data[0]   = frt_inst0_fmov_dst_rdy;
-//    frt_dp_inst3_srcf0_data[1]   = frt_inst0_fmov_dst_wb;
-//    frt_dp_inst3_srcf0_data[8:2] = {1'b0,frt_inst0_fmov_dst_freg[5:0]};
-//  end
+//add new logic by xlx
+  else if(frt_inst3_srcf0_match_inst0 && frt_inst0_fmov_bypass_over_inst1
+                                     && frt_inst0_fmov_bypass_over_inst2) begin
+    frt_dp_inst3_srcf0_data[0]   = frt_inst0_fmov_dst_rdy;
+    frt_dp_inst3_srcf0_data[1]   = frt_inst0_fmov_dst_wb;
+    frt_dp_inst3_srcf0_data[8:2] = {1'b0,frt_inst0_fmov_dst_freg[5:0]};
+  end
   else if(frt_inst3_srcf0_match_inst0) begin
     frt_dp_inst3_srcf0_data[0]   = 1'b0;
     frt_dp_inst3_srcf0_data[1]   = 1'b0;
@@ -5745,22 +6049,24 @@ begin
     frt_dp_inst3_srcf1_data[1]   = frt_inst2_dst_wb;
     frt_dp_inst3_srcf1_data[8:2] = {1'b0,frt_inst2_dst_freg[5:0]};
   end
-//  else if(frt_inst3_srcf1_match_inst1 && frt_inst1_fmov_bypass_over_inst2) begin
-//    frt_dp_inst3_srcf1_data[0]   = frt_inst1_fmov_dst_rdy;
-//    frt_dp_inst3_srcf1_data[1]   = frt_inst1_fmov_dst_wb;
-//    frt_dp_inst3_srcf1_data[8:2] = {1'b0,frt_inst1_fmov_dst_freg[5:0]};
-//  end
+  //add new logic by xlx
+  else if(frt_inst3_srcf1_match_inst1 && frt_inst1_fmov_bypass_over_inst2) begin
+    frt_dp_inst3_srcf1_data[0]   = frt_inst1_fmov_dst_rdy;
+    frt_dp_inst3_srcf1_data[1]   = frt_inst1_fmov_dst_wb;
+    frt_dp_inst3_srcf1_data[8:2] = {1'b0,frt_inst1_fmov_dst_freg[5:0]};
+  end
   else if(frt_inst3_srcf1_match_inst1) begin
     frt_dp_inst3_srcf1_data[0]   = 1'b0;
     frt_dp_inst3_srcf1_data[1]   = 1'b0;
     frt_dp_inst3_srcf1_data[8:2] = {1'b0,dp_frt_inst1_dst_freg[5:0]};
   end
-//  else if(frt_inst3_srcf1_match_inst0 && frt_inst0_fmov_bypass_over_inst1
-//                                     && frt_inst0_fmov_bypass_over_inst2) begin
-//    frt_dp_inst3_srcf1_data[0]   = frt_inst0_fmov_dst_rdy;
-//    frt_dp_inst3_srcf1_data[1]   = frt_inst0_fmov_dst_wb;
-//    frt_dp_inst3_srcf1_data[8:2] = {1'b0,frt_inst0_fmov_dst_freg[5:0]};
-//  end
+  //add new logic by xlx
+  else if(frt_inst3_srcf1_match_inst0 && frt_inst0_fmov_bypass_over_inst1
+                                     && frt_inst0_fmov_bypass_over_inst2) begin
+    frt_dp_inst3_srcf1_data[0]   = frt_inst0_fmov_dst_rdy;
+    frt_dp_inst3_srcf1_data[1]   = frt_inst0_fmov_dst_wb;
+    frt_dp_inst3_srcf1_data[8:2] = {1'b0,frt_inst0_fmov_dst_freg[5:0]};
+  end
   else if(frt_inst3_srcf1_match_inst0) begin
     frt_dp_inst3_srcf1_data[0]   = 1'b0;
     frt_dp_inst3_srcf1_data[1]   = 1'b0;
@@ -5906,12 +6212,13 @@ begin
     frt_dp_inst13_srcf2_match    = frt_inst2_fmov_match_inst1;
     frt_dp_inst03_srcf2_match    = frt_inst2_fmov_match_inst0;
   end
-//  else if(frt_inst3_srcf2_match_inst1 && frt_inst1_fmov_bypass_over_inst2) begin
-//    frt_dp_inst3_srcf2_data[9]   = frt_inst1_fmov_dst_rdy;
-//    frt_dp_inst3_srcf2_data[0]   = frt_inst1_fmov_dst_mla_rdy;
-//    frt_dp_inst3_srcf2_data[1]   = frt_inst1_fmov_dst_wb;
-//    frt_dp_inst3_srcf2_data[5:0] = {1'b0,frt_inst1_fmov_dst_freg[5:0]};
-//  end
+  //add new logic by xlx
+  else if(frt_inst3_srcf2_match_inst1 && frt_inst1_fmov_bypass_over_inst2) begin
+    frt_dp_inst3_srcf2_data[9]   = frt_inst1_fmov_dst_rdy;
+    frt_dp_inst3_srcf2_data[0]   = frt_inst1_fmov_dst_mla_rdy;
+    frt_dp_inst3_srcf2_data[1]   = frt_inst1_fmov_dst_wb;
+    frt_dp_inst3_srcf2_data[5:0] = {1'b0,frt_inst1_fmov_dst_freg[5:0]};
+  end
   else if(frt_inst3_srcf2_match_inst1) begin
     frt_dp_inst3_srcf2_data[9]   = 1'b0;
     frt_dp_inst3_srcf2_data[0]   = 1'b0;
@@ -5922,13 +6229,14 @@ begin
     frt_dp_inst13_srcf2_match    = 1'b1;
     frt_dp_inst03_srcf2_match    = 1'b0;
   end
-//  else if(frt_inst3_srcf2_match_inst0 && frt_inst0_fmov_bypass_over_inst1
-//                                     && frt_inst0_fmov_bypass_over_inst2) begin
-//    frt_dp_inst3_srcf2_data[9]   = frt_inst0_fmov_dst_rdy;
-//    frt_dp_inst3_srcf2_data[0]   = frt_inst0_fmov_dst_mla_rdy;
-//    frt_dp_inst3_srcf2_data[1]   = frt_inst0_fmov_dst_wb;
-//    frt_dp_inst3_srcf2_data[5:0] = {1'b0,frt_inst0_fmov_dst_freg[5:0]};
-//  end
+  //add new logic by xlx
+  else if(frt_inst3_srcf2_match_inst0 && frt_inst0_fmov_bypass_over_inst1
+                                     && frt_inst0_fmov_bypass_over_inst2) begin
+    frt_dp_inst3_srcf2_data[9]   = frt_inst0_fmov_dst_rdy;
+    frt_dp_inst3_srcf2_data[0]   = frt_inst0_fmov_dst_mla_rdy;
+    frt_dp_inst3_srcf2_data[1]   = frt_inst0_fmov_dst_wb;
+    frt_dp_inst3_srcf2_data[5:0] = {1'b0,frt_inst0_fmov_dst_freg[5:0]};
+  end
   else if(frt_inst3_srcf2_match_inst0) begin
     frt_dp_inst3_srcf2_data[9]   = 1'b0;
     frt_dp_inst3_srcf2_data[0]   = 1'b0;
@@ -6107,6 +6415,487 @@ begin
     frt_dp_inst3_rel_ereg[4:0] = reg_e_read_ereg[4:0];
 // &CombEnd; @2432
 end
+
+
+
+//new logic by xlx inst4 logic
+//-----------------instruction 4 source 0-------------------
+always @( reg_28_read_data[12:0]
+       or reg_18_read_data[12:0]
+       or reg_22_read_data[12:0]
+       or reg_15_read_data[12:0]
+       or reg_32_read_data[12:0]
+       or reg_2_read_data[12:0]
+       or reg_0_read_data[12:0]
+       or reg_25_read_data[12:0]
+       or reg_10_read_data[12:0]
+       or reg_8_read_data[12:0]
+       or reg_14_read_data[12:0]
+       or dp_frt_inst4_srcf0_reg[5:0]
+       or reg_6_read_data[12:0]
+       or reg_30_read_data[12:0]
+       or reg_26_read_data[12:0]
+       or reg_27_read_data[12:0]
+       or reg_16_read_data[12:0]
+       or reg_29_read_data[12:0]
+       or reg_12_read_data[12:0]
+       or reg_31_read_data[12:0]
+       or reg_4_read_data[12:0]
+       or reg_23_read_data[12:0]
+       or reg_9_read_data[12:0]
+       or reg_24_read_data[12:0]
+       or reg_7_read_data[12:0]
+       or reg_1_read_data[12:0]
+       or reg_21_read_data[12:0]
+       or reg_17_read_data[12:0]
+       or reg_19_read_data[12:0]
+       or reg_20_read_data[12:0]
+       or reg_3_read_data[12:0]
+       or reg_11_read_data[12:0]
+       or reg_5_read_data[12:0]
+       or reg_13_read_data[12:0])
+begin
+    case (dp_frt_inst4_srcf0_reg[5:0])
+    6'd0   : inst4_srcf0_read_data[12:0] = reg_0_read_data[12:0];
+    6'd1   : inst4_srcf0_read_data[12:0] = reg_1_read_data[12:0];
+    6'd2   : inst4_srcf0_read_data[12:0] = reg_2_read_data[12:0];
+    6'd3   : inst4_srcf0_read_data[12:0] = reg_3_read_data[12:0];
+    6'd4   : inst4_srcf0_read_data[12:0] = reg_4_read_data[12:0];
+    6'd5   : inst4_srcf0_read_data[12:0] = reg_5_read_data[12:0];
+    6'd6   : inst4_srcf0_read_data[12:0] = reg_6_read_data[12:0];
+    6'd7   : inst4_srcf0_read_data[12:0] = reg_7_read_data[12:0];
+    6'd8   : inst4_srcf0_read_data[12:0] = reg_8_read_data[12:0];
+    6'd9   : inst4_srcf0_read_data[12:0] = reg_9_read_data[12:0];
+    6'd10  : inst4_srcf0_read_data[12:0] = reg_10_read_data[12:0];
+    6'd11  : inst4_srcf0_read_data[12:0] = reg_11_read_data[12:0];
+    6'd12  : inst4_srcf0_read_data[12:0] = reg_12_read_data[12:0];
+    6'd13  : inst4_srcf0_read_data[12:0] = reg_13_read_data[12:0];
+    6'd14  : inst4_srcf0_read_data[12:0] = reg_14_read_data[12:0];
+    6'd15  : inst4_srcf0_read_data[12:0] = reg_15_read_data[12:0];
+    6'd16  : inst4_srcf0_read_data[12:0] = reg_16_read_data[12:0];
+    6'd17  : inst4_srcf0_read_data[12:0] = reg_17_read_data[12:0];
+    6'd18  : inst4_srcf0_read_data[12:0] = reg_18_read_data[12:0];
+    6'd19  : inst4_srcf0_read_data[12:0] = reg_19_read_data[12:0];
+    6'd20  : inst4_srcf0_read_data[12:0] = reg_20_read_data[12:0];
+    6'd21  : inst4_srcf0_read_data[12:0] = reg_21_read_data[12:0];
+    6'd22  : inst4_srcf0_read_data[12:0] = reg_22_read_data[12:0];
+    6'd23  : inst4_srcf0_read_data[12:0] = reg_23_read_data[12:0];
+    6'd24  : inst4_srcf0_read_data[12:0] = reg_24_read_data[12:0];
+    6'd25  : inst4_srcf0_read_data[12:0] = reg_25_read_data[12:0];
+    6'd26  : inst4_srcf0_read_data[12:0] = reg_26_read_data[12:0];
+    6'd27  : inst4_srcf0_read_data[12:0] = reg_27_read_data[12:0];
+    6'd28  : inst4_srcf0_read_data[12:0] = reg_28_read_data[12:0];
+    6'd29  : inst4_srcf0_read_data[12:0] = reg_29_read_data[12:0];
+    6'd30  : inst4_srcf0_read_data[12:0] = reg_30_read_data[12:0];
+    6'd31  : inst4_srcf0_read_data[12:0] = reg_31_read_data[12:0];
+    6'd32  : inst4_srcf0_read_data[12:0] = reg_32_read_data[12:0];
+    default: inst4_srcf0_read_data[12:0] = {13{1'bx}};
+  endcase
+end
+
+
+assign inst4_srcf0_read_rdy       = inst4_srcf0_read_data[0];
+assign inst4_srcf0_read_wb        = inst4_srcf0_read_data[1];
+assign inst4_srcf0_read_freg[5:0] = inst4_srcf0_read_data[7:2];
+
+assign frt_inst4_srcf0_match_inst0 =
+            ctrl_rt_inst4_vld && dp_frt_inst4_srcf0_vld
+         && ctrl_rt_inst0_vld && dp_frt_inst0_dstf_vld
+         && (dp_frt_inst0_dstf_reg[5:0] == dp_frt_inst4_srcf0_reg[5:0])
+         && (dp_frt_inst0_dstf_reg[5:0] != 6'd0);
+assign frt_inst4_srcf0_match_inst1 =
+            ctrl_rt_inst3_vld && dp_frt_inst3_srcf0_vld
+         && ctrl_rt_inst1_vld && dp_frt_inst1_dstf_vld
+         && (dp_frt_inst1_dstf_reg[5:0] == dp_frt_inst3_srcf0_reg[5:0])
+         && (dp_frt_inst1_dstf_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST14_PREG_MASK];
+assign frt_inst4_srcf0_match_inst2 =
+            ctrl_rt_inst3_vld && dp_frt_inst3_srcf0_vld
+         && ctrl_rt_inst2_vld && dp_frt_inst2_dstf_vld
+         && (dp_frt_inst2_dstf_reg[5:0] == dp_frt_inst3_srcf0_reg[5:0])
+         && (dp_frt_inst2_dstf_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST24_srcf0_MASK];
+assign frt_inst4_srcf0_match_inst3 =
+            ctrl_rt_inst4_vld && dp_frt_inst4_srcf0_vld
+         && ctrl_rt_inst3_vld && dp_frt_inst3_dstf_vld
+         && (dp_frt_inst3_dstf_reg[5:0] == dp_frt_inst4_srcf0_reg[5:0])
+         && (dp_frt_inst3_dstf_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST34_srcf0_MASK];
+
+always @(*)
+
+begin
+  if(frt_inst4_srcf0_match_inst3) begin
+    frt_dp_inst4_srcf0_data[0]     = frt_inst3_dst_rdy;
+    frt_dp_inst4_srcf0_data[1]     = frt_inst3_dst_wb;
+    frt_dp_inst4_srcf0_data[8:2]   ={1'b0,frt_inst3_dst_freg[5:0]};
+
+  end
+//  else if(frt_inst3_srcf0_match_inst1 && frt_inst1_mov_bypass_over_inst2) begin
+//    frt_dp_inst3_srcf0_data[0]     = frt_inst1_mov_dstf_rdy;
+//    frt_dp_inst3_srcf0_data[1]     = frt_inst1_mov_dstf_wb;
+//    frt_dp_inst3_srcf0_data[8:2]   = frt_inst1_mov_dstf_preg[6:0];
+//  end
+  else if(frt_inst4_srcf0_match_inst2) begin
+    frt_dp_inst4_srcf0_data[0]     = 1'b0;
+    frt_dp_inst4_srcf0_data[1]     = 1'b0;
+    frt_dp_inst4_srcf0_data[8:2]   = {1'b0,dp_frt_inst2_dst_freg[5:0]};
+
+  end
+//  else if(frt_inst3_srcf0_match_inst0 && frt_inst0_mov_bypass_over_inst1
+//                                    && frt_inst0_mov_bypass_over_inst2)
+//    frt_dp_inst3_srcf0_data[0]     = frt_inst0_mov_dstf_rdy;
+//    frt_dp_inst3_srcf0_data[1]     = frt_inst0_mov_dstf_wb;
+//    frt_dp_inst3_srcf0_data[8:2]   = frt_inst0_mov_dstf_preg[6:0];
+//  end
+  else if(frt_inst4_srcf0_match_inst1) begin
+    frt_dp_inst4_srcf0_data[0]     = 1'b0;
+    frt_dp_inst4_srcf0_data[1]     = 1'b0;
+    frt_dp_inst4_srcf0_data[8:2]   = {1'b0,dp_frt_inst1_dst_freg[5:0]};
+
+
+  end
+  else if(frt_inst4_srcf0_match_inst0) begin
+    frt_dp_inst4_srcf0_data[0]     = 1'b0;
+    frt_dp_inst4_srcf0_data[1]     = 1'b0;
+    frt_dp_inst4_srcf0_data[8:2]   = {1'b0,dp_frt_inst0_dst_freg[5:0]};
+
+  end
+  else begin
+    frt_dp_inst4_srcf0_data[0]     = inst4_srcf0_read_rdy
+                                || !dp_frt_inst4_srcf0_vld;
+    frt_dp_inst4_srcf0_data[1]     = inst4_srcf0_read_wb
+                                || !dp_frt_inst4_srcf0_vld;
+    frt_dp_inst4_srcf0_data[8:2]   = inst4_srcf0_read_freg[6:0];
+
+
+  end
+// &CombEnd; @1881
+end
+
+//-----------------instruction 4 source 1-------------------
+always @( reg_28_read_data[12:0]
+       or reg_18_read_data[12:0]
+       or reg_22_read_data[12:0]
+       or reg_15_read_data[12:0]
+       or reg_32_read_data[12:0]
+       or reg_2_read_data[12:0]
+       or reg_0_read_data[12:0]
+       or reg_25_read_data[12:0]
+       or reg_10_read_data[12:0]
+       or reg_8_read_data[12:0]
+       or reg_14_read_data[12:0]
+       or dp_frt_inst4_srcf1_reg[5:0]
+       or reg_6_read_data[12:0]
+       or reg_30_read_data[12:0]
+       or reg_26_read_data[12:0]
+       or reg_27_read_data[12:0]
+       or reg_16_read_data[12:0]
+       or reg_29_read_data[12:0]
+       or reg_12_read_data[12:0]
+       or reg_31_read_data[12:0]
+       or reg_4_read_data[12:0]
+       or reg_23_read_data[12:0]
+       or reg_9_read_data[12:0]
+       or reg_24_read_data[12:0]
+       or reg_7_read_data[12:0]
+       or reg_1_read_data[12:0]
+       or reg_21_read_data[12:0]
+       or reg_17_read_data[12:0]
+       or reg_19_read_data[12:0]
+       or reg_20_read_data[12:0]
+       or reg_3_read_data[12:0]
+       or reg_11_read_data[12:0]
+       or reg_5_read_data[12:0]
+       or reg_13_read_data[12:0])
+begin
+  case (dp_frt_inst4_srcf1_reg[5:0])
+    6'd0   : inst4_srcf1_read_data[12:0] = reg_0_read_data[12:0];
+    6'd1   : inst4_srcf1_read_data[12:0] = reg_1_read_data[12:0];
+    6'd2   : inst4_srcf1_read_data[12:0] = reg_2_read_data[12:0];
+    6'd3   : inst4_srcf1_read_data[12:0] = reg_3_read_data[12:0];
+    6'd4   : inst4_srcf1_read_data[12:0] = reg_4_read_data[12:0];
+    6'd5   : inst4_srcf1_read_data[12:0] = reg_5_read_data[12:0];
+    6'd6   : inst4_srcf1_read_data[12:0] = reg_6_read_data[12:0];
+    6'd7   : inst4_srcf1_read_data[12:0] = reg_7_read_data[12:0];
+    6'd8   : inst4_srcf1_read_data[12:0] = reg_8_read_data[12:0];
+    6'd9   : inst4_srcf1_read_data[12:0] = reg_9_read_data[12:0];
+    6'd10  : inst4_srcf1_read_data[12:0] = reg_10_read_data[12:0];
+    6'd11  : inst4_srcf1_read_data[12:0] = reg_11_read_data[12:0];
+    6'd12  : inst4_srcf1_read_data[12:0] = reg_12_read_data[12:0];
+    6'd13  : inst4_srcf1_read_data[12:0] = reg_13_read_data[12:0];
+    6'd14  : inst4_srcf1_read_data[12:0] = reg_14_read_data[12:0];
+    6'd15  : inst4_srcf1_read_data[12:0] = reg_15_read_data[12:0];
+    6'd16  : inst4_srcf1_read_data[12:0] = reg_16_read_data[12:0];
+    6'd17  : inst4_srcf1_read_data[12:0] = reg_17_read_data[12:0];
+    6'd18  : inst4_srcf1_read_data[12:0] = reg_18_read_data[12:0];
+    6'd19  : inst4_srcf1_read_data[12:0] = reg_19_read_data[12:0];
+    6'd20  : inst4_srcf1_read_data[12:0] = reg_20_read_data[12:0];
+    6'd21  : inst4_srcf1_read_data[12:0] = reg_21_read_data[12:0];
+    6'd22  : inst4_srcf1_read_data[12:0] = reg_22_read_data[12:0];
+    6'd23  : inst4_srcf1_read_data[12:0] = reg_23_read_data[12:0];
+    6'd24  : inst4_srcf1_read_data[12:0] = reg_24_read_data[12:0];
+    6'd25  : inst4_srcf1_read_data[12:0] = reg_25_read_data[12:0];
+    6'd26  : inst4_srcf1_read_data[12:0] = reg_26_read_data[12:0];
+    6'd27  : inst4_srcf1_read_data[12:0] = reg_27_read_data[12:0];
+    6'd28  : inst4_srcf1_read_data[12:0] = reg_28_read_data[12:0];
+    6'd29  : inst4_srcf1_read_data[12:0] = reg_29_read_data[12:0];
+    6'd30  : inst4_srcf1_read_data[12:0] = reg_30_read_data[12:0];
+    6'd31  : inst4_srcf1_read_data[12:0] = reg_31_read_data[12:0];
+    6'd32  : inst4_srcf1_read_data[12:0] = reg_32_read_data[12:0];
+    default: inst4_srcf1_read_data[12:0] = {13{1'bx}};
+  endcase
+
+end
+
+assign inst4_srcf1_read_rdy       = inst4_srcf1_read_data[0];
+assign inst4_srcf1_read_wb        = inst4_srcf1_read_data[1];
+assign inst4_srcf1_read_freg[6:0] = inst4_srcf1_read_data[8:2];
+
+assign frt_inst4_srcf1_match_inst0 =
+            ctrl_rt_inst4_vld && dp_frt_inst4_srcf1_vld
+         && ctrl_rt_inst0_vld && dp_frt_inst0_dstf_vld
+         && (dp_frt_inst0_dstf_reg[5:0] == dp_frt_inst4_srcf1_reg[5:0])
+         && (dp_frt_inst0_dstf_reg[5:0] != 6'd0);
+assign frt_inst4_srcf1_match_inst1 =
+            ctrl_rt_inst3_vld && dp_frt_inst3_srcf1_vld
+         && ctrl_rt_inst1_vld && dp_frt_inst1_dstf_vld
+         && (dp_frt_inst1_dstf_reg[5:0] == dp_frt_inst3_srcf1_reg[5:0])
+         && (dp_frt_inst1_dstf_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST14_PREG_MASK];
+assign frt_inst4_srcf1_match_inst2 =
+            ctrl_rt_inst3_vld && dp_frt_inst3_srcf1_vld
+         && ctrl_rt_inst2_vld && dp_frt_inst2_dstf_vld
+         && (dp_frt_inst2_dstf_reg[5:0] == dp_frt_inst3_srcf1_reg[5:0])
+         && (dp_frt_inst2_dstf_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST24_srcf0_MASK];
+assign frt_inst4_srcf1_match_inst3 =
+            ctrl_rt_inst4_vld && dp_frt_inst4_srcf1_vld
+         && ctrl_rt_inst3_vld && dp_frt_inst3_dstf_vld
+         && (dp_frt_inst3_dstf_reg[5:0] == dp_frt_inst4_srcf1_reg[5:0])
+         && (dp_frt_inst3_dstf_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST34_srcf0_MASK];
+
+
+always @( *)
+
+begin
+  if(frt_inst4_srcf1_match_inst3) begin
+    frt_dp_inst4_srcf1_data[0]     = frt_inst3_dst_rdy;
+    frt_dp_inst4_srcf1_data[1]     = frt_inst3_dst_wb;
+    frt_dp_inst4_srcf1_data[8:2]   = {1'b0,frt_inst3_dst_freg[5:0]};
+
+  end
+  else if(frt_inst4_srcf1_match_inst2) begin
+    frt_dp_inst4_srcf1_data[0]     = 1'b0;
+    frt_dp_inst4_srcf1_data[1]     = 1'b0;
+    frt_dp_inst4_srcf1_data[8:2]   =  {1'b0,frt_inst2_dst_freg[5:0]};
+
+
+  end
+
+    else if(frt_inst4_srcf1_match_inst1) begin
+    frt_dp_inst4_srcf1_data[0]     = 1'b0;
+    frt_dp_inst4_srcf1_data[1]     = 1'b0;
+    frt_dp_inst4_srcf1_data[8:2]   =  {1'b0,dp_frt_inst1_dst_freg[5:0]};
+
+  
+  end
+  else if(frt_inst4_srcf1_match_inst0) begin
+    frt_dp_inst4_srcf1_data[0]     = 1'b0;
+    frt_dp_inst4_srcf1_data[1]     = 1'b0;
+    frt_dp_inst4_srcf1_data[8:2]   =  {1'b0,dp_frt_inst0_dst_freg[5:0]};
+
+  
+  end
+  else begin
+     frt_dp_inst4_srcf0_data[0]   = inst4_srcf0_read_rdy
+                                   || !dp_frt_inst4_srcf0_vld;
+    frt_dp_inst4_srcf0_data[1]   = inst4_srcf0_read_wb
+                                   || !dp_frt_inst4_srcf0_vld;
+    frt_dp_inst4_srcf0_data[8:2] = {1'b0,inst4_srcf0_read_freg[5:0]};
+  end
+// &CombEnd; @1881
+end
+
+//---------instruction 4 srcf2/dest reg (for release)--------
+always @( reg_28_read_data[12:0]
+       or reg_18_read_data[12:0]
+       or reg_22_read_data[12:0]
+       or reg_15_read_data[12:0]
+       or reg_32_read_data[12:0]
+       or reg_2_read_data[12:0]
+       or reg_0_read_data[12:0]
+       or reg_25_read_data[12:0]
+       or reg_10_read_data[12:0]
+       or reg_8_read_data[12:0]
+       or reg_14_read_data[12:0]
+       or reg_6_read_data[12:0]
+       or reg_30_read_data[12:0]
+       or reg_26_read_data[12:0]
+       or dp_frt_inst4_dstf_reg[5:0]
+       or reg_27_read_data[12:0]
+       or reg_16_read_data[12:0]
+       or reg_29_read_data[12:0]
+       or reg_12_read_data[12:0]
+       or reg_31_read_data[12:0]
+       or reg_4_read_data[12:0]
+       or reg_23_read_data[12:0]
+       or reg_9_read_data[12:0]
+       or reg_24_read_data[12:0]
+       or reg_7_read_data[12:0]
+       or reg_1_read_data[12:0]
+       or reg_21_read_data[12:0]
+       or reg_17_read_data[12:0]
+       or reg_19_read_data[12:0]
+       or reg_20_read_data[12:0]
+       or reg_3_read_data[12:0]
+       or reg_11_read_data[12:0]
+       or reg_5_read_data[12:0]
+       or reg_13_read_data[12:0])
+
+begin
+  case (dp_frt_inst4_dstf_reg[5:0])
+    6'd0   : inst4_dstf_read_data[12:0] = reg_0_read_data[12:0];
+    6'd1   : inst4_dstf_read_data[12:0] = reg_1_read_data[12:0];
+    6'd2   : inst4_dstf_read_data[12:0] = reg_2_read_data[12:0];
+    6'd3   : inst4_dstf_read_data[12:0] = reg_3_read_data[12:0];
+    6'd4   : inst4_dstf_read_data[12:0] = reg_4_read_data[12:0];
+    6'd5   : inst4_dstf_read_data[12:0] = reg_5_read_data[12:0];
+    6'd6   : inst4_dstf_read_data[12:0] = reg_6_read_data[12:0];
+    6'd7   : inst4_dstf_read_data[12:0] = reg_7_read_data[12:0];
+    6'd8   : inst4_dstf_read_data[12:0] = reg_8_read_data[12:0];
+    6'd9   : inst4_dstf_read_data[12:0] = reg_9_read_data[12:0];
+    6'd10  : inst4_dstf_read_data[12:0] = reg_10_read_data[12:0];
+    6'd11  : inst4_dstf_read_data[12:0] = reg_11_read_data[12:0];
+    6'd12  : inst4_dstf_read_data[12:0] = reg_12_read_data[12:0];
+    6'd13  : inst4_dstf_read_data[12:0] = reg_13_read_data[12:0];
+    6'd14  : inst4_dstf_read_data[12:0] = reg_14_read_data[12:0];
+    6'd15  : inst4_dstf_read_data[12:0] = reg_15_read_data[12:0];
+    6'd16  : inst4_dstf_read_data[12:0] = reg_16_read_data[12:0];
+    6'd17  : inst4_dstf_read_data[12:0] = reg_17_read_data[12:0];
+    6'd18  : inst4_dstf_read_data[12:0] = reg_18_read_data[12:0];
+    6'd19  : inst4_dstf_read_data[12:0] = reg_19_read_data[12:0];
+    6'd20  : inst4_dstf_read_data[12:0] = reg_20_read_data[12:0];
+    6'd21  : inst4_dstf_read_data[12:0] = reg_21_read_data[12:0];
+    6'd22  : inst4_dstf_read_data[12:0] = reg_22_read_data[12:0];
+    6'd23  : inst4_dstf_read_data[12:0] = reg_23_read_data[12:0];
+    6'd24  : inst4_dstf_read_data[12:0] = reg_24_read_data[12:0];
+    6'd25  : inst4_dstf_read_data[12:0] = reg_25_read_data[12:0];
+    6'd26  : inst4_dstf_read_data[12:0] = reg_26_read_data[12:0];
+    6'd27  : inst4_dstf_read_data[12:0] = reg_27_read_data[12:0];
+    6'd28  : inst4_dstf_read_data[12:0] = reg_28_read_data[12:0];
+    6'd29  : inst4_dstf_read_data[12:0] = reg_29_read_data[12:0];
+    6'd30  : inst4_dstf_read_data[12:0] = reg_30_read_data[12:0];
+    6'd31  : inst4_dstf_read_data[12:0] = reg_31_read_data[12:0];
+    6'd32  : inst4_dstf_read_data[12:0] = reg_32_read_data[12:0];
+    default: inst4_dstf_read_data[12:0] = {13{1'bx}};
+  endcase
+end
+// &CombEnd; @2038
+
+
+assign inst4_srcf2_read_rdy       = inst4_srcf2_read_data[0];
+assign inst4_srcf2_read_wb        = inst4_srcf2_read_data[1];
+assign inst4_srcf2_read_freg[5:0] = inst4_srcf2_read_data[8:2];
+assign inst4_srcf2_read_mla_rdy   = inst4_srcf2_read_data[9];
+
+assign frt_inst4_dstf_match_inst0 =
+            ctrl_rt_inst4_vld && dp_frt_inst4_dstf_vld
+         && ctrl_rt_inst0_vld && dp_frt_inst0_dstf_vld
+         && (dp_frt_inst0_dstf_reg[5:0] == dp_frt_inst4_dstf_reg[5:0])
+         && (dp_frt_inst0_dstf_reg[5:0] != 6'd0);
+assign frt_inst4_dstf_match_inst1 =
+            ctrl_rt_inst3_vld && dp_frt_inst3_dstf_vld
+         && ctrl_rt_inst1_vld && dp_frt_inst1_dstf_vld
+         && (dp_frt_inst1_dstf_reg[5:0] == dp_frt_inst3_dstf_reg[5:0])
+         && (dp_frt_inst1_dstf_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST14_PREG_MASK];
+assign frt_inst4_dstf_match_inst2 =
+            ctrl_rt_inst3_vld && dp_frt_inst3_dstf_vld
+         && ctrl_rt_inst2_vld && dp_frt_inst2_dstf_vld
+         && (dp_frt_inst2_dstf_reg[5:0] == dp_frt_inst3_dstf_reg[5:0])
+         && (dp_frt_inst2_dstf_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST24_srcf0_MASK];
+assign frt_inst4_dstf_match_inst3 =
+            ctrl_rt_inst4_vld && dp_frt_inst4_dstf_vld
+         && ctrl_rt_inst3_vld && dp_frt_inst3_dstf_vld
+         && (dp_frt_inst3_dstf_reg[5:0] == dp_frt_inst4_dstf_reg[5:0])
+         && (dp_frt_inst3_dstf_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST34_srcf0_MASK];
+
+always @( *)
+
+begin
+  if(frt_inst4_dstf_match_inst3) begin
+    frt_dp_inst4_srcf2_data[9]   = frt_inst3_dst_rdy;
+    frt_dp_inst4_srcf2_data[0]   = frt_inst3_dst_mla_rdy;
+    frt_dp_inst4_srcf2_data[1]   = frt_inst3_dst_wb;
+    frt_dp_inst4_srcf2_data[8:2] = {1'b0,frt_inst3_dst_freg[5:0]};
+
+    frt_dp_inst34_srcf2_match    = frt_inst3_fmov_match_inst3;
+    frt_dp_inst24_srcf2_match    = frt_inst3_fmov_match_inst2;
+    frt_dp_inst14_srcf2_match    = frt_inst3_fmov_match_inst1;
+    frt_dp_inst04_srcf2_match    = frt_inst3_fmov_match_inst0;
+  end
+  else if(frt_inst4_dstf_match_inst2) begin
+    frt_dp_inst4_srcf2_data[9]   = 1'b0;
+    frt_dp_inst4_srcf2_data[0]   = 1'b0;
+    frt_dp_inst4_srcf2_data[1]   = 1'b0;
+    frt_dp_inst4_srcf2_data[8:2] = {1'b0,dp_frt_inst2_dst_freg[5:0]};
+
+  frt_dp_inst34_srcf2_match    = 1'b0;
+    frt_dp_inst24_srcf2_match    = 1'b1;
+    frt_dp_inst14_srcf2_match    = 1'b0;
+    frt_dp_inst04_srcf2_match    = 1'b0;
+  end
+
+    else if(frt_inst4_dstf_match_inst1) begin
+    frt_dp_inst4_srcf2_data[9]   = 1'b0;
+    frt_dp_inst4_srcf2_data[0]   = 1'b0;
+    frt_dp_inst4_srcf2_data[1]   = 1'b0;
+    frt_dp_inst4_srcf2_data[8:2] = {1'b0,dp_frt_inst1_dst_freg[5:0]};
+
+    frt_dp_inst34_srcf2_match    = 1'b0;
+    frt_dp_inst24_srcf2_match    = 1'b0;
+    frt_dp_inst14_srcf2_match    = 1'b1;
+    frt_dp_inst04_srcf2_match    = 1'b0;
+  end
+  else if(frt_inst4_dstf_match_inst0) begin
+    frt_dp_inst3_srcf2_data[9]   = 1'b0;
+    frt_dp_inst3_srcf2_data[0]   = 1'b0;
+    frt_dp_inst3_srcf2_data[1]   = 1'b0;
+    frt_dp_inst3_srcf2_data[8:2] = {1'b0,dp_frt_inst0_dst_freg[5:0]};
+
+
+    frt_dp_inst34_srcf2_match    = 1'b0;
+    frt_dp_inst24_srcf2_match    = 1'b0;
+    frt_dp_inst14_srcf2_match    = 1'b0;
+    frt_dp_inst04_srcf2_match    = 1'b1;
+
+  end
+  else begin
+   frt_dp_inst4_srcf2_data[9]   = inst4_srcf2_read_rdy
+                                   || !dp_frt_inst4_srcf2_vld;
+    frt_dp_inst4_srcf2_data[0]   = inst4_srcf2_read_mla_rdy
+                                   && dp_frt_inst4_fmla
+                                   || !dp_frt_inst4_srcf2_vld;
+    frt_dp_inst4_srcf2_data[1]   = inst4_srcf2_read_wb
+                                   || !dp_frt_inst4_srcf2_vld;
+    frt_dp_inst4_srcf2_data[8:2] = {1'b0,inst4_srcf2_read_freg[5:0]};
+
+
+    frt_dp_inst34_srcf2_match    = 1'b0;
+    frt_dp_inst24_srcf2_match    = 1'b0;
+    frt_dp_inst14_srcf2_match    = 1'b0;
+    frt_dp_inst04_srcf2_match    = 1'b0;
+
+
+  end
+// &CombEnd; @1881
+end
+
+
 
 // &ModuleEnd; @2434
 endmodule

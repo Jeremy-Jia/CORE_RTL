@@ -67,6 +67,9 @@ module ct_had_private_top(
   idu_had_id_inst1_vld,
   idu_had_id_inst2_info,
   idu_had_id_inst2_vld,
+  //Jeremy add
+  idu_had_id_inst3_info,
+  idu_had_id_inst3_vld,
   idu_had_iq_empty,
   idu_had_pipe_stall,
   idu_had_pipeline_empty,
@@ -102,6 +105,8 @@ module ct_had_private_top(
   rtu_had_inst0_non_irv_bkpt,
   rtu_had_inst1_non_irv_bkpt,
   rtu_had_inst2_non_irv_bkpt,
+  //Jeremy add this
+  rtu_had_inst3_non_irv_bkpt,
   rtu_had_inst_bkpt_inst_vld,
   rtu_had_inst_bkpta_vld,
   rtu_had_inst_bkptb_vld,
@@ -114,6 +119,9 @@ module ct_had_private_top(
   rtu_had_retire_inst1_vld,
   rtu_had_retire_inst2_info,
   rtu_had_retire_inst2_vld,
+  //Jeremy add this
+  rtu_had_retire_inst3_info,
+  rtu_had_retire_inst3_vld,
   rtu_had_rob_empty,
   rtu_had_xx_dbg_ack_pc,
   rtu_had_xx_mbkpt_chgflow,
@@ -142,6 +150,14 @@ module ct_had_private_top(
   rtu_had_xx_pcfifo_inst2_next_pc,
   rtu_had_xx_pcfifo_inst2_pcall,
   rtu_had_xx_pcfifo_inst2_preturn,
+  //Jeremy add 
+  rtu_had_xx_pcfifo_inst3_chgflow,
+  rtu_had_xx_pcfifo_inst3_condbr,
+  rtu_had_xx_pcfifo_inst3_condbr_taken,
+  rtu_had_xx_pcfifo_inst3_jmp,
+  rtu_had_xx_pcfifo_inst3_next_pc,
+  rtu_had_xx_pcfifo_inst3_pcall,
+  rtu_had_xx_pcfifo_inst3_preturn,
   rtu_had_xx_split_inst,
   rtu_yy_xx_dbgon,
   rtu_yy_xx_flush,
@@ -149,6 +165,8 @@ module ct_had_private_top(
   rtu_yy_xx_retire0_normal,
   rtu_yy_xx_retire1,
   rtu_yy_xx_retire2,
+  //Jeremy add 
+  rtu_yy_xx_retire3,
   sm_update_dr,
   sm_update_ir,
   x_dbg_ack_pc,
@@ -179,6 +197,8 @@ input   [39 :0]  idu_had_id_inst1_info;
 input            idu_had_id_inst1_vld;           
 input   [39 :0]  idu_had_id_inst2_info;          
 input            idu_had_id_inst2_vld;           
+input   [39 :0]  idu_had_id_inst3_info; //Jeremy add          
+input            idu_had_id_inst3_vld;  //Jeremy add          
 input            idu_had_iq_empty;               
 input            idu_had_pipe_stall;             
 input            idu_had_pipeline_empty;         
@@ -214,6 +234,7 @@ input            rtu_had_inst0_bkpt_inst;
 input   [3  :0]  rtu_had_inst0_non_irv_bkpt;     
 input   [3  :0]  rtu_had_inst1_non_irv_bkpt;     
 input   [3  :0]  rtu_had_inst2_non_irv_bkpt;     
+input   [3  :0]  rtu_had_inst3_non_irv_bkpt; //Jeremy add     
 input            rtu_had_inst_bkpt_inst_vld;     
 input            rtu_had_inst_bkpta_vld;         
 input            rtu_had_inst_bkptb_vld;         
@@ -226,6 +247,8 @@ input   [63 :0]  rtu_had_retire_inst1_info;
 input            rtu_had_retire_inst1_vld;       
 input   [63 :0]  rtu_had_retire_inst2_info;      
 input            rtu_had_retire_inst2_vld;       
+input   [63 :0]  rtu_had_retire_inst3_info;//Jeremy add      
+input            rtu_had_retire_inst3_vld;//Jeremy add       
 input            rtu_had_rob_empty;              
 input            rtu_had_xx_dbg_ack_pc;          
 input            rtu_had_xx_mbkpt_chgflow;       
@@ -254,6 +277,13 @@ input            rtu_had_xx_pcfifo_inst2_jmp;
 input   [38 :0]  rtu_had_xx_pcfifo_inst2_next_pc; 
 input            rtu_had_xx_pcfifo_inst2_pcall;  
 input            rtu_had_xx_pcfifo_inst2_preturn; 
+input            rtu_had_xx_pcfifo_inst3_chgflow; //Jeremy add
+input            rtu_had_xx_pcfifo_inst3_condbr; //Jeremy add
+input            rtu_had_xx_pcfifo_inst3_condbr_taken; //Jeremy add
+input            rtu_had_xx_pcfifo_inst3_jmp;    //Jeremy add
+input   [38 :0]  rtu_had_xx_pcfifo_inst3_next_pc; //Jeremy add
+input            rtu_had_xx_pcfifo_inst3_pcall;  //Jeremy add
+input            rtu_had_xx_pcfifo_inst3_preturn; //Jeremy add
 input            rtu_had_xx_split_inst;          
 input            rtu_yy_xx_dbgon;                
 input            rtu_yy_xx_flush;                
@@ -261,6 +291,7 @@ input            rtu_yy_xx_retire0;
 input            rtu_yy_xx_retire0_normal;       
 input            rtu_yy_xx_retire1;              
 input            rtu_yy_xx_retire2;              
+input            rtu_yy_xx_retire3;//Jeremy add               
 input            sm_update_dr;                   
 input            sm_update_ir;                   
 input            x_enter_dbg_req_i;              
@@ -412,6 +443,8 @@ wire    [39 :0]  idu_had_id_inst1_info;
 wire             idu_had_id_inst1_vld;           
 wire    [39 :0]  idu_had_id_inst2_info;          
 wire             idu_had_id_inst2_vld;           
+wire    [39 :0]  idu_had_id_inst3_info;          
+wire             idu_had_id_inst3_vld;           
 wire             idu_had_iq_empty;               
 wire             idu_had_pipe_stall;             
 wire             idu_had_pipeline_empty;         
@@ -490,6 +523,7 @@ wire             rtu_had_inst0_bkpt_inst;
 wire    [3  :0]  rtu_had_inst0_non_irv_bkpt;     
 wire    [3  :0]  rtu_had_inst1_non_irv_bkpt;     
 wire    [3  :0]  rtu_had_inst2_non_irv_bkpt;     
+wire    [3  :0]  rtu_had_inst3_non_irv_bkpt; //Jeremy add     
 wire             rtu_had_inst_bkpt_inst_vld;     
 wire             rtu_had_inst_bkpta_vld;         
 wire             rtu_had_inst_bkptb_vld;         
@@ -502,6 +536,8 @@ wire    [63 :0]  rtu_had_retire_inst1_info;
 wire             rtu_had_retire_inst1_vld;       
 wire    [63 :0]  rtu_had_retire_inst2_info;      
 wire             rtu_had_retire_inst2_vld;       
+wire    [63 :0]  rtu_had_retire_inst3_info; //Jeremy add      
+wire             rtu_had_retire_inst3_vld;  //Jeremy add      
 wire             rtu_had_rob_empty;              
 wire             rtu_had_xx_dbg_ack_pc;          
 wire             rtu_had_xx_mbkpt_chgflow;       
@@ -514,6 +550,8 @@ wire             rtu_had_xx_pcfifo_inst1_chgflow;
 wire    [38 :0]  rtu_had_xx_pcfifo_inst1_next_pc; 
 wire             rtu_had_xx_pcfifo_inst2_chgflow; 
 wire    [38 :0]  rtu_had_xx_pcfifo_inst2_next_pc; 
+wire             rtu_had_xx_pcfifo_inst3_chgflow;//Jeremy add 
+wire    [38 :0]  rtu_had_xx_pcfifo_inst3_next_pc; //Jeremy add 
 wire             rtu_had_xx_split_inst;          
 wire             rtu_yy_xx_dbgon;                
 wire             rtu_yy_xx_flush;                
@@ -521,6 +559,7 @@ wire             rtu_yy_xx_retire0;
 wire             rtu_yy_xx_retire0_normal;       
 wire             rtu_yy_xx_retire1;              
 wire             rtu_yy_xx_retire2;              
+wire             rtu_yy_xx_retire3;//Jeremy add              
 wire             sm_update_dr;                   
 wire             sm_update_ir;                   
 wire             trace_ctrl_req;                 
@@ -780,7 +819,9 @@ ct_had_pcfifo  x_ct_had_pcfifo (
   .rtu_had_xx_pcfifo_inst1_chgflow (rtu_had_xx_pcfifo_inst1_chgflow),
   .rtu_had_xx_pcfifo_inst1_next_pc (rtu_had_xx_pcfifo_inst1_next_pc),
   .rtu_had_xx_pcfifo_inst2_chgflow (rtu_had_xx_pcfifo_inst2_chgflow),
-  .rtu_had_xx_pcfifo_inst2_next_pc (rtu_had_xx_pcfifo_inst2_next_pc)
+  .rtu_had_xx_pcfifo_inst2_next_pc (rtu_had_xx_pcfifo_inst2_next_pc),
+  .rtu_had_xx_pcfifo_inst3_chgflow (rtu_had_xx_pcfifo_inst3_chgflow),//Jeremy add
+  .rtu_had_xx_pcfifo_inst3_next_pc (rtu_had_xx_pcfifo_inst3_next_pc)//Jeremy add
 );
 
 // &Instance("ct_had_regs"); @62
@@ -946,6 +987,8 @@ ct_had_dbg_info  x_ct_had_dbg_info (
   .idu_had_id_inst1_vld         (idu_had_id_inst1_vld        ),
   .idu_had_id_inst2_info        (idu_had_id_inst2_info       ),
   .idu_had_id_inst2_vld         (idu_had_id_inst2_vld        ),
+  .idu_had_id_inst2_info        (idu_had_id_inst3_info       ),
+  .idu_had_id_inst2_vld         (idu_had_id_inst3_vld        ),
   .ifu_had_debug_info           (ifu_had_debug_info          ),
   .ir_xx_pipesel_reg_sel        (ir_xx_pipesel_reg_sel       ),
   .ir_xx_wdata                  (ir_xx_wdata                 ),
@@ -965,6 +1008,8 @@ ct_had_dbg_info  x_ct_had_dbg_info (
   .rtu_had_retire_inst1_vld     (rtu_had_retire_inst1_vld    ),
   .rtu_had_retire_inst2_info    (rtu_had_retire_inst2_info   ),
   .rtu_had_retire_inst2_vld     (rtu_had_retire_inst2_vld    ),
+  .rtu_had_retire_inst3_info    (rtu_had_retire_inst3_info   ),//Jeremy add 
+  .rtu_had_retire_inst3_vld     (rtu_had_retire_inst3_vld    ),//Jeremy add 
   .x_dbg_ack_pc                 (x_dbg_ack_pc                ),
   .x_sm_xx_update_dr_en         (x_sm_xx_update_dr_en        )
 );
@@ -981,12 +1026,14 @@ ct_had_nirv_bkpt  x_ct_had_nirv_bkpt (
   .rtu_had_inst0_non_irv_bkpt (rtu_had_inst0_non_irv_bkpt),
   .rtu_had_inst1_non_irv_bkpt (rtu_had_inst1_non_irv_bkpt),
   .rtu_had_inst2_non_irv_bkpt (rtu_had_inst2_non_irv_bkpt),
+  .rtu_had_inst3_non_irv_bkpt (rtu_had_inst3_non_irv_bkpt),//Jeremy add
   .rtu_had_xx_split_inst      (rtu_had_xx_split_inst     ),
   .rtu_yy_xx_dbgon            (rtu_yy_xx_dbgon           ),
   .rtu_yy_xx_flush            (rtu_yy_xx_flush           ),
   .rtu_yy_xx_retire0_normal   (rtu_yy_xx_retire0_normal  ),
   .rtu_yy_xx_retire1          (rtu_yy_xx_retire1         ),
-  .rtu_yy_xx_retire2          (rtu_yy_xx_retire2         )
+  .rtu_yy_xx_retire2          (rtu_yy_xx_retire2         ),
+  .rtu_yy_xx_retire3          (rtu_yy_xx_retire3         )//Jeremy add 
 );
 
 // &Instance("ct_had_private_ir"); @71

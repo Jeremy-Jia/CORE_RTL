@@ -23,6 +23,7 @@ module ct_idu_ir_rt(
   ctrl_rt_inst1_vld,
   ctrl_rt_inst2_vld,
   ctrl_rt_inst3_vld,
+  ctrl_rt_inst4_vld,//add by xlx
   ctrl_xx_rf_pipe0_preg_lch_vld_dupx,
   ctrl_xx_rf_pipe1_preg_lch_vld_dupx,
   dp_rt_dep_info,
@@ -65,6 +66,18 @@ module ct_idu_ir_rt(
   dp_rt_inst3_src1_reg,
   dp_rt_inst3_src1_vld,
   dp_rt_inst3_src2_vld,
+
+//add by xlx
+  dp_rt_inst4_dst_preg,
+  dp_rt_inst4_dst_reg,
+  dp_rt_inst4_dst_vld,
+  dp_rt_inst4_mla,
+  dp_rt_inst4_src0_reg,
+  dp_rt_inst4_src0_vld,
+  dp_rt_inst4_src1_reg,
+  dp_rt_inst4_src1_vld,
+  dp_rt_inst4_src2_vld,
+
   dp_xx_rf_pipe0_dst_preg_dupx,
   dp_xx_rf_pipe1_dst_preg_dupx,
   forever_cpuclk,
@@ -106,6 +119,17 @@ module ct_idu_ir_rt(
   rt_dp_inst3_src0_data,
   rt_dp_inst3_src1_data,
   rt_dp_inst3_src2_data,
+//ADD By xlx
+  rt_dp_inst4_rel_preg,
+  rt_dp_inst4_src0_data,
+  rt_dp_inst4_src1_data,
+  rt_dp_inst4_src2_data,
+  rt_dp_inst34_src_match,
+  rt_dp_inst24_src_match,
+  rt_dp_inst14_src_match,
+  rt_dp_inst04_src_match,
+
+
   rtu_idu_flush_fe,
   rtu_idu_flush_is,
   rtu_idu_rt_recover_preg,
@@ -124,7 +148,8 @@ input            ctrl_ir_stall;
 input            ctrl_rt_inst0_vld;                      
 input            ctrl_rt_inst1_vld;                      
 input            ctrl_rt_inst2_vld;                      
-input            ctrl_rt_inst3_vld;                      
+input            ctrl_rt_inst3_vld;        
+input            ctrl_rt_inst4_vld;//add by xlx      
 input            ctrl_xx_rf_pipe0_preg_lch_vld_dupx;     
 input            ctrl_xx_rf_pipe1_preg_lch_vld_dupx;     
 input   [16 :0]  dp_rt_dep_info;                         
@@ -166,7 +191,20 @@ input   [5  :0]  dp_rt_inst3_src0_reg;
 input            dp_rt_inst3_src0_vld;                   
 input   [5  :0]  dp_rt_inst3_src1_reg;                   
 input            dp_rt_inst3_src1_vld;                   
-input            dp_rt_inst3_src2_vld;                   
+input            dp_rt_inst3_src2_vld;         
+
+//add by xlx
+input   [6  :0]  dp_rt_inst4_dst_preg;                   
+input   [5  :0]  dp_rt_inst4_dst_reg;                    
+input            dp_rt_inst4_dst_vld;                    
+input            dp_rt_inst4_mla;                        
+input   [5  :0]  dp_rt_inst4_src0_reg;                   
+input            dp_rt_inst4_src0_vld;                   
+input   [5  :0]  dp_rt_inst4_src1_reg;                   
+input            dp_rt_inst4_src1_vld;                   
+input            dp_rt_inst4_src2_vld;     
+
+
 input   [6  :0]  dp_xx_rf_pipe0_dst_preg_dupx;           
 input   [6  :0]  dp_xx_rf_pipe1_dst_preg_dupx;           
 input            forever_cpuclk;                         
@@ -217,6 +255,16 @@ output  [8  :0]  rt_dp_inst3_src0_data;
 output  [8  :0]  rt_dp_inst3_src1_data;                  
 output  [9  :0]  rt_dp_inst3_src2_data;                  
 
+
+//add by xlx
+output  [6  :0]  rt_dp_inst4_rel_preg;                   
+output  [8  :0]  rt_dp_inst4_src0_data;                  
+output  [8  :0]  rt_dp_inst4_src1_data;                  
+output  [9  :0]  rt_dp_inst4_src2_data;   
+output  [2  :0]  rt_dp_inst34_src_match;    
+output  [2  :0]  rt_dp_inst24_src_match;     
+output  [2  :0]  rt_dp_inst14_src_match;     
+output  [2  :0]  rt_dp_inst04_src_match;         
 // &Regs; @27
 reg     [12 :0]  inst0_dst_read_data;                    
 reg     [12 :0]  inst0_src0_read_data;                   
@@ -229,7 +277,12 @@ reg     [12 :0]  inst2_src0_read_data;
 reg     [12 :0]  inst2_src1_read_data;                   
 reg     [12 :0]  inst3_dst_read_data;                    
 reg     [12 :0]  inst3_src0_read_data;                   
-reg     [12 :0]  inst3_src1_read_data;                   
+reg     [12 :0]  inst3_src1_read_data;        
+//add by xlx  
+reg     [12 :0]  inst4_dst_read_data;                    
+reg     [12 :0]  inst4_src0_read_data;                   
+reg     [12 :0]  inst4_src1_read_data;      
+
 reg     [6  :0]  reg_0_create_preg;                      
 reg     [6  :0]  reg_10_create_preg;                     
 reg     [6  :0]  reg_11_create_preg;                     
@@ -280,7 +333,19 @@ reg     [9  :0]  rt_dp_inst2_src2_data;
 reg     [6  :0]  rt_dp_inst3_rel_preg;                   
 reg     [8  :0]  rt_dp_inst3_src0_data;                  
 reg     [8  :0]  rt_dp_inst3_src1_data;                  
-reg     [9  :0]  rt_dp_inst3_src2_data;                  
+reg     [9  :0]  rt_dp_inst3_src2_data;  
+
+//add by xlx
+reg     [6  :0]  rt_dp_inst4_rel_preg;                   
+reg     [8  :0]  rt_dp_inst4_src0_data;                  
+reg     [8  :0]  rt_dp_inst4_src1_data;                  
+reg     [9  :0]  rt_dp_inst4_src2_data;      
+reg     [2  :0]  rt_dp_inst34_src_match;   
+reg     [2  :0]  rt_dp_inst24_src_match;   
+reg     [2  :0]  rt_dp_inst14_src_match;   
+reg     [2  :0]  rt_dp_inst04_src_match;   
+
+
 reg              rt_inst1_mov_dst_match_inst0;           
 reg              rt_inst1_mov_dst_mla_rdy;               
 reg     [6  :0]  rt_inst1_mov_dst_preg;                  
@@ -294,6 +359,13 @@ reg              rt_inst2_mov_match_inst0;
 reg              rt_inst2_mov_match_inst1;               
 reg              rt_inst2_mov_match_inst2;               
 
+reg     [6  :0]  rt_inst3_dst_preg;                      
+reg              rt_inst3_dst_rdy;                       
+reg              rt_inst3_dst_wb;                        
+reg              rt_inst3_mov_match_inst0;               
+reg              rt_inst3_mov_match_inst1;               
+reg              rt_inst3_mov_match_inst2;      
+reg              rt_inst3_mov_match_inst3;      
 // &Wires; @28
 wire             alu0_reg_fwd_vld;                       
 wire             alu1_reg_fwd_vld;                       
@@ -304,7 +376,8 @@ wire             ctrl_ir_stall;
 wire             ctrl_rt_inst0_vld;                      
 wire             ctrl_rt_inst1_vld;                      
 wire             ctrl_rt_inst2_vld;                      
-wire             ctrl_rt_inst3_vld;                      
+wire             ctrl_rt_inst3_vld;    
+wire             ctrl_rt_inst4_vld;  //add by xlx                       
 wire             ctrl_xx_rf_pipe0_preg_lch_vld_dupx;     
 wire             ctrl_xx_rf_pipe1_preg_lch_vld_dupx;     
 wire    [16 :0]  dp_rt_dep_info;                         
@@ -343,7 +416,8 @@ wire    [5  :0]  dp_rt_inst2_src0_reg;
 wire             dp_rt_inst2_src0_vld;                   
 wire    [5  :0]  dp_rt_inst2_src1_reg;                   
 wire             dp_rt_inst2_src1_vld;                   
-wire             dp_rt_inst2_src2_vld;                   
+wire             dp_rt_inst2_src2_vld;   
+
 wire    [6  :0]  dp_rt_inst3_dst_preg;                   
 wire    [5  :0]  dp_rt_inst3_dst_reg;                    
 wire    [4  :0]  dp_rt_inst3_dst_reg_lsb;                
@@ -354,7 +428,20 @@ wire    [5  :0]  dp_rt_inst3_src0_reg;
 wire             dp_rt_inst3_src0_vld;                   
 wire    [5  :0]  dp_rt_inst3_src1_reg;                   
 wire             dp_rt_inst3_src1_vld;                   
-wire             dp_rt_inst3_src2_vld;                   
+wire             dp_rt_inst3_src2_vld;   
+//add new logic by xlx
+wire    [6  :0]  dp_rt_inst4_dst_preg;                   
+wire    [5  :0]  dp_rt_inst4_dst_reg;                    
+wire    [4  :0]  dp_rt_inst4_dst_reg_lsb;                
+wire    [31 :0]  dp_rt_inst4_dst_reg_lsb_expand;         
+wire             dp_rt_inst4_dst_vld;                    
+wire             dp_rt_inst4_mla;                        
+wire    [5  :0]  dp_rt_inst4_src0_reg;                   
+wire             dp_rt_inst4_src0_vld;                   
+wire    [5  :0]  dp_rt_inst4_src1_reg;                   
+wire             dp_rt_inst4_src1_vld;                   
+wire             dp_rt_inst4_src2_vld;   
+
 wire    [6  :0]  dp_xx_rf_pipe0_dst_preg_dupx;           
 wire    [6  :0]  dp_xx_rf_pipe1_dst_preg_dupx;           
 wire             forever_cpuclk;                         
@@ -398,7 +485,8 @@ wire             inst2_src2_read_mla_rdy;
 wire    [6  :0]  inst2_src2_read_preg;                   
 wire             inst2_src2_read_rdy;                    
 wire             inst2_src2_read_wb;                     
-wire             inst2_write_en;                         
+wire             inst2_write_en;        
+
 wire             inst3_gateclk_write_en;                 
 wire    [6  :0]  inst3_src0_read_preg;                   
 wire             inst3_src0_read_rdy;                    
@@ -410,7 +498,22 @@ wire             inst3_src2_read_mla_rdy;
 wire    [6  :0]  inst3_src2_read_preg;                   
 wire             inst3_src2_read_rdy;                    
 wire             inst3_src2_read_wb;                     
-wire             inst3_write_en;                         
+wire             inst3_write_en;           
+
+//add by xllx
+wire             inst4_gateclk_write_en;                 
+wire    [6  :0]  inst4_src0_read_preg;                   
+wire             inst4_src0_read_rdy;                    
+wire             inst4_src0_read_wb;                     
+wire    [6  :0]  inst4_src1_read_preg;                   
+wire             inst4_src1_read_rdy;                    
+wire             inst4_src1_read_wb;                     
+wire             inst4_src2_read_mla_rdy;                
+wire    [6  :0]  inst4_src2_read_preg;                   
+wire             inst4_src2_read_rdy;                    
+wire             inst4_src2_read_wb;                     
+wire             inst4_write_en;        
+
 wire             iu_idu_div_inst_vld;                    
 wire    [6  :0]  iu_idu_div_preg_dupx;                   
 wire    [6  :0]  iu_idu_ex2_pipe0_wb_preg_dupx;          
@@ -663,12 +766,14 @@ wire             reg_9_write_en;
 wire    [32 :0]  reg_gateclk_write0_en;                  
 wire    [32 :0]  reg_gateclk_write1_en;                  
 wire    [32 :0]  reg_gateclk_write2_en;                  
-wire    [32 :0]  reg_gateclk_write3_en;                  
+wire    [32 :0]  reg_gateclk_write3_en;       
+wire    [32 :0]  reg_gateclk_write4_en; //add by xlx             
 wire    [32 :0]  reg_gateclk_write_en;                   
 wire    [32 :0]  reg_write0_en;                          
 wire    [32 :0]  reg_write1_en;                          
 wire    [32 :0]  reg_write2_en;                          
-wire    [32 :0]  reg_write3_en;                          
+wire    [32 :0]  reg_write3_en; 
+wire    [32 :0]  reg_write4_en;//add by xlx                               
 wire    [32 :0]  reg_write_en;                           
 wire    [6  :0]  rt_dp_inst0_rel_preg;                   
 wire    [8  :0]  rt_dp_inst0_src0_data;                  
@@ -702,7 +807,27 @@ wire             rt_inst3_src1_match_inst1;
 wire             rt_inst3_src1_match_inst2;              
 wire             rt_inst3_src2_match_inst0;              
 wire             rt_inst3_src2_match_inst1;              
-wire             rt_inst3_src2_match_inst2;              
+wire             rt_inst3_src2_match_inst2;    
+//add  by xlx
+wire             rt_inst4_dst_match_inst0;               
+wire             rt_inst4_dst_match_inst1;               
+wire             rt_inst4_dst_match_inst2; 
+wire             rt_inst4_dst_match_inst3;    
+wire             rt_inst4_src0_match_inst0;              
+wire             rt_inst4_src0_match_inst1;              
+wire             rt_inst4_src0_match_inst2;  
+wire             rt_inst4_src0_match_inst3;  
+wire             rt_inst4_src1_match_inst0;              
+wire             rt_inst4_src1_match_inst1;              
+wire             rt_inst4_src1_match_inst2;   
+wire             rt_inst4_src1_match_inst3;   
+wire             rt_inst4_src2_match_inst0;              
+wire             rt_inst4_src2_match_inst1;              
+wire             rt_inst4_src2_match_inst2;    
+wire             rt_inst4_src2_match_inst3;    
+
+
+
 wire    [223:0]  rt_recover_updt_preg;                   
 wire             rt_recover_updt_vld;                    
 wire    [223:0]  rt_reset_updt_preg;                     
@@ -742,6 +867,10 @@ parameter DEP_INST01_SRCV1_MASK = 14;
 parameter DEP_INST12_SRCV1_MASK = 15;
 parameter DEP_INST23_SRCV1_MASK = 16;
 
+//DEP_INST14_PREG_MASK  add by xlx
+parameter DEP_INST14_PREG_MASK = 17;
+parameter DEP_INST24_SRC0_MASK = 18;
+parameter DEP_INST34_SRC0_MASK = 19;
 // &Force("bus","dp_rt_dep_info",DEP_WIDTH-1,0); @56
 
 //==========================================================
@@ -2317,6 +2446,7 @@ assign dp_rt_inst0_dst_reg_lsb[4:0] = dp_rt_inst0_dst_reg[4:0];
 assign dp_rt_inst1_dst_reg_lsb[4:0] = dp_rt_inst1_dst_reg[4:0];
 assign dp_rt_inst2_dst_reg_lsb[4:0] = dp_rt_inst2_dst_reg[4:0];
 assign dp_rt_inst3_dst_reg_lsb[4:0] = dp_rt_inst3_dst_reg[4:0];
+assign dp_rt_inst4_dst_reg_lsb[4:0] = dp_rt_inst4_dst_reg[4:0];//add uop4 by xlx
 
 // &ConnRule(s/^x_num/dp_rt_inst0_dst_reg_lsb/); @224
 // &Instance("ct_rtu_expand_32","x_ct_rtu_expand_32_dp_rt_inst0_dst_reg_lsb"); @225
@@ -2346,6 +2476,14 @@ ct_rtu_expand_32  x_ct_rtu_expand_32_dp_rt_inst3_dst_reg_lsb (
   .x_num_expand                   (dp_rt_inst3_dst_reg_lsb_expand)
 );
 
+//add uop4 by xlx
+ct_rtu_expand_32  x_ct_rtu_expand_32_dp_rt_inst4_dst_reg_lsb (
+  .x_num                          (dp_rt_inst4_dst_reg_lsb       ),
+  .x_num_expand                   (dp_rt_inst4_dst_reg_lsb_expand)
+);
+
+
+
 
 //if no write back, write port 0 not enable
 assign inst0_write_en              = ctrl_rt_inst0_vld
@@ -2357,6 +2495,7 @@ assign reg_write0_en[31:0]         = dp_rt_inst0_dst_reg_lsb_expand[31:0]
 assign reg_write0_en[32]           = dp_rt_inst0_dst_reg_lsb_expand[0]
                                      && inst0_write_en && dp_rt_inst0_dst_reg[5];
 //gateclk write en ignore stall signal
+
 assign inst0_gateclk_write_en      = ctrl_rt_inst0_vld
                                      && !rt_recover_updt_vld
                                      &&  dp_rt_inst0_dst_vld;
@@ -2393,6 +2532,8 @@ assign reg_write2_en[31:0]         = dp_rt_inst2_dst_reg_lsb_expand[31:0]
 assign reg_write2_en[32]           = dp_rt_inst2_dst_reg_lsb_expand[0]
                                      && inst2_write_en && dp_rt_inst2_dst_reg[5];
 //gateclk write en ignore stall signal
+
+
 assign inst2_gateclk_write_en      = ctrl_rt_inst2_vld
                                      && !rt_recover_updt_vld
                                      &&  dp_rt_inst2_dst_vld;
@@ -2419,6 +2560,26 @@ assign reg_gateclk_write3_en[31:0] = dp_rt_inst3_dst_reg_lsb_expand[31:0]
 assign reg_gateclk_write3_en[32]   = dp_rt_inst3_dst_reg_lsb_expand[0]
                                      && inst3_gateclk_write_en && dp_rt_inst3_dst_reg[5];
 
+//add uop5 logic by xlx
+//if no write back, write port 4 not enable
+assign inst4_write_en              = ctrl_rt_inst4_vld
+                                     && !ctrl_ir_stall
+                                     && !rt_recover_updt_vld
+                                     &&  dp_rt_inst4_dst_vld;
+assign reg_write4_en[31:0]         = dp_rt_inst4_dst_reg_lsb_expand[31:0]
+                                     & {32{inst4_write_en && !dp_rt_inst4_dst_reg[5]}};
+assign reg_write4_en[32]           = dp_rt_inst4_dst_reg_lsb_expand[0]
+                                     && inst4_write_en && dp_rt_inst4_dst_reg[5];
+//gateclk write en ignore stall signal
+assign inst4_gateclk_write_en      = ctrl_rt_inst4_vld
+                                     && !rt_recover_updt_vld
+                                     &&  dp_rt_inst4_dst_vld;
+assign reg_gateclk_write4_en[31:0] = dp_rt_inst4_dst_reg_lsb_expand[31:0] 
+                                     & {32{inst4_gateclk_write_en && !dp_rt_inst4_dst_reg[5]}};
+assign reg_gateclk_write4_en[32]   = dp_rt_inst4_dst_reg_lsb_expand[0]
+                                     && inst4_gateclk_write_en && dp_rt_inst4_dst_reg[5];
+
+
 //-------------flush and reset write enable-----------------
 //reset: build initial mappings (r0~r31 <-> p0~p31)
 //flush: recover mappings from rtu pst
@@ -2439,7 +2600,9 @@ assign reg_write_en[32:0] = {33{rt_recover_updt_vld}}
                             | reg_write0_en[32:0]
                             | reg_write1_en[32:0]
                             | reg_write2_en[32:0]
-                            | reg_write3_en[32:0];
+                            | reg_write3_en[32:0]
+                            | reg_write4_en[32:0]//add uop5 logic
+                            ;
 
 assign reg_0_write_en  = reg_write_en[0];
 assign reg_1_write_en  = reg_write_en[1];
@@ -2482,7 +2645,9 @@ assign reg_gateclk_write_en[32:0] = {33{rt_recover_updt_vld}}
                                     | reg_gateclk_write0_en[32:0]
                                     | reg_gateclk_write1_en[32:0]
                                     | reg_gateclk_write2_en[32:0]
-                                    | reg_gateclk_write3_en[32:0];
+                                    | reg_gateclk_write3_en[32:0]
+                                    | reg_gateclk_write4_en[32:0]//add uop5 logic
+                                    ;
 
 assign reg_0_gateclk_write_en  = reg_gateclk_write_en[0];
 assign reg_1_gateclk_write_en  = reg_gateclk_write_en[1];
@@ -2557,7 +2722,8 @@ assign reg_32_gateclk_idx_write_en = reg_gateclk_write_en[32];
 //the write back data path use gateclk wen, ignoring id stall
 //priority is 3>2>1>0>pst_update
 // &CombBeg; @442
-always @( reg_gateclk_write2_en[0]
+//new logic by xlx
+ always @( reg_gateclk_write2_en[0]
        or dp_rt_inst0_dst_preg[6:0]
        or reg_gateclk_write1_en[0]
        or dp_rt_inst3_dst_preg[6:0]
@@ -2565,9 +2731,13 @@ always @( reg_gateclk_write2_en[0]
        or reg_gateclk_write0_en[0]
        or rt_recover_updt_preg[6:0]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[0]//add new logic by xlx
+       )
 begin
-  if(reg_gateclk_write3_en[0])
+  if(reg_gateclk_write4_en[0])//add new logic by xlx
+    reg_0_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[0])
     reg_0_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[0])
     reg_0_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2579,7 +2749,9 @@ begin
     reg_0_create_preg[6:0] = rt_recover_updt_preg[6:0];
 // &CombEnd; @453
 end
+
 // &CombBeg; @454
+/*
 always @( rt_recover_updt_preg[13:7]
        or dp_rt_inst0_dst_preg[6:0]
        or dp_rt_inst3_dst_preg[6:0]
@@ -2602,6 +2774,37 @@ begin
     reg_1_create_preg[6:0] = rt_recover_updt_preg[13:7];
 // &CombEnd; @465
 end
+*/
+always @( rt_recover_updt_preg[13:7]
+       or dp_rt_inst0_dst_preg[6:0]
+       or dp_rt_inst3_dst_preg[6:0]
+       or reg_gateclk_write2_en[1]
+       or dp_rt_inst1_dst_preg[6:0]
+       or reg_gateclk_write0_en[1]
+       or reg_gateclk_write1_en[1]
+       or reg_gateclk_write3_en[1]
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[1]//add new logic by xlx
+       )
+begin
+  if(reg_gateclk_write4_en[1])//add new logic by xlx
+    reg_1_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[1])//add else by xlx
+    reg_1_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
+  else if(reg_gateclk_write2_en[1])
+    reg_1_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
+  else if(reg_gateclk_write1_en[1])
+    reg_1_create_preg[6:0] = dp_rt_inst1_dst_preg[6:0];
+  else if(reg_gateclk_write0_en[1])
+    reg_1_create_preg[6:0] = dp_rt_inst0_dst_preg[6:0];
+  else
+    reg_1_create_preg[6:0] = rt_recover_updt_preg[13:7];
+// &CombEnd; @465
+end
+
+
+
+
 // &CombBeg; @466
 always @( dp_rt_inst0_dst_preg[6:0]
        or rt_recover_updt_preg[20:14]
@@ -2611,9 +2814,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or reg_gateclk_write1_en[2]
        or dp_rt_inst1_dst_preg[6:0]
        or dp_rt_inst2_dst_preg[6:0]
-       or reg_gateclk_write2_en[2])
+       or reg_gateclk_write2_en[2]
+       or reg_gateclk_write4_en[2])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[2])
+  if(reg_gateclk_write4_en[2])//add new logic by xlx
+    reg_2_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[2])//add else
     reg_2_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[2])
     reg_2_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2634,9 +2840,12 @@ always @( reg_gateclk_write0_en[3]
        or reg_gateclk_write2_en[3]
        or rt_recover_updt_preg[27:21]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[3])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[3])
+  if(reg_gateclk_write4_en[3])//add new logic by xlx
+    reg_3_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[3])//add else
     reg_3_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[3])
     reg_3_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2657,9 +2866,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or rt_recover_updt_preg[34:28]
        or reg_gateclk_write2_en[4]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[4])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[4])
+  if(reg_gateclk_write4_en[4])//add new logic by xlx
+    reg_4_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[4])//add else
     reg_4_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[4])
     reg_4_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2680,9 +2892,12 @@ always @( rt_recover_updt_preg[41:35]
        or dp_rt_inst3_dst_preg[6:0]
        or reg_gateclk_write0_en[5]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[5])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[5])
+  if(reg_gateclk_write4_en[5])//add new logic by xlx
+    reg_5_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[5])//add else
     reg_5_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[5])
     reg_5_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2703,9 +2918,12 @@ always @( reg_gateclk_write1_en[6]
        or rt_recover_updt_preg[48:42]
        or reg_gateclk_write2_en[6]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[6])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[6])
+  if(reg_gateclk_write4_en[6])//add new logic by xlx
+    reg_6_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[6])//add else
     reg_6_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[6])
     reg_6_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2726,9 +2944,12 @@ always @( reg_gateclk_write1_en[7]
        or reg_gateclk_write0_en[7]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write3_en[7]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[7])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[7])
+  if(reg_gateclk_write4_en[7])//add new logic by xlx
+    reg_7_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[7])//add else
     reg_7_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[7])
     reg_7_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2749,9 +2970,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or reg_gateclk_write3_en[8]
        or rt_recover_updt_preg[62:56]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[8])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[8])
+  if(reg_gateclk_write4_en[8])//add new logic by xlx
+    reg_8_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[8])//add else
     reg_8_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[8])
     reg_8_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2772,9 +2996,12 @@ always @( reg_gateclk_write3_en[9]
        or dp_rt_inst1_dst_preg[6:0]
        or rt_recover_updt_preg[69:63]
        or dp_rt_inst2_dst_preg[6:0]
-       or reg_gateclk_write2_en[9])
+       or reg_gateclk_write2_en[9]
+       or reg_gateclk_write4_en[9])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[9])
+  if(reg_gateclk_write4_en[9])//add new logic by xlx
+    reg_9_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[9])//add else
     reg_9_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[9])
     reg_9_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2795,9 +3022,12 @@ always @( rt_recover_updt_preg[76:70]
        or dp_rt_inst3_dst_preg[6:0]
        or reg_gateclk_write3_en[10]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[10])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[10])
+  if(reg_gateclk_write4_en[10])//add new logic by xlx
+    reg_10_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[10])//add else
     reg_10_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[10])
     reg_10_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2818,9 +3048,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or dp_rt_inst2_dst_preg[6:0]
        or reg_gateclk_write0_en[11]
        or reg_gateclk_write1_en[11]
-       or reg_gateclk_write3_en[11])
+       or reg_gateclk_write3_en[11]
+       or reg_gateclk_write4_en[11])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[11])
+  if(reg_gateclk_write4_en[11])//add new logic by xlx
+    reg_11_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[11])//add else
     reg_11_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[11])
     reg_11_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2841,9 +3074,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or rt_recover_updt_preg[90:84]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write0_en[12]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[12])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[12])
+  if(reg_gateclk_write4_en[12])//add new logic by xlx
+    reg_12_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[12])//add else
     reg_12_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[12])
     reg_12_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2864,9 +3100,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or reg_gateclk_write3_en[13]
        or reg_gateclk_write0_en[13]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[13])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[13])
+  if(reg_gateclk_write4_en[13])//add new logic by xlx
+    reg_13_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[13])//add else
     reg_13_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[13])
     reg_13_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2887,9 +3126,12 @@ always @( reg_gateclk_write0_en[14]
        or rt_recover_updt_preg[104:98]
        or reg_gateclk_write1_en[14]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[14])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[14])
+  if(reg_gateclk_write4_en[14])//add new logic by xlx
+    reg_14_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[14])//add else
     reg_14_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[14])
     reg_14_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2910,9 +3152,12 @@ always @( rt_recover_updt_preg[111:105]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write1_en[15]
        or dp_rt_inst2_dst_preg[6:0]
-       or reg_gateclk_write3_en[15])
+       or reg_gateclk_write3_en[15]
+       or reg_gateclk_write4_en[15])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[15])
+  if(reg_gateclk_write4_en[15])//add new logic by xlx
+    reg_15_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[15])//add else
     reg_15_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[15])
     reg_15_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2933,9 +3178,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or reg_gateclk_write3_en[16]
        or reg_gateclk_write2_en[16]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[16])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[16])
+  if(reg_gateclk_write4_en[16])//add new logic by xlx
+    reg_16_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[16])//add else
     reg_16_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[16])
     reg_16_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2956,9 +3204,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or rt_recover_updt_preg[125:119]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write3_en[17]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[17])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[17])
+  if(reg_gateclk_write4_en[17])//add new logic by xlx
+    reg_17_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[17])//add else
     reg_17_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[17])
     reg_17_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -2979,9 +3230,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write0_en[18]
        or dp_rt_inst2_dst_preg[6:0]
-       or reg_gateclk_write1_en[18])
+       or reg_gateclk_write1_en[18]
+       or reg_gateclk_write4_en[18])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[18])
+  if(reg_gateclk_write4_en[18])//add new logic by xlx
+    reg_18_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[18])//add else
     reg_18_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[18])
     reg_18_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3002,9 +3256,12 @@ always @( reg_gateclk_write1_en[19]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write3_en[19]
        or dp_rt_inst2_dst_preg[6:0]
-       or reg_gateclk_write2_en[19])
+       or reg_gateclk_write2_en[19]
+       or reg_gateclk_write4_en[19])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[19])
+  if(reg_gateclk_write4_en[19])//add new logic by xlx
+    reg_19_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[19])//add else
     reg_19_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[19])
     reg_19_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3025,9 +3282,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or reg_gateclk_write1_en[20]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write2_en[20]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[20])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[20])
+  if(reg_gateclk_write4_en[20])//add new logic by xlx
+    reg_20_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[20])//add else
     reg_20_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[20])
     reg_20_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3048,9 +3308,12 @@ always @( reg_gateclk_write3_en[21]
        or reg_gateclk_write1_en[21]
        or reg_gateclk_write2_en[21]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[21])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[21])
+  if(reg_gateclk_write4_en[21])//add new logic by xlx
+    reg_21_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[21])//add else
     reg_21_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[21])
     reg_21_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3071,9 +3334,12 @@ always @( reg_gateclk_write1_en[22]
        or reg_gateclk_write2_en[22]
        or rt_recover_updt_preg[160:154]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[22])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[22])
+  if(reg_gateclk_write4_en[22])//add new logic by xlx
+    reg_22_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[22])//add else
     reg_22_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[22])
     reg_22_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3094,9 +3360,12 @@ always @( reg_gateclk_write0_en[23]
        or rt_recover_updt_preg[167:161]
        or dp_rt_inst2_dst_preg[6:0]
        or reg_gateclk_write2_en[23]
-       or reg_gateclk_write3_en[23])
+       or reg_gateclk_write3_en[23]
+       or reg_gateclk_write4_en[23])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[23])
+  if(reg_gateclk_write4_en[23])//add new logic by xlx
+    reg_23_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[23])//add else
     reg_23_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[23])
     reg_23_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3117,9 +3386,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or dp_rt_inst1_dst_preg[6:0]
        or dp_rt_inst2_dst_preg[6:0]
        or reg_gateclk_write1_en[24]
-       or reg_gateclk_write3_en[24])
+       or reg_gateclk_write3_en[24]
+       or reg_gateclk_write4_en[24])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[24])
+  if(reg_gateclk_write4_en[24])//add new logic by xlx
+    reg_24_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[24])//add else
     reg_24_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[24])
     reg_24_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3140,9 +3412,12 @@ always @( reg_gateclk_write2_en[25]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write0_en[25]
        or rt_recover_updt_preg[181:175]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[25])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[25])
+  if(reg_gateclk_write4_en[25])//add new logic by xlx
+    reg_25_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[25])//add else
     reg_25_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[25])
     reg_25_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3163,9 +3438,12 @@ always @( reg_gateclk_write1_en[26]
        or reg_gateclk_write2_en[26]
        or dp_rt_inst3_dst_preg[6:0]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[26])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[26])
+  if(reg_gateclk_write4_en[26])//add new logic by xlx
+    reg_26_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[26])//add else
     reg_26_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[26])
     reg_26_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3186,9 +3464,12 @@ always @( reg_gateclk_write3_en[27]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write0_en[27]
        or reg_gateclk_write2_en[27]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[27])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[27])
+  if(reg_gateclk_write4_en[27])//add new logic by xlx
+    reg_27_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[27])//add else
     reg_27_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[27])
     reg_27_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3209,9 +3490,12 @@ always @( reg_gateclk_write3_en[28]
        or reg_gateclk_write0_en[28]
        or reg_gateclk_write1_en[28]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[28])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[28])
+  if(reg_gateclk_write4_en[28])//add new logic by xlx
+    reg_28_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[28])//add else
     reg_28_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[28])
     reg_28_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3232,9 +3516,12 @@ always @( reg_gateclk_write3_en[29]
        or rt_recover_updt_preg[209:203]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write1_en[29]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[29])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[29])
+  if(reg_gateclk_write4_en[29])//add new logic by xlx
+    reg_29_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[29])//add else
     reg_29_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[29])
     reg_29_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3255,9 +3542,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or reg_gateclk_write0_en[30]
        or rt_recover_updt_preg[216:210]
        or dp_rt_inst2_dst_preg[6:0]
-       or reg_gateclk_write2_en[30])
+       or reg_gateclk_write2_en[30]
+       or reg_gateclk_write4_en[30])//add new logic by xlx)
 begin
-  if(reg_gateclk_write3_en[30])
+  if(reg_gateclk_write4_en[30])//add new logic by xlx
+    reg_30_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[30])//add else
     reg_30_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[30])
     reg_30_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3278,9 +3568,12 @@ always @( reg_gateclk_write2_en[31]
        or reg_gateclk_write0_en[31]
        or reg_gateclk_write1_en[31]
        or dp_rt_inst1_dst_preg[6:0]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[31])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[31])
+  if(reg_gateclk_write4_en[31])//add new logic by xlx
+    reg_31_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[31])//add else
     reg_31_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[31])
     reg_31_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3300,9 +3593,12 @@ always @( dp_rt_inst0_dst_preg[6:0]
        or reg_gateclk_write3_en[32]
        or dp_rt_inst1_dst_preg[6:0]
        or reg_gateclk_write1_en[32]
-       or dp_rt_inst2_dst_preg[6:0])
+       or dp_rt_inst2_dst_preg[6:0]
+       or reg_gateclk_write4_en[32])//add new logic by xlx
 begin
-  if(reg_gateclk_write3_en[32])
+  if(reg_gateclk_write4_en[32])//add new logic by xlx
+    reg_32_create_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(reg_gateclk_write3_en[32])//add else
     reg_32_create_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
   else if(reg_gateclk_write2_en[32])
     reg_32_create_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
@@ -3896,6 +4192,7 @@ begin
     rt_dp_inst1_src1_data[0]     = rt_inst0_mov_dst_rdy;
     rt_dp_inst1_src1_data[1]     = rt_inst0_mov_dst_wb;
     rt_dp_inst1_src1_data[8:2]   = rt_inst0_mov_dst_preg[6:0];
+
     rt_dp_inst01_src_match[1]    = 1'b0;
   end
   else if(rt_inst1_src1_match_inst0) begin
@@ -4683,6 +4980,9 @@ begin
 // &CombEnd; @1746
 end
 
+
+
+//new logic by xlx inst3 logic
 //-----------------instruction 3 source 0-------------------
 // &CombBeg; @1749
 always @( reg_28_read_data[12:0]
@@ -4770,6 +5070,7 @@ assign inst3_src0_read_preg[6:0] = inst3_src0_read_data[8:2];
 //no implicity dependency across two insts, the split src
 //can only adjacent split dest
 
+//add new match logic by xlx
 assign rt_inst3_src0_match_inst0 =
             ctrl_rt_inst3_vld && dp_rt_inst3_src0_vld
          && ctrl_rt_inst0_vld && dp_rt_inst0_dst_vld
@@ -4788,19 +5089,20 @@ assign rt_inst3_src0_match_inst2 =
          && (dp_rt_inst2_dst_reg[5:0] != 6'd0)
          && !dp_rt_dep_info[DEP_INST23_SRC0_MASK];
 
+//add new logic by xlx
 ////if inst2 dest is same with inst0 (mov) src0, inst2 may release mov src0
 ////before inst3 src gets mov src0 value, so disable mov bypass in this condition
-//assign rt_inst0_mov_bypass_over_inst2 =
-//            dp_rt_inst0_mov
-//         && !(dp_rt_inst2_dst_vld
-//             && (dp_rt_inst0_src0_reg[5:0] == dp_rt_inst2_dst_reg[5:0]));
-//
+assign rt_inst0_mov_bypass_over_inst2 =
+            dp_rt_inst0_mov
+         && !(dp_rt_inst2_dst_vld
+             && (dp_rt_inst0_src0_reg[5:0] == dp_rt_inst2_dst_reg[5:0]));
+
 ////if inst2 dest is same with inst1 (mov) src0, inst2 may release mov src0
 ////before inst3 src gets mov src0 value, so disable mov bypass in this condition
-//assign rt_inst1_mov_bypass_over_inst2 =
-//            dp_rt_inst1_mov
-//         && !(dp_rt_inst2_dst_vld
-//             && (dp_rt_inst1_src0_reg[5:0] == dp_rt_inst2_dst_reg[5:0]));
+assign rt_inst1_mov_bypass_over_inst2 =
+            dp_rt_inst1_mov
+         && !(dp_rt_inst2_dst_vld
+             && (dp_rt_inst1_src0_reg[5:0] == dp_rt_inst2_dst_reg[5:0]));
 
 // &CombBeg; @1831
 always @( inst3_src0_read_rdy
@@ -4828,11 +5130,12 @@ begin
     rt_dp_inst13_src_match[0]    = rt_inst2_mov_match_inst1;
     rt_dp_inst03_src_match[0]    = rt_inst2_mov_match_inst0;
   end
-//  else if(rt_inst3_src0_match_inst1 && rt_inst1_mov_bypass_over_inst2) begin
-//    rt_dp_inst3_src0_data[0]     = rt_inst1_mov_dst_rdy;
-//    rt_dp_inst3_src0_data[1]     = rt_inst1_mov_dst_wb;
-//    rt_dp_inst3_src0_data[8:2]   = rt_inst1_mov_dst_preg[6:0];
-//  end
+  //add new logic by xlx
+  else if(rt_inst3_src0_match_inst1 && rt_inst1_mov_bypass_over_inst2) begin
+    rt_dp_inst3_src0_data[0]     = rt_inst1_mov_dst_rdy;
+    rt_dp_inst3_src0_data[1]     = rt_inst1_mov_dst_wb;
+    rt_dp_inst3_src0_data[8:2]   = rt_inst1_mov_dst_preg[6:0];
+  end
   else if(rt_inst3_src0_match_inst1) begin
     rt_dp_inst3_src0_data[0]     = 1'b0;
     rt_dp_inst3_src0_data[1]     = 1'b0;
@@ -4842,12 +5145,13 @@ begin
     rt_dp_inst13_src_match[0]    = 1'b1;
     rt_dp_inst03_src_match[0]    = 1'b0;
   end
-//  else if(rt_inst3_src0_match_inst0 && rt_inst0_mov_bypass_over_inst1
-//                                    && rt_inst0_mov_bypass_over_inst2)
-//    rt_dp_inst3_src0_data[0]     = rt_inst0_mov_dst_rdy;
-//    rt_dp_inst3_src0_data[1]     = rt_inst0_mov_dst_wb;
-//    rt_dp_inst3_src0_data[8:2]   = rt_inst0_mov_dst_preg[6:0];
-//  end
+  //add new logic by xlx
+  else if(rt_inst3_src0_match_inst0 && rt_inst0_mov_bypass_over_inst1
+                                    && rt_inst0_mov_bypass_over_inst2)begin
+    rt_dp_inst3_src0_data[0]     = rt_inst0_mov_dst_rdy;
+    rt_dp_inst3_src0_data[1]     = rt_inst0_mov_dst_wb;
+    rt_dp_inst3_src0_data[8:2]   = rt_inst0_mov_dst_preg[6:0];
+  end
   else if(rt_inst3_src0_match_inst0) begin
     rt_dp_inst3_src0_data[0]     = 1'b0;
     rt_dp_inst3_src0_data[1]     = 1'b0;
@@ -4870,6 +5174,7 @@ begin
   end
 // &CombEnd; @1881
 end
+
 
 //-----------------instruction 3 source 1-------------------
 // &CombBeg; @1884
@@ -4998,11 +5303,12 @@ begin
     rt_dp_inst13_src_match[1]    = rt_inst2_mov_match_inst1;
     rt_dp_inst03_src_match[1]    = rt_inst2_mov_match_inst0;
   end
-//  else if(rt_inst3_src1_match_inst1 && rt_inst1_mov_bypass_over_inst2) begin
-//    rt_dp_inst3_src1_data[0]     = rt_inst1_mov_dst_rdy;
-//    rt_dp_inst3_src1_data[1]     = rt_inst1_mov_dst_wb;
-//    rt_dp_inst3_src1_data[8:2]   = rt_inst1_mov_dst_preg[6:0];
-//  end
+  //add new logic by xlx
+  else if(rt_inst3_src1_match_inst1 && rt_inst1_mov_bypass_over_inst2) begin
+    rt_dp_inst3_src1_data[0]     = rt_inst1_mov_dst_rdy;
+    rt_dp_inst3_src1_data[1]     = rt_inst1_mov_dst_wb;
+    rt_dp_inst3_src1_data[8:2]   = rt_inst1_mov_dst_preg[6:0];
+  end
   else if(rt_inst3_src1_match_inst1) begin
     rt_dp_inst3_src1_data[0]     = 1'b0;
     rt_dp_inst3_src1_data[1]     = 1'b0;
@@ -5012,12 +5318,13 @@ begin
     rt_dp_inst13_src_match[1]    = 1'b1;
     rt_dp_inst03_src_match[1]    = 1'b0;
   end
-//  else if(rt_inst3_src1_match_inst0 && rt_inst0_mov_bypass_over_inst1
-//                                    && rt_inst0_mov_bypass_over_inst2)
-//    rt_dp_inst3_src1_data[0]     = rt_inst0_mov_dst_rdy;
-//    rt_dp_inst3_src1_data[1]     = rt_inst0_mov_dst_wb;
-//    rt_dp_inst3_src1_data[8:2]   = rt_inst0_mov_dst_preg[6:0];
-//  end
+  //add new logic by xlx
+  else if(rt_inst3_src1_match_inst0 && rt_inst0_mov_bypass_over_inst1
+                                    && rt_inst0_mov_bypass_over_inst2)begin
+    rt_dp_inst3_src1_data[0]     = rt_inst0_mov_dst_rdy;
+    rt_dp_inst3_src1_data[1]     = rt_inst0_mov_dst_wb;
+    rt_dp_inst3_src1_data[8:2]   = rt_inst0_mov_dst_preg[6:0];
+  end
   else if(rt_inst3_src1_match_inst0) begin
     rt_dp_inst3_src1_data[0]     = 1'b0;
     rt_dp_inst3_src1_data[1]     = 1'b0;
@@ -5136,6 +5443,7 @@ assign rt_inst3_src2_match_inst1 =
          && (dp_rt_inst1_dst_reg[5:0] == dp_rt_inst3_dst_reg[5:0])
          && (dp_rt_inst1_dst_reg[5:0] != 6'd0)
          && !dp_rt_dep_info[DEP_INST13_PREG_MASK];
+//add new logic by xlx
 assign rt_inst3_src2_match_inst2 =
             ctrl_rt_inst3_vld && dp_rt_inst3_src2_vld
          && ctrl_rt_inst2_vld && dp_rt_inst2_dst_vld
@@ -5174,12 +5482,13 @@ begin
     rt_dp_inst13_src_match[2]    = rt_inst2_mov_match_inst1;
     rt_dp_inst03_src_match[2]    = rt_inst2_mov_match_inst0;
   end
-//  else if(rt_inst3_src2_match_inst1 && rt_inst1_mov_bypass_over_inst2) begin
-//    rt_dp_inst3_src2_data[9]     = rt_inst1_mov_dst_rdy;
-//    rt_dp_inst3_src2_data[0]     = rt_inst1_mov_dst_mla_rdy;
-//    rt_dp_inst3_src2_data[1]     = rt_inst1_mov_dst_wb;
-//    rt_dp_inst3_src2_data[8:2]   = rt_inst1_mov_dst_preg[6:0];
-//  end
+  //add new logic by xlx
+  else if(rt_inst3_src2_match_inst1 && rt_inst1_mov_bypass_over_inst2) begin
+    rt_dp_inst3_src2_data[9]     = rt_inst1_mov_dst_rdy;
+    rt_dp_inst3_src2_data[0]     = rt_inst1_mov_dst_mla_rdy;
+    rt_dp_inst3_src2_data[1]     = rt_inst1_mov_dst_wb;
+    rt_dp_inst3_src2_data[8:2]   = rt_inst1_mov_dst_preg[6:0];
+  end
   else if(rt_inst3_src2_match_inst1) begin
     rt_dp_inst3_src2_data[9]     = 1'b0;
     rt_dp_inst3_src2_data[0]     = 1'b0;
@@ -5190,13 +5499,14 @@ begin
     rt_dp_inst13_src_match[2]    = 1'b1;
     rt_dp_inst03_src_match[2]    = 1'b0;
   end
-//  else if(rt_inst3_src2_match_inst0 && rt_inst0_mov_bypass_over_inst1
-//                                    && rt_inst0_mov_bypass_over_inst2)
-//    rt_dp_inst3_src2_data[9]     = rt_inst0_mov_dst_rdy;
-//    rt_dp_inst3_src2_data[0]     = rt_inst0_mov_dst_mla_rdy;
-//    rt_dp_inst3_src2_data[1]     = rt_inst0_mov_dst_wb;
-//    rt_dp_inst3_src2_data[8:2]   = rt_inst0_mov_dst_preg[6:0];
-//  end
+  //add new logic by xlx
+  else if(rt_inst3_src2_match_inst0 && rt_inst0_mov_bypass_over_inst1
+                                    && rt_inst0_mov_bypass_over_inst2)begin
+    rt_dp_inst3_src2_data[9]     = rt_inst0_mov_dst_rdy;
+    rt_dp_inst3_src2_data[0]     = rt_inst0_mov_dst_mla_rdy;
+    rt_dp_inst3_src2_data[1]     = rt_inst0_mov_dst_wb;
+    rt_dp_inst3_src2_data[8:2]   = rt_inst0_mov_dst_preg[6:0];
+  end
   else if(rt_inst3_src2_match_inst0) begin
     rt_dp_inst3_src2_data[9]     = 1'b0;
     rt_dp_inst3_src2_data[0]     = 1'b0;
@@ -5269,6 +5579,494 @@ begin
 end
 
 // &ModuleEnd; @2160
-endmodule
 
+
+//new logic by xlx inst4 logic
+//-----------------instruction 3 source 0-------------------
+always @( reg_28_read_data[12:0]
+       or reg_18_read_data[12:0]
+       or reg_22_read_data[12:0]
+       or reg_15_read_data[12:0]
+       or reg_32_read_data[12:0]
+       or reg_2_read_data[12:0]
+       or reg_0_read_data[12:0]
+       or reg_25_read_data[12:0]
+       or reg_10_read_data[12:0]
+       or reg_8_read_data[12:0]
+       or reg_14_read_data[12:0]
+       or dp_rt_inst4_src0_reg[5:0]
+       or reg_6_read_data[12:0]
+       or reg_30_read_data[12:0]
+       or reg_26_read_data[12:0]
+       or reg_27_read_data[12:0]
+       or reg_16_read_data[12:0]
+       or reg_29_read_data[12:0]
+       or reg_12_read_data[12:0]
+       or reg_31_read_data[12:0]
+       or reg_4_read_data[12:0]
+       or reg_23_read_data[12:0]
+       or reg_9_read_data[12:0]
+       or reg_24_read_data[12:0]
+       or reg_7_read_data[12:0]
+       or reg_1_read_data[12:0]
+       or reg_21_read_data[12:0]
+       or reg_17_read_data[12:0]
+       or reg_19_read_data[12:0]
+       or reg_20_read_data[12:0]
+       or reg_3_read_data[12:0]
+       or reg_11_read_data[12:0]
+       or reg_5_read_data[12:0]
+       or reg_13_read_data[12:0])
+begin
+    case (dp_rt_inst4_src0_reg[5:0])
+    6'd0   : inst4_src0_read_data[12:0] = reg_0_read_data[12:0];
+    6'd1   : inst4_src0_read_data[12:0] = reg_1_read_data[12:0];
+    6'd2   : inst4_src0_read_data[12:0] = reg_2_read_data[12:0];
+    6'd3   : inst4_src0_read_data[12:0] = reg_3_read_data[12:0];
+    6'd4   : inst4_src0_read_data[12:0] = reg_4_read_data[12:0];
+    6'd5   : inst4_src0_read_data[12:0] = reg_5_read_data[12:0];
+    6'd6   : inst4_src0_read_data[12:0] = reg_6_read_data[12:0];
+    6'd7   : inst4_src0_read_data[12:0] = reg_7_read_data[12:0];
+    6'd8   : inst4_src0_read_data[12:0] = reg_8_read_data[12:0];
+    6'd9   : inst4_src0_read_data[12:0] = reg_9_read_data[12:0];
+    6'd10  : inst4_src0_read_data[12:0] = reg_10_read_data[12:0];
+    6'd11  : inst4_src0_read_data[12:0] = reg_11_read_data[12:0];
+    6'd12  : inst4_src0_read_data[12:0] = reg_12_read_data[12:0];
+    6'd13  : inst4_src0_read_data[12:0] = reg_13_read_data[12:0];
+    6'd14  : inst4_src0_read_data[12:0] = reg_14_read_data[12:0];
+    6'd15  : inst4_src0_read_data[12:0] = reg_15_read_data[12:0];
+    6'd16  : inst4_src0_read_data[12:0] = reg_16_read_data[12:0];
+    6'd17  : inst4_src0_read_data[12:0] = reg_17_read_data[12:0];
+    6'd18  : inst4_src0_read_data[12:0] = reg_18_read_data[12:0];
+    6'd19  : inst4_src0_read_data[12:0] = reg_19_read_data[12:0];
+    6'd20  : inst4_src0_read_data[12:0] = reg_20_read_data[12:0];
+    6'd21  : inst4_src0_read_data[12:0] = reg_21_read_data[12:0];
+    6'd22  : inst4_src0_read_data[12:0] = reg_22_read_data[12:0];
+    6'd23  : inst4_src0_read_data[12:0] = reg_23_read_data[12:0];
+    6'd24  : inst4_src0_read_data[12:0] = reg_24_read_data[12:0];
+    6'd25  : inst4_src0_read_data[12:0] = reg_25_read_data[12:0];
+    6'd26  : inst4_src0_read_data[12:0] = reg_26_read_data[12:0];
+    6'd27  : inst4_src0_read_data[12:0] = reg_27_read_data[12:0];
+    6'd28  : inst4_src0_read_data[12:0] = reg_28_read_data[12:0];
+    6'd29  : inst4_src0_read_data[12:0] = reg_29_read_data[12:0];
+    6'd30  : inst4_src0_read_data[12:0] = reg_30_read_data[12:0];
+    6'd31  : inst4_src0_read_data[12:0] = reg_31_read_data[12:0];
+    6'd32  : inst4_src0_read_data[12:0] = reg_32_read_data[12:0];
+    default: inst4_src0_read_data[12:0] = {13{1'bx}};
+  endcase
+end
+
+
+assign inst4_src0_read_rdy       = inst4_src0_read_data[0];
+assign inst4_src0_read_wb        = inst4_src0_read_data[1];
+assign inst4_src0_read_preg[6:0] = inst4_src0_read_data[8:2];
+
+assign rt_inst4_src0_match_inst0 =
+            ctrl_rt_inst4_vld && dp_rt_inst4_src0_vld
+         && ctrl_rt_inst0_vld && dp_rt_inst0_dst_vld
+         && (dp_rt_inst0_dst_reg[5:0] == dp_rt_inst4_src0_reg[5:0])
+         && (dp_rt_inst0_dst_reg[5:0] != 6'd0);
+assign rt_inst4_src0_match_inst1 =
+            ctrl_rt_inst3_vld && dp_rt_inst3_src0_vld
+         && ctrl_rt_inst1_vld && dp_rt_inst1_dst_vld
+         && (dp_rt_inst1_dst_reg[5:0] == dp_rt_inst3_src0_reg[5:0])
+         && (dp_rt_inst1_dst_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST14_PREG_MASK];
+assign rt_inst4_src0_match_inst2 =
+            ctrl_rt_inst3_vld && dp_rt_inst3_src0_vld
+         && ctrl_rt_inst2_vld && dp_rt_inst2_dst_vld
+         && (dp_rt_inst2_dst_reg[5:0] == dp_rt_inst3_src0_reg[5:0])
+         && (dp_rt_inst2_dst_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST24_SRC0_MASK];
+assign rt_inst4_src0_match_inst3 =
+            ctrl_rt_inst4_vld && dp_rt_inst4_src0_vld
+         && ctrl_rt_inst3_vld && dp_rt_inst3_dst_vld
+         && (dp_rt_inst3_dst_reg[5:0] == dp_rt_inst4_src0_reg[5:0])
+         && (dp_rt_inst3_dst_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST34_SRC0_MASK];
+
+always @( inst4_src0_read_rdy
+       or rt_inst2_dst_wb
+       or dp_rt_inst3_src0_vld
+       or rt_inst2_mov_match_inst0
+       or inst3_src0_read_wb
+       or rt_inst2_mov_match_inst1
+       or rt_inst3_src0_match_inst1
+       or rt_inst3_src0_match_inst0
+       or rt_inst2_dst_preg[6:0]
+       or rt_inst2_dst_rdy
+       or dp_rt_inst0_dst_preg[6:0]
+       or rt_inst3_src0_match_inst2
+       or dp_rt_inst1_dst_preg[6:0]
+       or inst3_src0_read_preg[6:0]
+       or rt_inst2_mov_match_inst2)
+
+begin
+  if(rt_inst4_src0_match_inst3) begin
+    rt_dp_inst4_src0_data[0]     = rt_inst3_dst_rdy;
+    rt_dp_inst4_src0_data[1]     = rt_inst3_dst_wb;
+    rt_dp_inst4_src0_data[8:2]   = rt_inst3_dst_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = rt_inst3_mov_match_inst3;
+    rt_dp_inst24_src_match[0]    = rt_inst3_mov_match_inst2;
+    rt_dp_inst14_src_match[0]    = rt_inst3_mov_match_inst1;
+    rt_dp_inst04_src_match[0]    = rt_inst3_mov_match_inst0;
+  end
+//  else if(rt_inst3_src0_match_inst1 && rt_inst1_mov_bypass_over_inst2) begin
+//    rt_dp_inst3_src0_data[0]     = rt_inst1_mov_dst_rdy;
+//    rt_dp_inst3_src0_data[1]     = rt_inst1_mov_dst_wb;
+//    rt_dp_inst3_src0_data[8:2]   = rt_inst1_mov_dst_preg[6:0];
+//  end
+  else if(rt_inst4_src0_match_inst2) begin
+    rt_dp_inst4_src0_data[0]     = 1'b0;
+    rt_dp_inst4_src0_data[1]     = 1'b0;
+    rt_dp_inst4_src0_data[8:2]   = dp_rt_inst2_dst_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = 1'b0;
+    rt_dp_inst24_src_match[0]    = 1'b1;
+    rt_dp_inst14_src_match[0]    = 1'b0;
+    rt_dp_inst04_src_match[0]    = 1'b0;
+  end
+//  else if(rt_inst3_src0_match_inst0 && rt_inst0_mov_bypass_over_inst1
+//                                    && rt_inst0_mov_bypass_over_inst2)
+//    rt_dp_inst3_src0_data[0]     = rt_inst0_mov_dst_rdy;
+//    rt_dp_inst3_src0_data[1]     = rt_inst0_mov_dst_wb;
+//    rt_dp_inst3_src0_data[8:2]   = rt_inst0_mov_dst_preg[6:0];
+//  end
+  else if(rt_inst4_src0_match_inst1) begin
+    rt_dp_inst4_src0_data[0]     = 1'b0;
+    rt_dp_inst4_src0_data[1]     = 1'b0;
+    rt_dp_inst4_src0_data[8:2]   = dp_rt_inst1_dst_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = 1'b0;
+    rt_dp_inst24_src_match[0]    = 1'b0;
+    rt_dp_inst14_src_match[0]    = 1'b1;
+    rt_dp_inst04_src_match[0]    = 1'b0;
+  end
+  else if(rt_inst4_src0_match_inst0) begin
+    rt_dp_inst4_src0_data[0]     = 1'b0;
+    rt_dp_inst4_src0_data[1]     = 1'b0;
+    rt_dp_inst4_src0_data[8:2]   = dp_rt_inst0_dst_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = 1'b0;
+    rt_dp_inst24_src_match[0]    = 1'b0;
+    rt_dp_inst14_src_match[0]    = 1'b0;
+    rt_dp_inst04_src_match[0]    = 1'b1;
+  end
+  else begin
+    rt_dp_inst4_src0_data[0]     = inst4_src0_read_rdy
+                                || !dp_rt_inst4_src0_vld;
+    rt_dp_inst4_src0_data[1]     = inst4_src0_read_wb
+                                || !dp_rt_inst4_src0_vld;
+    rt_dp_inst4_src0_data[8:2]   = inst4_src0_read_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = 1'b0;
+    rt_dp_inst24_src_match[0]    = 1'b0;
+    rt_dp_inst14_src_match[0]    = 1'b0;
+    rt_dp_inst04_src_match[0]    = 1'b0;
+  end
+// &CombEnd; @1881
+end
+
+//-----------------instruction 4 source 1-------------------
+always @( reg_28_read_data[12:0]
+       or reg_18_read_data[12:0]
+       or reg_22_read_data[12:0]
+       or reg_15_read_data[12:0]
+       or reg_32_read_data[12:0]
+       or reg_2_read_data[12:0]
+       or reg_0_read_data[12:0]
+       or reg_25_read_data[12:0]
+       or reg_10_read_data[12:0]
+       or reg_8_read_data[12:0]
+       or reg_14_read_data[12:0]
+       or dp_rt_inst4_src1_reg[5:0]
+       or reg_6_read_data[12:0]
+       or reg_30_read_data[12:0]
+       or reg_26_read_data[12:0]
+       or reg_27_read_data[12:0]
+       or reg_16_read_data[12:0]
+       or reg_29_read_data[12:0]
+       or reg_12_read_data[12:0]
+       or reg_31_read_data[12:0]
+       or reg_4_read_data[12:0]
+       or reg_23_read_data[12:0]
+       or reg_9_read_data[12:0]
+       or reg_24_read_data[12:0]
+       or reg_7_read_data[12:0]
+       or reg_1_read_data[12:0]
+       or reg_21_read_data[12:0]
+       or reg_17_read_data[12:0]
+       or reg_19_read_data[12:0]
+       or reg_20_read_data[12:0]
+       or reg_3_read_data[12:0]
+       or reg_11_read_data[12:0]
+       or reg_5_read_data[12:0]
+       or reg_13_read_data[12:0])
+begin
+  case (dp_rt_inst4_src1_reg[5:0])
+    6'd0   : inst4_src1_read_data[12:0] = reg_0_read_data[12:0];
+    6'd1   : inst4_src1_read_data[12:0] = reg_1_read_data[12:0];
+    6'd2   : inst4_src1_read_data[12:0] = reg_2_read_data[12:0];
+    6'd3   : inst4_src1_read_data[12:0] = reg_3_read_data[12:0];
+    6'd4   : inst4_src1_read_data[12:0] = reg_4_read_data[12:0];
+    6'd5   : inst4_src1_read_data[12:0] = reg_5_read_data[12:0];
+    6'd6   : inst4_src1_read_data[12:0] = reg_6_read_data[12:0];
+    6'd7   : inst4_src1_read_data[12:0] = reg_7_read_data[12:0];
+    6'd8   : inst4_src1_read_data[12:0] = reg_8_read_data[12:0];
+    6'd9   : inst4_src1_read_data[12:0] = reg_9_read_data[12:0];
+    6'd10  : inst4_src1_read_data[12:0] = reg_10_read_data[12:0];
+    6'd11  : inst4_src1_read_data[12:0] = reg_11_read_data[12:0];
+    6'd12  : inst4_src1_read_data[12:0] = reg_12_read_data[12:0];
+    6'd13  : inst4_src1_read_data[12:0] = reg_13_read_data[12:0];
+    6'd14  : inst4_src1_read_data[12:0] = reg_14_read_data[12:0];
+    6'd15  : inst4_src1_read_data[12:0] = reg_15_read_data[12:0];
+    6'd16  : inst4_src1_read_data[12:0] = reg_16_read_data[12:0];
+    6'd17  : inst4_src1_read_data[12:0] = reg_17_read_data[12:0];
+    6'd18  : inst4_src1_read_data[12:0] = reg_18_read_data[12:0];
+    6'd19  : inst4_src1_read_data[12:0] = reg_19_read_data[12:0];
+    6'd20  : inst4_src1_read_data[12:0] = reg_20_read_data[12:0];
+    6'd21  : inst4_src1_read_data[12:0] = reg_21_read_data[12:0];
+    6'd22  : inst4_src1_read_data[12:0] = reg_22_read_data[12:0];
+    6'd23  : inst4_src1_read_data[12:0] = reg_23_read_data[12:0];
+    6'd24  : inst4_src1_read_data[12:0] = reg_24_read_data[12:0];
+    6'd25  : inst4_src1_read_data[12:0] = reg_25_read_data[12:0];
+    6'd26  : inst4_src1_read_data[12:0] = reg_26_read_data[12:0];
+    6'd27  : inst4_src1_read_data[12:0] = reg_27_read_data[12:0];
+    6'd28  : inst4_src1_read_data[12:0] = reg_28_read_data[12:0];
+    6'd29  : inst4_src1_read_data[12:0] = reg_29_read_data[12:0];
+    6'd30  : inst4_src1_read_data[12:0] = reg_30_read_data[12:0];
+    6'd31  : inst4_src1_read_data[12:0] = reg_31_read_data[12:0];
+    6'd32  : inst4_src1_read_data[12:0] = reg_32_read_data[12:0];
+    default: inst4_src1_read_data[12:0] = {13{1'bx}};
+  endcase
+
+end
+
+assign inst4_src1_read_rdy       = inst4_src1_read_data[0];
+assign inst4_src1_read_wb        = inst4_src1_read_data[1];
+assign inst4_src1_read_preg[6:0] = inst4_src1_read_data[8:2];
+
+assign rt_inst4_src1_match_inst0 =
+            ctrl_rt_inst4_vld && dp_rt_inst4_src1_vld
+         && ctrl_rt_inst0_vld && dp_rt_inst0_dst_vld
+         && (dp_rt_inst0_dst_reg[5:0] == dp_rt_inst4_src1_reg[5:0])
+         && (dp_rt_inst0_dst_reg[5:0] != 6'd0);
+assign rt_inst4_src1_match_inst1 =
+            ctrl_rt_inst3_vld && dp_rt_inst3_src1_vld
+         && ctrl_rt_inst1_vld && dp_rt_inst1_dst_vld
+         && (dp_rt_inst1_dst_reg[5:0] == dp_rt_inst3_src1_reg[5:0])
+         && (dp_rt_inst1_dst_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST14_PREG_MASK];
+assign rt_inst4_src1_match_inst2 =
+            ctrl_rt_inst3_vld && dp_rt_inst3_src1_vld
+         && ctrl_rt_inst2_vld && dp_rt_inst2_dst_vld
+         && (dp_rt_inst2_dst_reg[5:0] == dp_rt_inst3_src1_reg[5:0])
+         && (dp_rt_inst2_dst_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST24_SRC0_MASK];
+assign rt_inst4_src1_match_inst3 =
+            ctrl_rt_inst4_vld && dp_rt_inst4_src1_vld
+         && ctrl_rt_inst3_vld && dp_rt_inst3_dst_vld
+         && (dp_rt_inst3_dst_reg[5:0] == dp_rt_inst4_src1_reg[5:0])
+         && (dp_rt_inst3_dst_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST34_SRC0_MASK];
+
+
+always @( inst4_src1_read_rdy
+       or rt_inst2_dst_wb
+       or dp_rt_inst3_src1_vld
+       or rt_inst2_mov_match_inst0
+       or inst3_src1_read_wb
+       or rt_inst2_mov_match_inst1
+       or rt_inst3_src1_match_inst1
+       or rt_inst3_src1_match_inst0
+       or rt_inst2_dst_preg[6:0]
+       or rt_inst2_dst_rdy
+       or dp_rt_inst0_dst_preg[6:0]
+       or rt_inst3_src1_match_inst2
+       or dp_rt_inst1_dst_preg[6:0]
+       or inst3_src1_read_preg[6:0]
+       or rt_inst2_mov_match_inst2)
+
+begin
+  if(rt_inst4_src1_match_inst3) begin
+    rt_dp_inst4_src1_data[0]     = rt_inst3_dst_rdy;
+    rt_dp_inst4_src1_data[1]     = rt_inst3_dst_wb;
+    rt_dp_inst4_src1_data[8:2]   = rt_inst3_dst_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = rt_inst3_mov_match_inst3;
+    rt_dp_inst24_src_match[0]    = rt_inst3_mov_match_inst2;
+    rt_dp_inst14_src_match[0]    = rt_inst3_mov_match_inst1;
+    rt_dp_inst04_src_match[0]    = rt_inst3_mov_match_inst0;
+  end
+  else if(rt_inst4_src1_match_inst2) begin
+    rt_dp_inst4_src1_data[0]     = 1'b0;
+    rt_dp_inst4_src1_data[1]     = 1'b0;
+    rt_dp_inst4_src1_data[8:2]   = dp_rt_inst2_dst_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = 1'b0;
+    rt_dp_inst24_src_match[0]    = 1'b1;
+    rt_dp_inst14_src_match[0]    = 1'b0;
+    rt_dp_inst04_src_match[0]    = 1'b0;
+  end
+
+    else if(rt_inst4_src1_match_inst1) begin
+    rt_dp_inst4_src1_data[0]     = 1'b0;
+    rt_dp_inst4_src1_data[1]     = 1'b0;
+    rt_dp_inst4_src1_data[8:2]   = dp_rt_inst1_dst_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = 1'b0;
+    rt_dp_inst24_src_match[0]    = 1'b0;
+    rt_dp_inst14_src_match[0]    = 1'b1;
+    rt_dp_inst04_src_match[0]    = 1'b0;
+  end
+  else if(rt_inst4_src1_match_inst0) begin
+    rt_dp_inst4_src1_data[0]     = 1'b0;
+    rt_dp_inst4_src1_data[1]     = 1'b0;
+    rt_dp_inst4_src1_data[8:2]   = dp_rt_inst0_dst_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = 1'b0;
+    rt_dp_inst24_src_match[0]    = 1'b0;
+    rt_dp_inst14_src_match[0]    = 1'b0;
+    rt_dp_inst04_src_match[0]    = 1'b1;
+  end
+  else begin
+    rt_dp_inst4_src1_data[0]     = inst4_src1_read_rdy
+                                || !dp_rt_inst4_src1_vld;
+    rt_dp_inst4_src1_data[1]     = inst4_src1_read_wb
+                                || !dp_rt_inst4_src1_vld;
+    rt_dp_inst4_src1_data[8:2]   = inst4_src1_read_preg[6:0];
+
+    rt_dp_inst34_src_match[0]    = 1'b0;
+    rt_dp_inst24_src_match[0]    = 1'b0;
+    rt_dp_inst14_src_match[0]    = 1'b0;
+    rt_dp_inst04_src_match[0]    = 1'b0;
+  end
+// &CombEnd; @1881
+end
+
+//---------instruction 4 src2/dest reg (for release)--------
+always @( reg_28_read_data[12:0]
+       or reg_18_read_data[12:0]
+       or reg_22_read_data[12:0]
+       or reg_15_read_data[12:0]
+       or reg_32_read_data[12:0]
+       or reg_2_read_data[12:0]
+       or reg_0_read_data[12:0]
+       or reg_25_read_data[12:0]
+       or reg_10_read_data[12:0]
+       or reg_8_read_data[12:0]
+       or reg_14_read_data[12:0]
+       or reg_6_read_data[12:0]
+       or reg_30_read_data[12:0]
+       or reg_26_read_data[12:0]
+       or dp_rt_inst4_dst_reg[5:0]
+       or reg_27_read_data[12:0]
+       or reg_16_read_data[12:0]
+       or reg_29_read_data[12:0]
+       or reg_12_read_data[12:0]
+       or reg_31_read_data[12:0]
+       or reg_4_read_data[12:0]
+       or reg_23_read_data[12:0]
+       or reg_9_read_data[12:0]
+       or reg_24_read_data[12:0]
+       or reg_7_read_data[12:0]
+       or reg_1_read_data[12:0]
+       or reg_21_read_data[12:0]
+       or reg_17_read_data[12:0]
+       or reg_19_read_data[12:0]
+       or reg_20_read_data[12:0]
+       or reg_3_read_data[12:0]
+       or reg_11_read_data[12:0]
+       or reg_5_read_data[12:0]
+       or reg_13_read_data[12:0])
+
+begin
+  case (dp_rt_inst4_dst_reg[5:0])
+    6'd0   : inst4_dst_read_data[12:0] = reg_0_read_data[12:0];
+    6'd1   : inst4_dst_read_data[12:0] = reg_1_read_data[12:0];
+    6'd2   : inst4_dst_read_data[12:0] = reg_2_read_data[12:0];
+    6'd3   : inst4_dst_read_data[12:0] = reg_3_read_data[12:0];
+    6'd4   : inst4_dst_read_data[12:0] = reg_4_read_data[12:0];
+    6'd5   : inst4_dst_read_data[12:0] = reg_5_read_data[12:0];
+    6'd6   : inst4_dst_read_data[12:0] = reg_6_read_data[12:0];
+    6'd7   : inst4_dst_read_data[12:0] = reg_7_read_data[12:0];
+    6'd8   : inst4_dst_read_data[12:0] = reg_8_read_data[12:0];
+    6'd9   : inst4_dst_read_data[12:0] = reg_9_read_data[12:0];
+    6'd10  : inst4_dst_read_data[12:0] = reg_10_read_data[12:0];
+    6'd11  : inst4_dst_read_data[12:0] = reg_11_read_data[12:0];
+    6'd12  : inst4_dst_read_data[12:0] = reg_12_read_data[12:0];
+    6'd13  : inst4_dst_read_data[12:0] = reg_13_read_data[12:0];
+    6'd14  : inst4_dst_read_data[12:0] = reg_14_read_data[12:0];
+    6'd15  : inst4_dst_read_data[12:0] = reg_15_read_data[12:0];
+    6'd16  : inst4_dst_read_data[12:0] = reg_16_read_data[12:0];
+    6'd17  : inst4_dst_read_data[12:0] = reg_17_read_data[12:0];
+    6'd18  : inst4_dst_read_data[12:0] = reg_18_read_data[12:0];
+    6'd19  : inst4_dst_read_data[12:0] = reg_19_read_data[12:0];
+    6'd20  : inst4_dst_read_data[12:0] = reg_20_read_data[12:0];
+    6'd21  : inst4_dst_read_data[12:0] = reg_21_read_data[12:0];
+    6'd22  : inst4_dst_read_data[12:0] = reg_22_read_data[12:0];
+    6'd23  : inst4_dst_read_data[12:0] = reg_23_read_data[12:0];
+    6'd24  : inst4_dst_read_data[12:0] = reg_24_read_data[12:0];
+    6'd25  : inst4_dst_read_data[12:0] = reg_25_read_data[12:0];
+    6'd26  : inst4_dst_read_data[12:0] = reg_26_read_data[12:0];
+    6'd27  : inst4_dst_read_data[12:0] = reg_27_read_data[12:0];
+    6'd28  : inst4_dst_read_data[12:0] = reg_28_read_data[12:0];
+    6'd29  : inst4_dst_read_data[12:0] = reg_29_read_data[12:0];
+    6'd30  : inst4_dst_read_data[12:0] = reg_30_read_data[12:0];
+    6'd31  : inst4_dst_read_data[12:0] = reg_31_read_data[12:0];
+    6'd32  : inst4_dst_read_data[12:0] = reg_32_read_data[12:0];
+    default: inst4_dst_read_data[12:0] = {13{1'bx}};
+  endcase
+// &CombEnd; @2038
+end
+
+assign inst4_src2_read_rdy       = inst4_dst_read_data[0];
+assign inst4_src2_read_wb        = inst4_dst_read_data[1];
+assign inst4_src2_read_preg[6:0] = inst4_dst_read_data[8:2];
+assign inst4_src2_read_mla_rdy   = inst4_dst_read_data[9];
+
+assign rt_inst4_dst_match_inst0 =
+            ctrl_rt_inst4_vld && dp_rt_inst4_dst_vld
+         && ctrl_rt_inst0_vld && dp_rt_inst0_dst_vld
+         && (dp_rt_inst0_dst_reg[5:0] == dp_rt_inst4_dst_reg[5:0])
+         && (dp_rt_inst0_dst_reg[5:0] != 6'd0);
+assign rt_inst4_dst_match_inst1 =
+            ctrl_rt_inst3_vld && dp_rt_inst3_dst_vld
+         && ctrl_rt_inst1_vld && dp_rt_inst1_dst_vld
+         && (dp_rt_inst1_dst_reg[5:0] == dp_rt_inst3_dst_reg[5:0])
+         && (dp_rt_inst1_dst_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST14_PREG_MASK];
+assign rt_inst4_dst_match_inst2 =
+            ctrl_rt_inst3_vld && dp_rt_inst3_dst_vld
+         && ctrl_rt_inst2_vld && dp_rt_inst2_dst_vld
+         && (dp_rt_inst2_dst_reg[5:0] == dp_rt_inst3_dst_reg[5:0])
+         && (dp_rt_inst2_dst_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST24_SRC0_MASK];
+assign rt_inst4_dst_match_inst3 =
+            ctrl_rt_inst4_vld && dp_rt_inst4_dst_vld
+         && ctrl_rt_inst3_vld && dp_rt_inst3_dst_vld
+         && (dp_rt_inst3_dst_reg[5:0] == dp_rt_inst4_dst_reg[5:0])
+         && (dp_rt_inst3_dst_reg[5:0] != 6'd0)
+         && !dp_rt_dep_info[DEP_INST34_SRC0_MASK];
+
+always @( *)
+begin
+  if(dp_rt_inst4_dst_reg[5])
+    rt_dp_inst4_rel_preg[6:0] = dp_rt_inst4_dst_preg[6:0];
+  else if(rt_inst4_dst_match_inst3)
+    rt_dp_inst4_rel_preg[6:0] = dp_rt_inst3_dst_preg[6:0];
+  else if(rt_inst4_dst_match_inst2)
+    rt_dp_inst4_rel_preg[6:0] = dp_rt_inst2_dst_preg[6:0];
+  else if(rt_inst4_dst_match_inst1)
+    rt_dp_inst4_rel_preg[6:0] = dp_rt_inst1_dst_preg[6:0];
+  else if(rt_inst4_dst_match_inst0)
+    rt_dp_inst4_rel_preg[6:0] = dp_rt_inst0_dst_preg[6:0];
+  else
+    rt_dp_inst4_rel_preg[6:0] = inst4_dst_read_data[8:2];
+// &CombEnd; @2158
+end
+
+
+endmodule
 

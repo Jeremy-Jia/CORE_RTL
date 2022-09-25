@@ -78,9 +78,13 @@ module ct_idu_is_ctrl(
   ctrl_dp_is_dis_pst_create1_iid_sel,
   ctrl_dp_is_dis_pst_create2_iid_sel,
   ctrl_dp_is_dis_pst_create3_iid_sel,
+  ctrl_dp_is_dis_pst_create4_iid_sel,//add by xlx
+
   ctrl_dp_is_dis_rob_create0_sel,
   ctrl_dp_is_dis_rob_create1_sel,
   ctrl_dp_is_dis_rob_create2_sel,
+    ctrl_dp_is_dis_rob_create3_sel,//add by xlx
+    ctrl_dp_is_dis_rob_create4_sel,//add by xlx
   ctrl_dp_is_dis_sdiq_create0_sel,
   ctrl_dp_is_dis_sdiq_create1_sel,
   ctrl_dp_is_dis_stall,
@@ -100,6 +104,7 @@ module ct_idu_is_ctrl(
   ctrl_ir_pipedown_inst1_vld,
   ctrl_ir_pipedown_inst2_vld,
   ctrl_ir_pipedown_inst3_vld,
+    ctrl_ir_pipedown_inst4_vld,//add  by xlx
   ctrl_ir_pre_dis_aiq0_create0_en,
   ctrl_ir_pre_dis_aiq0_create0_sel,
   ctrl_ir_pre_dis_aiq0_create1_en,
@@ -116,6 +121,7 @@ module ct_idu_is_ctrl(
   ctrl_ir_pre_dis_inst1_vld,
   ctrl_ir_pre_dis_inst2_vld,
   ctrl_ir_pre_dis_inst3_vld,
+    ctrl_ir_pre_dis_inst4_vld,//add by xlx
   ctrl_ir_pre_dis_lsiq_create0_en,
   ctrl_ir_pre_dis_lsiq_create0_sel,
   ctrl_ir_pre_dis_lsiq_create1_en,
@@ -130,6 +136,9 @@ module ct_idu_is_ctrl(
   ctrl_ir_pre_dis_rob_create2_en,
   ctrl_ir_pre_dis_rob_create2_sel,
   ctrl_ir_pre_dis_rob_create3_en,
+  ctrl_ir_pre_dis_rob_create3_sel,//add by xlx
+  ctrl_ir_pre_dis_rob_create4_en,//add by xlx
+
   ctrl_ir_pre_dis_sdiq_create0_en,
   ctrl_ir_pre_dis_sdiq_create0_sel,
   ctrl_ir_pre_dis_sdiq_create1_en,
@@ -148,6 +157,7 @@ module ct_idu_is_ctrl(
   ctrl_ir_pre_dis_vmb_create1_sel,
   ctrl_ir_type_stall_inst2_vld,
   ctrl_ir_type_stall_inst3_vld,
+    ctrl_ir_type_stall_inst4_vld,//add by xlx
   ctrl_is_dis_type_stall,
   ctrl_is_inst2_vld,
   ctrl_is_inst3_vld,
@@ -304,55 +314,63 @@ input          ctrl_ir_pipedown_gateclk;
 input          ctrl_ir_pipedown_inst0_vld;         
 input          ctrl_ir_pipedown_inst1_vld;         
 input          ctrl_ir_pipedown_inst2_vld;         
-input          ctrl_ir_pipedown_inst3_vld;         
+input          ctrl_ir_pipedown_inst3_vld;      
+input          ctrl_ir_pipedown_inst4_vld;  //add by xlx          
 input          ctrl_ir_pre_dis_aiq0_create0_en;    
-input   [1:0]  ctrl_ir_pre_dis_aiq0_create0_sel;   
+input   [2:0]  ctrl_ir_pre_dis_aiq0_create0_sel;   //add by xlx
 input          ctrl_ir_pre_dis_aiq0_create1_en;    
-input   [1:0]  ctrl_ir_pre_dis_aiq0_create1_sel;   
+input   [2:0]  ctrl_ir_pre_dis_aiq0_create1_sel;   //add by xlx
 input          ctrl_ir_pre_dis_aiq1_create0_en;    
-input   [1:0]  ctrl_ir_pre_dis_aiq1_create0_sel;   
+input   [2:0]  ctrl_ir_pre_dis_aiq1_create0_sel;   //add by xlx
 input          ctrl_ir_pre_dis_aiq1_create1_en;    
-input   [1:0]  ctrl_ir_pre_dis_aiq1_create1_sel;   
+input   [2:0]  ctrl_ir_pre_dis_aiq1_create1_sel;   //add by xlx
 input          ctrl_ir_pre_dis_biq_create0_en;     
-input   [1:0]  ctrl_ir_pre_dis_biq_create0_sel;    
+input   [2:0]  ctrl_ir_pre_dis_biq_create0_sel;    //add by xlx
 input          ctrl_ir_pre_dis_biq_create1_en;     
-input   [1:0]  ctrl_ir_pre_dis_biq_create1_sel;    
+input   [2:0]  ctrl_ir_pre_dis_biq_create1_sel;    //add by xlx
 input          ctrl_ir_pre_dis_inst0_vld;          
 input          ctrl_ir_pre_dis_inst1_vld;          
 input          ctrl_ir_pre_dis_inst2_vld;          
-input          ctrl_ir_pre_dis_inst3_vld;          
+input          ctrl_ir_pre_dis_inst3_vld; 
+input          ctrl_ir_pre_dis_inst4_vld;     //add by xlx         
 input          ctrl_ir_pre_dis_lsiq_create0_en;    
-input   [1:0]  ctrl_ir_pre_dis_lsiq_create0_sel;   
+input   [2:0]  ctrl_ir_pre_dis_lsiq_create0_sel;   //add by xlx
 input          ctrl_ir_pre_dis_lsiq_create1_en;    
-input   [1:0]  ctrl_ir_pre_dis_lsiq_create1_sel;   
+input   [2:0]  ctrl_ir_pre_dis_lsiq_create1_sel;   //add by xlx
 input          ctrl_ir_pre_dis_pipedown2;          
 input          ctrl_ir_pre_dis_pst_create1_iid_sel; 
 input   [2:0]  ctrl_ir_pre_dis_pst_create2_iid_sel; 
 input   [2:0]  ctrl_ir_pre_dis_pst_create3_iid_sel; 
-input   [1:0]  ctrl_ir_pre_dis_rob_create0_sel;    
+input   [2:0]  ctrl_ir_pre_dis_rob_create0_sel;    //add by xlx
 input          ctrl_ir_pre_dis_rob_create1_en;     
 input   [2:0]  ctrl_ir_pre_dis_rob_create1_sel;    
 input          ctrl_ir_pre_dis_rob_create2_en;     
-input   [1:0]  ctrl_ir_pre_dis_rob_create2_sel;    
-input          ctrl_ir_pre_dis_rob_create3_en;     
+input   [2:0]  ctrl_ir_pre_dis_rob_create2_sel;    //add by xlx
+input          ctrl_ir_pre_dis_rob_create3_en;
+
+//addby xlx
+input   [2:0]  ctrl_ir_pre_dis_rob_create3_sel;    //add by xlxv
+input          ctrl_ir_pre_dis_rob_create4_en;     
+
 input          ctrl_ir_pre_dis_sdiq_create0_en;    
-input   [1:0]  ctrl_ir_pre_dis_sdiq_create0_sel;   
+input   [2:0]  ctrl_ir_pre_dis_sdiq_create0_sel;   //add by xlx
 input          ctrl_ir_pre_dis_sdiq_create1_en;    
-input   [1:0]  ctrl_ir_pre_dis_sdiq_create1_sel;   
+input   [2:0]  ctrl_ir_pre_dis_sdiq_create1_sel;  //add by xlx 
 input          ctrl_ir_pre_dis_viq0_create0_en;    
-input   [1:0]  ctrl_ir_pre_dis_viq0_create0_sel;   
+input   [2:0]  ctrl_ir_pre_dis_viq0_create0_sel;   //add by xlx
 input          ctrl_ir_pre_dis_viq0_create1_en;    
-input   [1:0]  ctrl_ir_pre_dis_viq0_create1_sel;   
+input   [2:0]  ctrl_ir_pre_dis_viq0_create1_sel;   //add by xlx
 input          ctrl_ir_pre_dis_viq1_create0_en;    
-input   [1:0]  ctrl_ir_pre_dis_viq1_create0_sel;   
+input   [2:0]  ctrl_ir_pre_dis_viq1_create0_sel;   //add by xlx
 input          ctrl_ir_pre_dis_viq1_create1_en;    
-input   [1:0]  ctrl_ir_pre_dis_viq1_create1_sel;   
+input   [2:0]  ctrl_ir_pre_dis_viq1_create1_sel;   //add by xlx
 input          ctrl_ir_pre_dis_vmb_create0_en;     
-input   [1:0]  ctrl_ir_pre_dis_vmb_create0_sel;    
+input   [2:0]  ctrl_ir_pre_dis_vmb_create0_sel;    //add by xlx
 input          ctrl_ir_pre_dis_vmb_create1_en;     
-input   [1:0]  ctrl_ir_pre_dis_vmb_create1_sel;    
+input   [2:0]  ctrl_ir_pre_dis_vmb_create1_sel;    //add by xlx
 input          ctrl_ir_type_stall_inst2_vld;       
 input          ctrl_ir_type_stall_inst3_vld;       
+input          ctrl_ir_type_stall_inst4_vld;//add by xlx       
 input          dp_ctrl_is_inst0_bar;               
 input          dp_ctrl_is_inst0_dst_vld;           
 input          dp_ctrl_is_inst0_dste_vld;          
@@ -454,9 +472,14 @@ output  [1:0]  ctrl_dp_is_dis_lsiq_create1_sel;
 output         ctrl_dp_is_dis_pst_create1_iid_sel; 
 output  [2:0]  ctrl_dp_is_dis_pst_create2_iid_sel; 
 output  [2:0]  ctrl_dp_is_dis_pst_create3_iid_sel; 
+output  [2:0]  ctrl_dp_is_dis_pst_create4_iid_sel; //add by xlx
+
 output  [1:0]  ctrl_dp_is_dis_rob_create0_sel;     
 output  [2:0]  ctrl_dp_is_dis_rob_create1_sel;     
 output  [1:0]  ctrl_dp_is_dis_rob_create2_sel;     
+output  [1:0]  ctrl_dp_is_dis_rob_create3_sel;     //add by xlx
+output  [1:0]  ctrl_dp_is_dis_rob_create4_sel;   
+
 output  [1:0]  ctrl_dp_is_dis_sdiq_create0_sel;    
 output  [1:0]  ctrl_dp_is_dis_sdiq_create1_sel;    
 output         ctrl_dp_is_dis_stall;               
@@ -571,7 +594,9 @@ reg     [1:0]  is_dis_biq_create1_sel;
 reg            is_dis_inst0_vld;                   
 reg            is_dis_inst1_vld;                   
 reg            is_dis_inst2_vld;                   
-reg            is_dis_inst3_vld;                   
+reg            is_dis_inst3_vld;  
+reg            is_dis_inst4_vld;  //add by xlx
+
 reg            is_dis_lsiq_create0_en;             
 reg            is_dis_lsiq_create0_en_updt;        
 reg     [1:0]  is_dis_lsiq_create0_sel;            
@@ -581,13 +606,21 @@ reg     [1:0]  is_dis_lsiq_create1_sel;
 reg            is_dis_pipedown2;                   
 reg            is_dis_pst_create1_iid_sel;         
 reg     [2:0]  is_dis_pst_create2_iid_sel;         
-reg     [2:0]  is_dis_pst_create3_iid_sel;         
+reg     [2:0]  is_dis_pst_create3_iid_sel;     
+reg     [2:0]  is_dis_pst_create4_iid_sel;        //add by xlx
+
 reg     [1:0]  is_dis_rob_create0_sel;             
 reg            is_dis_rob_create1_en;              
 reg     [2:0]  is_dis_rob_create1_sel;             
 reg            is_dis_rob_create2_en;              
 reg     [1:0]  is_dis_rob_create2_sel;             
-reg            is_dis_rob_create3_en;              
+reg            is_dis_rob_create3_en;      
+//add by xlx
+reg     [1:0]  is_dis_rob_create3_sel;             
+reg            is_dis_rob_create4_en;      
+reg     [1:0]  is_dis_rob_create4_sel;    //add by xlx
+
+
 reg            is_dis_sdiq_create0_en;             
 reg            is_dis_sdiq_create0_en_updt;        
 reg     [1:0]  is_dis_sdiq_create0_sel;            
@@ -615,7 +648,8 @@ reg     [1:0]  is_dis_vmb_create1_sel;
 reg            is_inst0_vld;                       
 reg            is_inst1_vld;                       
 reg            is_inst2_vld;                       
-reg            is_inst3_vld;                       
+reg            is_inst3_vld;    
+reg            is_inst4_vld;                  
 
 // &Wires; @30
 wire           aiq0_ctrl_1_left_updt;              
@@ -697,9 +731,14 @@ wire    [1:0]  ctrl_dp_is_dis_lsiq_create1_sel;
 wire           ctrl_dp_is_dis_pst_create1_iid_sel; 
 wire    [2:0]  ctrl_dp_is_dis_pst_create2_iid_sel; 
 wire    [2:0]  ctrl_dp_is_dis_pst_create3_iid_sel; 
+wire    [2:0]  ctrl_dp_is_dis_pst_create4_iid_sel; //add by xlx
+
 wire    [1:0]  ctrl_dp_is_dis_rob_create0_sel;     
 wire    [2:0]  ctrl_dp_is_dis_rob_create1_sel;     
 wire    [1:0]  ctrl_dp_is_dis_rob_create2_sel;     
+wire    [1:0]  ctrl_dp_is_dis_rob_create3_sel;     //add by xlx
+wire    [1:0]  ctrl_dp_is_dis_rob_create4_sel;   
+
 wire    [1:0]  ctrl_dp_is_dis_sdiq_create0_sel;    
 wire    [1:0]  ctrl_dp_is_dis_sdiq_create1_sel;    
 wire           ctrl_dp_is_dis_stall;               
@@ -718,55 +757,58 @@ wire           ctrl_ir_pipedown_gateclk;
 wire           ctrl_ir_pipedown_inst0_vld;         
 wire           ctrl_ir_pipedown_inst1_vld;         
 wire           ctrl_ir_pipedown_inst2_vld;         
-wire           ctrl_ir_pipedown_inst3_vld;         
+wire           ctrl_ir_pipedown_inst3_vld;     
+wire           ctrl_ir_pipedown_inst4_vld;     //add by xlx
 wire           ctrl_ir_pre_dis_aiq0_create0_en;    
-wire    [1:0]  ctrl_ir_pre_dis_aiq0_create0_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_aiq0_create0_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_aiq0_create1_en;    
-wire    [1:0]  ctrl_ir_pre_dis_aiq0_create1_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_aiq0_create1_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_aiq1_create0_en;    
-wire    [1:0]  ctrl_ir_pre_dis_aiq1_create0_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_aiq1_create0_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_aiq1_create1_en;    
-wire    [1:0]  ctrl_ir_pre_dis_aiq1_create1_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_aiq1_create1_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_biq_create0_en;     
-wire    [1:0]  ctrl_ir_pre_dis_biq_create0_sel;    
+wire    [2:0]  ctrl_ir_pre_dis_biq_create0_sel;    //add by xlx
 wire           ctrl_ir_pre_dis_biq_create1_en;     
-wire    [1:0]  ctrl_ir_pre_dis_biq_create1_sel;    
+wire    [2:0]  ctrl_ir_pre_dis_biq_create1_sel;    //add by xlx
 wire           ctrl_ir_pre_dis_inst0_vld;          
 wire           ctrl_ir_pre_dis_inst1_vld;          
 wire           ctrl_ir_pre_dis_inst2_vld;          
-wire           ctrl_ir_pre_dis_inst3_vld;          
+wire           ctrl_ir_pre_dis_inst3_vld;    
+wire           ctrl_ir_pre_dis_inst4_vld;                
 wire           ctrl_ir_pre_dis_lsiq_create0_en;    
-wire    [1:0]  ctrl_ir_pre_dis_lsiq_create0_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_lsiq_create0_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_lsiq_create1_en;    
-wire    [1:0]  ctrl_ir_pre_dis_lsiq_create1_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_lsiq_create1_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_pipedown2;          
 wire           ctrl_ir_pre_dis_pst_create1_iid_sel; 
 wire    [2:0]  ctrl_ir_pre_dis_pst_create2_iid_sel; 
 wire    [2:0]  ctrl_ir_pre_dis_pst_create3_iid_sel; 
-wire    [1:0]  ctrl_ir_pre_dis_rob_create0_sel;    
+wire    [2:0]  ctrl_ir_pre_dis_rob_create0_sel;    //add by xlx
 wire           ctrl_ir_pre_dis_rob_create1_en;     
-wire    [2:0]  ctrl_ir_pre_dis_rob_create1_sel;    
+wire    [2:0]  ctrl_ir_pre_dis_rob_create1_sel;    //add by xlx
 wire           ctrl_ir_pre_dis_rob_create2_en;     
-wire    [1:0]  ctrl_ir_pre_dis_rob_create2_sel;    
+wire    [2:0]  ctrl_ir_pre_dis_rob_create2_sel;    //add by xlx
 wire           ctrl_ir_pre_dis_rob_create3_en;     
 wire           ctrl_ir_pre_dis_sdiq_create0_en;    
-wire    [1:0]  ctrl_ir_pre_dis_sdiq_create0_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_sdiq_create0_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_sdiq_create1_en;    
-wire    [1:0]  ctrl_ir_pre_dis_sdiq_create1_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_sdiq_create1_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_viq0_create0_en;    
-wire    [1:0]  ctrl_ir_pre_dis_viq0_create0_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_viq0_create0_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_viq0_create1_en;    
-wire    [1:0]  ctrl_ir_pre_dis_viq0_create1_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_viq0_create1_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_viq1_create0_en;    
-wire    [1:0]  ctrl_ir_pre_dis_viq1_create0_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_viq1_create0_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_viq1_create1_en;    
-wire    [1:0]  ctrl_ir_pre_dis_viq1_create1_sel;   
+wire    [2:0]  ctrl_ir_pre_dis_viq1_create1_sel;   //add by xlx
 wire           ctrl_ir_pre_dis_vmb_create0_en;     
-wire    [1:0]  ctrl_ir_pre_dis_vmb_create0_sel;    
+wire    [2:0]  ctrl_ir_pre_dis_vmb_create0_sel;    //add by xlx
 wire           ctrl_ir_pre_dis_vmb_create1_en;     
-wire    [1:0]  ctrl_ir_pre_dis_vmb_create1_sel;    
+wire    [2:0]  ctrl_ir_pre_dis_vmb_create1_sel;    //add by xlx
 wire           ctrl_ir_type_stall_inst2_vld;       
-wire           ctrl_ir_type_stall_inst3_vld;       
+wire           ctrl_ir_type_stall_inst3_vld;    
+wire           ctrl_ir_type_stall_inst4_vld;//add by xlx          
 wire           ctrl_is_aiq0_full_updt;             
 wire           ctrl_is_aiq1_full_updt;             
 wire           ctrl_is_biq_full_updt;              
@@ -928,7 +970,8 @@ assign is_inst_clk_en = ctrl_ir_pipedown_gateclk
                         || is_inst0_vld
                         || is_inst1_vld
                         || is_inst2_vld
-                        || is_inst3_vld;
+                        || is_inst3_vld
+                        || is_inst4_vld;//add uop4  by xlx
 // &Instance("gated_clk_cell", "x_is_inst_gated_clk"); @41
 gated_clk_cell  x_is_inst_gated_clk (
   .clk_in             (forever_cpuclk    ),
@@ -961,24 +1004,28 @@ begin
     is_inst1_vld <= 1'b0;
     is_inst2_vld <= 1'b0;
     is_inst3_vld <= 1'b0;
+    is_inst4_vld <= 1'b0;//add inst4  by xlx
   end
   else if(rtu_idu_flush_fe || iu_yy_xx_cancel) begin
     is_inst0_vld <= 1'b0;
     is_inst1_vld <= 1'b0;
     is_inst2_vld <= 1'b0;
     is_inst3_vld <= 1'b0;
+    is_inst4_vld <= 1'b0;//add inst4  by xlx
   end
   else if(!ctrl_is_dis_stall) begin
     is_inst0_vld <= ctrl_ir_pipedown_inst0_vld;
     is_inst1_vld <= ctrl_ir_pipedown_inst1_vld;
     is_inst2_vld <= ctrl_ir_pipedown_inst2_vld;
     is_inst3_vld <= ctrl_ir_pipedown_inst3_vld;
+    is_inst4_vld <= ctrl_ir_pipedown_inst4_vld;//add inst4  by xlx
   end
   else begin
     is_inst0_vld <= is_inst0_vld;
     is_inst1_vld <= is_inst1_vld;
     is_inst2_vld <= is_inst2_vld;
     is_inst3_vld <= is_inst3_vld;
+    is_inst4_vld <= is_inst4_vld;//add inst4  by xlx
   end
 end
 
@@ -987,11 +1034,15 @@ assign ctrl_dp_is_inst0_vld     = is_inst0_vld;
 assign ctrl_dp_is_inst1_vld     = is_inst1_vld;
 assign ctrl_dp_is_inst2_vld     = is_inst2_vld;
 assign ctrl_dp_is_inst3_vld     = is_inst3_vld;
+assign ctrl_dp_is_inst4_vld     = is_inst4_vld;//add inst4  by xlx
+
 
 assign ctrl_top_is_inst0_vld    = is_inst0_vld;
 assign ctrl_top_is_inst1_vld    = is_inst1_vld;
 assign ctrl_top_is_inst2_vld    = is_inst2_vld;
 assign ctrl_top_is_inst3_vld    = is_inst3_vld;
+assign ctrl_top_is_inst4_vld    = is_inst4_vld;//add inst4  by xlx
+
 
 assign ctrl_is_inst2_vld        = is_inst2_vld;
 assign ctrl_is_inst3_vld        = is_inst3_vld;
@@ -1008,92 +1059,116 @@ begin
     is_dis_inst1_vld                <= 1'b0;
     is_dis_inst2_vld                <= 1'b0;
     is_dis_inst3_vld                <= 1'b0;
+    is_dis_inst4_vld                <= 1'b0;//add inst4  by xlx
+
     is_dis_pipedown2                <= 1'b0;
+
     is_dis_aiq0_create0_en          <= 1'b0;
-    is_dis_aiq0_create0_sel[1:0]    <= 2'b0;
+    is_dis_aiq0_create0_sel[2:0]    <= 3'b0;//+1位   by xlx
     is_dis_aiq0_create1_en          <= 1'b0;
-    is_dis_aiq0_create1_sel[1:0]    <= 2'b0;
+    is_dis_aiq0_create1_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_aiq1_create0_en          <= 1'b0;
-    is_dis_aiq1_create0_sel[1:0]    <= 2'b0;
+    is_dis_aiq1_create0_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_aiq1_create1_en          <= 1'b0;
-    is_dis_aiq1_create1_sel[1:0]    <= 2'b0;
+    is_dis_aiq1_create1_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_biq_create0_en           <= 1'b0;
-    is_dis_biq_create0_sel[1:0]     <= 2'b0;
+    is_dis_biq_create0_sel[2:0]     <= 2'b0;//+1位   by xlx
     is_dis_biq_create1_en           <= 1'b0;
-    is_dis_biq_create1_sel[1:0]     <= 2'b0;
+    is_dis_biq_create1_sel[2:0]     <= 2'b0;//+1位   by xlx
     is_dis_lsiq_create0_en          <= 1'b0;
-    is_dis_lsiq_create0_sel[1:0]    <= 2'b0;
+    is_dis_lsiq_create0_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_lsiq_create1_en          <= 1'b0;
-    is_dis_lsiq_create1_sel[1:0]    <= 2'b0;
+    is_dis_lsiq_create1_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_sdiq_create0_en          <= 1'b0;
-    is_dis_sdiq_create0_sel[1:0]    <= 2'b0;
+    is_dis_sdiq_create0_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_sdiq_create1_en          <= 1'b0;
-    is_dis_sdiq_create1_sel[1:0]    <= 2'b0;
+    is_dis_sdiq_create1_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_viq0_create0_en          <= 1'b0;
-    is_dis_viq0_create0_sel[1:0]    <= 2'b0;
+    is_dis_viq0_create0_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_viq0_create1_en          <= 1'b0;
-    is_dis_viq0_create1_sel[1:0]    <= 2'b0;
+    is_dis_viq0_create1_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_viq1_create0_en          <= 1'b0;
-    is_dis_viq1_create0_sel[1:0]    <= 2'b0;
+    is_dis_viq1_create0_sel[2:0]    <= 2'b0;//+1位   by xlx
     is_dis_viq1_create1_en          <= 1'b0;
-    is_dis_viq1_create1_sel[1:0]    <= 2'b0;
+    is_dis_viq1_create1_sel[2:0]    <= 2'b0;//+1位   by xlx
+
     is_dis_rob_create1_en           <= 1'b0;
     is_dis_rob_create2_en           <= 1'b0;
     is_dis_rob_create3_en           <= 1'b0;
-    is_dis_rob_create0_sel[1:0]     <= 2'b0;
-    is_dis_rob_create1_sel[2:0]     <= 3'b0;
-    is_dis_rob_create2_sel[1:0]     <= 2'b0;
+    is_dis_rob_create4_en           <= 1'b0;//add rt 4 by xlx
+
+    is_dis_rob_create0_sel[2:0]     <= 2'b0;
+    is_dis_rob_create1_sel[2:0]     <= 2'b0;
+    is_dis_rob_create2_sel[2:0]     <= 2'b0;
+    is_dis_rob_create2_sel[2:0]     <= 2'b0;//add rt 4 by xlx
+
     is_dis_pst_create1_iid_sel      <= 1'b0;
     is_dis_pst_create2_iid_sel[2:0] <= 3'b0;
     is_dis_pst_create3_iid_sel[2:0] <= 3'b0;
+    is_dis_pst_create4_iid_sel[2:0] <= 3'b0;//add rt 4 by xlx
+
     is_dis_vmb_create0_en           <= 1'b0;
-    is_dis_vmb_create0_sel[1:0]     <= 2'b0;
+    is_dis_vmb_create0_sel[2:0]     <= 2'b0;
+
     is_dis_vmb_create1_en           <= 1'b0;
-    is_dis_vmb_create1_sel[1:0]     <= 2'b0;
+    is_dis_vmb_create1_sel[2:0]     <= 2'b0;
   end
   else if(rtu_idu_flush_fe || iu_yy_xx_cancel) begin
     is_dis_inst0_vld                <= 1'b0;
     is_dis_inst1_vld                <= 1'b0;
     is_dis_inst2_vld                <= 1'b0;
     is_dis_inst3_vld                <= 1'b0;
+    is_dis_inst4_vld                <= 1'b0;//add inst4  by xlx
+
     is_dis_pipedown2                <= 1'b0;
+//需要扩展一位
     is_dis_aiq0_create0_en          <= 1'b0;
-    is_dis_aiq0_create0_sel[1:0]    <= 2'b0;
+    is_dis_aiq0_create0_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
     is_dis_aiq0_create1_en          <= 1'b0;
-    is_dis_aiq0_create1_sel[1:0]    <= 2'b0;
+    is_dis_aiq0_create1_sel[2:0]    <= 3'b0;//add  [2:0]byxlx
+
     is_dis_aiq1_create0_en          <= 1'b0;
-    is_dis_aiq1_create0_sel[1:0]    <= 2'b0;
+    is_dis_aiq1_create0_sel[2:0]    <= 3'b0;//add  [2:0]byxlx
+
     is_dis_aiq1_create1_en          <= 1'b0;
-    is_dis_aiq1_create1_sel[1:0]    <= 2'b0;
+    is_dis_aiq1_create1_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
+
     is_dis_biq_create0_en           <= 1'b0;
-    is_dis_biq_create0_sel[1:0]     <= 2'b0;
+    is_dis_biq_create0_sel[2:0]     <= 3'b0;//add  [2:0] byxlx
     is_dis_biq_create1_en           <= 1'b0;
-    is_dis_biq_create1_sel[1:0]     <= 2'b0;
+    is_dis_biq_create1_sel[2:0]     <= 3'b0;//add  [2:0] byxlx
+
     is_dis_lsiq_create0_en          <= 1'b0;
-    is_dis_lsiq_create0_sel[1:0]    <= 2'b0;
+    is_dis_lsiq_create0_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
     is_dis_lsiq_create1_en          <= 1'b0;
-    is_dis_lsiq_create1_sel[1:0]    <= 2'b0;
+    is_dis_lsiq_create1_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
+
     is_dis_sdiq_create0_en          <= 1'b0;
-    is_dis_sdiq_create0_sel[1:0]    <= 2'b0;
+    is_dis_sdiq_create0_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
     is_dis_sdiq_create1_en          <= 1'b0;
-    is_dis_sdiq_create1_sel[1:0]    <= 2'b0;
+    is_dis_sdiq_create1_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
+
     is_dis_viq0_create0_en          <= 1'b0;
-    is_dis_viq0_create0_sel[1:0]    <= 2'b0;
+    is_dis_viq0_create0_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
     is_dis_viq0_create1_en          <= 1'b0;
-    is_dis_viq0_create1_sel[1:0]    <= 2'b0;
+    is_dis_viq0_create1_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
     is_dis_viq1_create0_en          <= 1'b0;
-    is_dis_viq1_create0_sel[1:0]    <= 2'b0;
+    is_dis_viq1_create0_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
     is_dis_viq1_create1_en          <= 1'b0;
-    is_dis_viq1_create1_sel[1:0]    <= 2'b0;
+    is_dis_viq1_create1_sel[2:0]    <= 3'b0;//add  [2:0] byxlx
+
     is_dis_rob_create1_en           <= 1'b0;
     is_dis_rob_create2_en           <= 1'b0;
     is_dis_rob_create3_en           <= 1'b0;
-    is_dis_rob_create0_sel[1:0]     <= 2'b0;
+
+    //这几个信号需要处理一下 未处理 ,iid相关
+    is_dis_rob_create0_sel[2:0]     <= 2'b0;
     is_dis_rob_create1_sel[2:0]     <= 3'b0;
-    is_dis_rob_create2_sel[1:0]     <= 2'b0;
+    is_dis_rob_create2_sel[2:0]     <= 2'b0;
     is_dis_pst_create1_iid_sel      <= 1'b0;
     is_dis_pst_create2_iid_sel[2:0] <= 3'b0;
     is_dis_pst_create3_iid_sel[2:0] <= 3'b0;
+    
     is_dis_vmb_create0_en           <= 1'b0;
     is_dis_vmb_create0_sel[1:0]     <= 2'b0;
     is_dis_vmb_create1_en           <= 1'b0;
@@ -1104,86 +1179,100 @@ begin
     is_dis_inst1_vld                <= ctrl_ir_pre_dis_inst1_vld;
     is_dis_inst2_vld                <= ctrl_ir_pre_dis_inst2_vld;
     is_dis_inst3_vld                <= ctrl_ir_pre_dis_inst3_vld;
+    is_dis_inst4_vld                <= ctrl_ir_pre_dis_inst4_vld;//add inst4  by xlx
+
     is_dis_pipedown2                <= ctrl_ir_pre_dis_pipedown2;
+
     is_dis_aiq0_create0_en          <= ctrl_ir_pre_dis_aiq0_create0_en;
-    is_dis_aiq0_create0_sel[1:0]    <= ctrl_ir_pre_dis_aiq0_create0_sel[1:0];
+    is_dis_aiq0_create0_sel[2:0]    <= ctrl_ir_pre_dis_aiq0_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_aiq0_create1_en          <= ctrl_ir_pre_dis_aiq0_create1_en;
-    is_dis_aiq0_create1_sel[1:0]    <= ctrl_ir_pre_dis_aiq0_create1_sel[1:0];
+    is_dis_aiq0_create1_sel[2:0]    <= ctrl_ir_pre_dis_aiq0_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_aiq1_create0_en          <= ctrl_ir_pre_dis_aiq1_create0_en;
-    is_dis_aiq1_create0_sel[1:0]    <= ctrl_ir_pre_dis_aiq1_create0_sel[1:0];
+    is_dis_aiq1_create0_sel[2:0]    <= ctrl_ir_pre_dis_aiq1_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_aiq1_create1_en          <= ctrl_ir_pre_dis_aiq1_create1_en;
-    is_dis_aiq1_create1_sel[1:0]    <= ctrl_ir_pre_dis_aiq1_create1_sel[1:0];
+    is_dis_aiq1_create1_sel[2:0]    <= ctrl_ir_pre_dis_aiq1_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_biq_create0_en           <= ctrl_ir_pre_dis_biq_create0_en;
-    is_dis_biq_create0_sel[1:0]     <= ctrl_ir_pre_dis_biq_create0_sel[1:0];
+    is_dis_biq_create0_sel[2:0]     <= ctrl_ir_pre_dis_biq_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_biq_create1_en           <= ctrl_ir_pre_dis_biq_create1_en;
-    is_dis_biq_create1_sel[1:0]     <= ctrl_ir_pre_dis_biq_create1_sel[1:0];
+    is_dis_biq_create1_sel[2:0]     <= ctrl_ir_pre_dis_biq_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_lsiq_create0_en          <= ctrl_ir_pre_dis_lsiq_create0_en;
-    is_dis_lsiq_create0_sel[1:0]    <= ctrl_ir_pre_dis_lsiq_create0_sel[1:0];
+    is_dis_lsiq_create0_sel[2:0]    <= ctrl_ir_pre_dis_lsiq_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_lsiq_create1_en          <= ctrl_ir_pre_dis_lsiq_create1_en;
-    is_dis_lsiq_create1_sel[1:0]    <= ctrl_ir_pre_dis_lsiq_create1_sel[1:0];
+    is_dis_lsiq_create1_sel[2:0]    <= ctrl_ir_pre_dis_lsiq_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_sdiq_create0_en          <= ctrl_ir_pre_dis_sdiq_create0_en;
-    is_dis_sdiq_create0_sel[1:0]    <= ctrl_ir_pre_dis_sdiq_create0_sel[1:0];
+    is_dis_sdiq_create0_sel[2:0]    <= ctrl_ir_pre_dis_sdiq_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_sdiq_create1_en          <= ctrl_ir_pre_dis_sdiq_create1_en;
-    is_dis_sdiq_create1_sel[1:0]    <= ctrl_ir_pre_dis_sdiq_create1_sel[1:0];
+    is_dis_sdiq_create1_sel[2:0]    <= ctrl_ir_pre_dis_sdiq_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_viq0_create0_en          <= ctrl_ir_pre_dis_viq0_create0_en;
-    is_dis_viq0_create0_sel[1:0]    <= ctrl_ir_pre_dis_viq0_create0_sel[1:0];
+    is_dis_viq0_create0_sel[2:0]    <= ctrl_ir_pre_dis_viq0_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_viq0_create1_en          <= ctrl_ir_pre_dis_viq0_create1_en;
-    is_dis_viq0_create1_sel[1:0]    <= ctrl_ir_pre_dis_viq0_create1_sel[1:0];
+    is_dis_viq0_create1_sel[2:0]    <= ctrl_ir_pre_dis_viq0_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_viq1_create0_en          <= ctrl_ir_pre_dis_viq1_create0_en;
-    is_dis_viq1_create0_sel[1:0]    <= ctrl_ir_pre_dis_viq1_create0_sel[1:0];
+    is_dis_viq1_create0_sel[2:0]    <= ctrl_ir_pre_dis_viq1_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_viq1_create1_en          <= ctrl_ir_pre_dis_viq1_create1_en;
-    is_dis_viq1_create1_sel[1:0]    <= ctrl_ir_pre_dis_viq1_create1_sel[1:0];
+    is_dis_viq1_create1_sel[2:0]    <= ctrl_ir_pre_dis_viq1_create1_sel[2:0];//add  [2:0] byxlx
+
+
     is_dis_rob_create1_en           <= ctrl_ir_pre_dis_rob_create1_en;
     is_dis_rob_create2_en           <= ctrl_ir_pre_dis_rob_create2_en;
     is_dis_rob_create3_en           <= ctrl_ir_pre_dis_rob_create3_en;
-    is_dis_rob_create0_sel[1:0]     <= ctrl_ir_pre_dis_rob_create0_sel[1:0];
-    is_dis_rob_create1_sel[2:0]     <= ctrl_ir_pre_dis_rob_create1_sel[2:0];
-    is_dis_rob_create2_sel[1:0]     <= ctrl_ir_pre_dis_rob_create2_sel[1:0];
+    is_dis_rob_create4_en           <= ctrl_ir_pre_dis_rob_create4_en;//add rename 4
+
+// 此处逻辑需修改
+    is_dis_rob_create0_sel[1:0]     <= ctrl_ir_pre_dis_rob_create0_sel[1:0];//add  [2:0] byxlx
+    is_dis_rob_create1_sel[2:0]     <= ctrl_ir_pre_dis_rob_create1_sel[2:0];//add  [2:0] byxlx
+    is_dis_rob_create2_sel[1:0]     <= ctrl_ir_pre_dis_rob_create2_sel[1:0];//add  [2:0] byxlx
     is_dis_pst_create1_iid_sel      <= ctrl_ir_pre_dis_pst_create1_iid_sel;
-    is_dis_pst_create2_iid_sel[2:0] <= ctrl_ir_pre_dis_pst_create2_iid_sel[2:0];
-    is_dis_pst_create3_iid_sel[2:0] <= ctrl_ir_pre_dis_pst_create3_iid_sel[2:0];
+    is_dis_pst_create2_iid_sel[2:0] <= ctrl_ir_pre_dis_pst_create2_iid_sel[2:0];//add  [2:0] byxlx
+    is_dis_pst_create3_iid_sel[2:0] <= ctrl_ir_pre_dis_pst_create3_iid_sel[2:0];//add  [2:0] byxlx
     is_dis_vmb_create0_en           <= ctrl_ir_pre_dis_vmb_create0_en;
-    is_dis_vmb_create0_sel[1:0]     <= ctrl_ir_pre_dis_vmb_create0_sel[1:0];
+    is_dis_vmb_create0_sel[1:0]     <= ctrl_ir_pre_dis_vmb_create0_sel[1:0];//add  [2:0] byxlx
     is_dis_vmb_create1_en           <= ctrl_ir_pre_dis_vmb_create1_en;
-    is_dis_vmb_create1_sel[1:0]     <= ctrl_ir_pre_dis_vmb_create1_sel[1:0];
+    is_dis_vmb_create1_sel[1:0]     <= ctrl_ir_pre_dis_vmb_create1_sel[1:0];//add  [2:0] byxlx
   end
   else begin
     is_dis_inst0_vld                <= is_dis_inst0_vld;
     is_dis_inst1_vld                <= is_dis_inst1_vld;
     is_dis_inst2_vld                <= is_dis_inst2_vld;
     is_dis_inst3_vld                <= is_dis_inst3_vld;
+    is_dis_inst4_vld                <= is_dis_inst4_vld;//add inst4  by xlx
+
     is_dis_pipedown2                <= is_dis_pipedown2;
+
     is_dis_aiq0_create0_en          <= is_dis_aiq0_create0_en;
-    is_dis_aiq0_create0_sel[1:0]    <= is_dis_aiq0_create0_sel[1:0];
+    is_dis_aiq0_create0_sel[2:0]    <= is_dis_aiq0_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_aiq0_create1_en          <= is_dis_aiq0_create1_en;
-    is_dis_aiq0_create1_sel[1:0]    <= is_dis_aiq0_create1_sel[1:0];
+    is_dis_aiq0_create1_sel[2:0]    <= is_dis_aiq0_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_aiq1_create0_en          <= is_dis_aiq1_create0_en;
-    is_dis_aiq1_create0_sel[1:0]    <= is_dis_aiq1_create0_sel[1:0];
+    is_dis_aiq1_create0_sel[2:0]    <= is_dis_aiq1_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_aiq1_create1_en          <= is_dis_aiq1_create1_en;
-    is_dis_aiq1_create1_sel[1:0]    <= is_dis_aiq1_create1_sel[1:0];
+    is_dis_aiq1_create1_sel[2:0]    <= is_dis_aiq1_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_biq_create0_en           <= is_dis_biq_create0_en;
-    is_dis_biq_create0_sel[1:0]     <= is_dis_biq_create0_sel[1:0];
+    is_dis_biq_create0_sel[2:0]     <= is_dis_biq_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_biq_create1_en           <= is_dis_biq_create1_en;
-    is_dis_biq_create1_sel[1:0]     <= is_dis_biq_create1_sel[1:0];
+    is_dis_biq_create1_sel[2:0]     <= is_dis_biq_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_lsiq_create0_en          <= is_dis_lsiq_create0_en;
-    is_dis_lsiq_create0_sel[1:0]    <= is_dis_lsiq_create0_sel[1:0];
+    is_dis_lsiq_create0_sel[2:0]    <= is_dis_lsiq_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_lsiq_create1_en          <= is_dis_lsiq_create1_en;
-    is_dis_lsiq_create1_sel[1:0]    <= is_dis_lsiq_create1_sel[1:0];
+    is_dis_lsiq_create1_sel[2:0]    <= is_dis_lsiq_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_sdiq_create0_en          <= is_dis_sdiq_create0_en;
-    is_dis_sdiq_create0_sel[1:0]    <= is_dis_sdiq_create0_sel[1:0];
+    is_dis_sdiq_create0_sel[2:0]    <= is_dis_sdiq_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_sdiq_create1_en          <= is_dis_sdiq_create1_en;
-    is_dis_sdiq_create1_sel[1:0]    <= is_dis_sdiq_create1_sel[1:0];
+    is_dis_sdiq_create1_sel[2:0]    <= is_dis_sdiq_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_viq0_create0_en          <= is_dis_viq0_create0_en;
-    is_dis_viq0_create0_sel[1:0]    <= is_dis_viq0_create0_sel[1:0];
+    is_dis_viq0_create0_sel[2:0]    <= is_dis_viq0_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_viq0_create1_en          <= is_dis_viq0_create1_en;
-    is_dis_viq0_create1_sel[1:0]    <= is_dis_viq0_create1_sel[1:0];
+    is_dis_viq0_create1_sel[2:0]    <= is_dis_viq0_create1_sel[2:0];//add  [2:0] byxlx
     is_dis_viq1_create0_en          <= is_dis_viq1_create0_en;
-    is_dis_viq1_create0_sel[1:0]    <= is_dis_viq1_create0_sel[1:0];
+    is_dis_viq1_create0_sel[2:0]    <= is_dis_viq1_create0_sel[2:0];//add  [2:0] byxlx
     is_dis_viq1_create1_en          <= is_dis_viq1_create1_en;
-    is_dis_viq1_create1_sel[1:0]    <= is_dis_viq1_create1_sel[1:0];
+    is_dis_viq1_create1_sel[2:0]    <= is_dis_viq1_create1_sel[2:0];//add  [2:0] byxlx
+
     is_dis_rob_create1_en           <= is_dis_rob_create1_en;
     is_dis_rob_create2_en           <= is_dis_rob_create2_en;
     is_dis_rob_create3_en           <= is_dis_rob_create3_en;
+    is_dis_rob_create3_en           <= is_dis_rob_create3_en;//add inst4  by xlx
+  //
     is_dis_rob_create0_sel[1:0]     <= is_dis_rob_create0_sel[1:0];
     is_dis_rob_create1_sel[2:0]     <= is_dis_rob_create1_sel[2:0];
     is_dis_rob_create2_sel[1:0]     <= is_dis_rob_create2_sel[1:0];
@@ -1203,32 +1292,71 @@ assign ctrl_top_is_dis_pipedown2            = is_dis_pipedown2;
 //==========================================================
 //        Control signal for IS data path update
 //==========================================================
+//origin logic 
+//当ir和is阶段要派遣的指令总和超过4条(IS阶段目前只派遣四条指令)时，
+//剩余指令无法用一个周期派遣，必须要阻塞IR和ID阶段的流水线，
+//用两个周期进行处理，控制IR阶段对IS阶段剩余的指令进行派遣信息的产生，
+//IR阶段不会处理本周期接收到的指令，不会进行寄存器重命名，也不会产生预派遣信息，
+//也不会将这些指令pipedown到IS阶段。
+/*
 assign is_dis_type_stall =
 //if pipedown2, is inst1/2 must be valid
+//若is 本周期派遣了2条指令
+//如果 inst3 vld（说明is级剩了一条以上(inst2 inst3)的指令）且 ir级inst2 vld(说明ir有3条及以上的指令)
    is_dis_pipedown2
 //  if is inst3 valid, type stall if ir inst2 valid
    && (is_inst3_vld && ctrl_ir_type_stall_inst2_vld
 //  if next cycle is inst3 not valid, type stall if ir inst3 valid
+//或 inst3不vld（说明is级最多剩了1条指令）且 ir级inst2 vld(说明ir有3条及以上的指令)
    || !is_inst3_vld && ctrl_ir_type_stall_inst3_vld);
 
+//以上两种情况说明 无法处理type stall了 需要stall流水线
 assign ctrl_is_dis_type_stall = is_dis_type_stall;
+
+*/
+
+//新逻辑: 现在is最大支持5条  addby xuelixiao
+//如果is inst3 vld（说明is级剩了2条以上(inst2 inst3)的指令）且 ir级inst3 vld(说明ir有4条及以上(0,1,2,3)的指令)
+//如果is inst3 不vld（说明is级剩(inst2 )的指令）且 ir级inst4 vld(说明ir有4条及以上(0,1,2,3,4)的指令
+ assign is_dis_type_stall = is_dis_pipedown2 
+          && ((is_inst3_vld && ctrl_ir_type_stall_inst3_vld
+              || !is_inst3_vld && ctrl_ir_type_stall_inst4_vld)
+//如果is inst4 vld（说明is级剩了3条(2,3,4)的指令）且 ir级inst2 vld(说明ir有3条及以上(0,1,2)的指令)
+//如果is inst4 不vld（说明is级剩(2 3  )的指令）且 ir级inst3 vld(说明ir有4条及以上(0,1,2,3)的指令
+              ||(is_inst4_vld && ctrl_ir_type_stall_inst2_vld
+              || !is_inst4_vld && ctrl_ir_type_stall_inst3_vld));
+
+  
 
 //==========================================================
 //        Control signal for IS data path update
 //==========================================================
 //1.if pipedown2, is inst1/2 must be valid, is inst0 will sel is inst2
+//如果只派遣了两条指令，下周期 is的inst0就是inst2
 assign ctrl_xx_is_inst0_sel[0] = is_dis_pipedown2;
 //2.if pipedown4, is inst0 will sel ir inst0
 assign ctrl_xx_is_inst0_sel[1] = !is_dis_pipedown2;
 
-//1.if pipedown2, is inst1/2 must be valid
-//  1.1 if is inst3 valid, is inst1 sel is inst3,
-//      is inst2/3 sel ir inst0/1
+//此处逻辑 主要为ir和 isdp选择指令用
+
+/*
+//1.if pipedown2, is inst1/2 must be valid  
+//  1.1 if is inst3 valid, is inst1 sel is inst3, //下周期 inst1 选择inst3
+//      is inst2/3 sel ir inst0/1 
 assign ctrl_xx_is_inst_sel[0] = is_dis_pipedown2 && is_inst3_vld;
 //  1.2 if is inst3 not valid, is inst1/2/3 sel ir inst0/1/2
 assign ctrl_xx_is_inst_sel[1] = is_dis_pipedown2 && !is_inst3_vld;
 //2.if pipedown4, is inst1/2/3 will sel ir inst1/2/3
 assign ctrl_xx_is_inst_sel[2] = !is_dis_pipedown2;
+*/
+
+// new logic add  by xlx
+assign ctrl_xx_is_inst_sel[0] = is_dis_pipedown2 && is_inst3_vld && is_inst4_vld;
+assign ctrl_xx_is_inst_sel[1] = is_dis_pipedown2 && is_inst3_vld &&!is_inst4_vld;
+assign ctrl_xx_is_inst_sel[2] = is_dis_pipedown2 && !is_inst3_vld;
+assign ctrl_xx_is_inst_sel[3] = !is_dis_pipedown2;
+
+
 
 //==========================================================
 //          Control signal for reorder buffer create
@@ -1236,6 +1364,9 @@ assign ctrl_xx_is_inst_sel[2] = !is_dis_pipedown2;
 //-------------create enable for reorder buffer-------------
 //output create enable for control path and data path
 //create 0 always from dis_inst0_vld
+
+//此处create与其他不同的原因是  0 不会出现折叠的情况
+//此处需要添加5重命名的逻辑
 assign idu_rtu_rob_create0_en               = is_dis_inst0_vld
                                               && !ctrl_is_dis_stall;
 assign idu_rtu_rob_create1_en               = is_dis_rob_create1_en
@@ -1244,6 +1375,11 @@ assign idu_rtu_rob_create2_en               = is_dis_rob_create2_en
                                               && !ctrl_is_dis_stall;
 assign idu_rtu_rob_create3_en               = is_dis_rob_create3_en
                                               && !ctrl_is_dis_stall;
+assign idu_rtu_rob_create4_en               = is_dis_rob_create4_en //add uop5 by xlx
+                                              && !ctrl_is_dis_stall;
+
+
+
 assign idu_rtu_rob_create0_dp_en            = is_dis_inst0_vld
                                               && !rtu_idu_rob_full; 
 assign idu_rtu_rob_create1_dp_en            = is_dis_rob_create1_en
@@ -1252,22 +1388,34 @@ assign idu_rtu_rob_create2_dp_en            = is_dis_rob_create2_en
                                               && !rtu_idu_rob_full;
 assign idu_rtu_rob_create3_dp_en            = is_dis_rob_create3_en
                                               && !rtu_idu_rob_full;
+assign idu_rtu_rob_create4_dp_en            = is_dis_rob_create4_en //add uop5 by xlx
+                                              && !rtu_idu_rob_full;
+
+
 assign idu_rtu_rob_create0_gateclk_en       = is_dis_inst0_vld;
 assign idu_rtu_rob_create1_gateclk_en       = is_dis_rob_create1_en;
 assign idu_rtu_rob_create2_gateclk_en       = is_dis_rob_create2_en;
 assign idu_rtu_rob_create3_gateclk_en       = is_dis_rob_create3_en;
+assign idu_rtu_rob_create4_gateclk_en       = is_dis_rob_create4_en;//add uop5 by xlx
+
 //output for rob create data path select
+//create4 不需要 判断 因为create 一定是inst3
 assign ctrl_dp_is_dis_rob_create0_sel[1:0]     = is_dis_rob_create0_sel[1:0];
 assign ctrl_dp_is_dis_rob_create1_sel[2:0]     = is_dis_rob_create1_sel[2:0];
 assign ctrl_dp_is_dis_rob_create2_sel[1:0]     = is_dis_rob_create2_sel[1:0];
+assign ctrl_dp_is_dis_rob_create3_sel[1:0]     = is_dis_rob_create3_sel[1:0];
+assign ctrl_dp_is_dis_rob_create4_sel[1:0]     = is_dis_rob_create4_sel[1:0];//add create 4 logic by xlx
+
 
 assign ctrl_dp_is_dis_pst_create1_iid_sel      = is_dis_pst_create1_iid_sel;
 assign ctrl_dp_is_dis_pst_create2_iid_sel[2:0] = is_dis_pst_create2_iid_sel[2:0];
 assign ctrl_dp_is_dis_pst_create3_iid_sel[2:0] = is_dis_pst_create3_iid_sel[2:0];
+assign ctrl_dp_is_dis_pst_create4_iid_sel[2:0] = is_dis_pst_create4_iid_sel[2:0];//create4 iid sel
 
 //==========================================================
 //                Control signal for PST
 //==========================================================
+//此处添加 inst4 逻辑
 assign ctrl_dis_inst0_preg_vld              = is_dis_inst0_vld
                                               && !ctrl_is_dis_stall
                                               && dp_ctrl_is_inst0_dst_vld;
@@ -1329,6 +1477,7 @@ assign ctrl_dis_inst3_ereg_vld              = is_dis_inst3_vld
                                               && dp_ctrl_is_inst3_dste_vld;
 
 //for dp output
+//此处添加inst4逻辑
 assign ctrl_dp_dis_inst0_preg_vld           = ctrl_dis_inst0_preg_vld;
 assign ctrl_dp_dis_inst1_preg_vld           = ctrl_dis_inst1_preg_vld;
 assign ctrl_dp_dis_inst2_preg_vld           = ctrl_dis_inst2_preg_vld;
@@ -1520,6 +1669,9 @@ assign ctrl_dp_is_dis_viq1_create1_sel[1:0] = is_dis_viq1_create1_sel[1:0];
 //==========================================================
 //               PID assign signal for PCFIFO
 //==========================================================
+
+//需要加入pcfifo isnt4
+//pcfifo的相关信息 写入了rob中
 assign ctrl_is_pcfifo_inst0_vld = is_dis_inst0_vld
                                   && !ctrl_is_dis_stall
                                   && dp_ctrl_is_inst0_pcfifo;
@@ -1548,6 +1700,8 @@ assign idu_iu_is_pcfifo_inst_num[2:0] = {2'b0,ctrl_is_pcfifo_inst0_vld}
 //               Barrier inst valid signal
 //==========================================================
 //ignore stall signals and type stall
+
+//add inst5
 assign ctrl_lsiq_is_bar_inst_vld = is_inst0_vld && dp_ctrl_is_inst0_bar
                                 || is_inst1_vld && dp_ctrl_is_inst1_bar
                                 || is_inst2_vld && dp_ctrl_is_inst2_bar
