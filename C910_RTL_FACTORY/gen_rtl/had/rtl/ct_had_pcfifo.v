@@ -43,12 +43,12 @@ input           rtu_had_xx_pcfifo_inst1_chgflow;
 input   [38:0]  rtu_had_xx_pcfifo_inst1_next_pc; 
 input           rtu_had_xx_pcfifo_inst2_chgflow; 
 input   [38:0]  rtu_had_xx_pcfifo_inst2_next_pc; 
-input           rtu_had_xx_pcfifo_inst3_chgflow; 
-input   [38:0]  rtu_had_xx_pcfifo_inst3_next_pc; 
+input           rtu_had_xx_pcfifo_inst3_chgflow; //Jeremy add
+input   [38:0]  rtu_had_xx_pcfifo_inst3_next_pc; //Jeremy add
 output  [63:0]  pcfifo_regs_data;               
 
 // &Regs; @25
-reg     [2 :0]  chgflow_valid[3:0] ;                  
+reg     [3 :0]  chgflow_valid[3:0] ;//Jeremy  changge width from 3-4                  
 reg             ctrl_pcfifo_wen_flop;           
 reg     [39:0]  pcfifo_din_0;                   
 reg     [39:0]  pcfifo_din_1;                   
@@ -63,6 +63,7 @@ wire    [3 :0]  chgflow_valid_pre;
 wire            cpuclk;                         
 wire            cpurst_b;                       
 wire            create_one;                     
+wire            create_four;//Jeremy add                    
 wire            create_three;                   
 wire            create_two;                     
 wire            create_vld;                     
@@ -71,6 +72,7 @@ wire            ctrl_pcfifo_wen;
 wire            inst0_chgflow_vld;              
 wire            inst1_chgflow_vld;              
 wire            inst2_chgflow_vld;              
+wire            inst3_chgflow_vld;//Jeremy add              
 wire            mmu_xx_mmu_en;                  
 wire            one_entry_left;                 
 wire            pcfifo_empty;                   
@@ -86,17 +88,20 @@ wire            rtu_had_xx_pcfifo_inst1_chgflow;
 wire    [38:0]  rtu_had_xx_pcfifo_inst1_next_pc; 
 wire            rtu_had_xx_pcfifo_inst2_chgflow; 
 wire    [38:0]  rtu_had_xx_pcfifo_inst2_next_pc; 
-wire            rtu_had_xx_pcfifo_inst3_chgflow; 
-wire    [38:0]  rtu_had_xx_pcfifo_inst3_next_pc; 
+wire            rtu_had_xx_pcfifo_inst3_chgflow; //Jeremy add
+wire    [38:0]  rtu_had_xx_pcfifo_inst3_next_pc; //Jeremy add
 wire            two_entry_left;                 
+wire            three_entry_left;//Jeremy add                  
 wire    [4 :0]  wptr_0;                         
 wire    [4 :0]  wptr_1;                         
 wire    [4 :0]  wptr_2;                         
+wire    [4 :0]  wptr_3;//Jeremy add                          
 wire    [4 :0]  wptr_inc;                       
 wire    [15:0]  wptr_sel_0;                     
 wire    [15:0]  wptr_sel_1;                     
 wire    [15:0]  wptr_sel_1_for_create_two;      
 wire    [15:0]  wptr_sel_2;                     
+wire    [15:0]  wptr_sel_3;//Jeremy add                      
 
 
 //==============================================================================
@@ -111,16 +116,6 @@ parameter PTR_WIDTH     = 5;
 //==========================================================
 //                   PCFIFO write
 //==========================================================
-// when a branch or jump inst retires in normal mode,
-// the target pc will be pushed into pcfifo
-// &Force("nonport","inst0_chgflow_vld"); @42
-// &Force("nonport","inst1_chgflow_vld"); @43
-// &Force("nonport","inst2_chgflow_vld"); @44
-// &Force("nonport","pcfifo_din_0"); @45
-// &Force("nonport","pcfifo_din_1"); @46
-// &Force("nonport","pcfifo_din_2"); @47
-// &Force("nonport","wptr_sel_1_for_create_two"); @48
-// &Force("nonport","wptr_sel_2"); @49
 
 assign chgflow_valid_pre[3:0] = {rtu_had_xx_pcfifo_inst3_chgflow,
                                  rtu_had_xx_pcfifo_inst2_chgflow,
@@ -175,20 +170,30 @@ assign inst2_chgflow_vld  = chgflow_valid[3:0] [2] && ctrl_pcfifo_wen_flop;
 assign inst3_chgflow_vld  = chgflow_valid[3:0] [3] && ctrl_pcfifo_wen_flop;//Jeremy add
 
 assign create_vld   = |chgflow_valid[3:0] [3:0] && ctrl_pcfifo_wen_flop;
+
+assign create_four = &chgflow_valid[3:0] [3:0];//Jeremy add 
                       
-assign create_three = &chgflow_valid[3:0] [2:0];
+assign create_three = (chgflow_valid[3:0] [3:0] == 4'b1110) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b1101) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b1011) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b0111);//Jeremy add  
 
-assign create_two   = (chgflow_valid[3:0] [3:0] == 3'b110) ||
-                      (chgflow_valid[3:0] [3:0] == 3'b101) ||
-                      (chgflow_valid[3:0] [3:0] == 3'b011);
+assign create_two   = (chgflow_valid[3:0] [3:0] == 4'b1100) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b1010) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b1001) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b0110) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b0101) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b0011);//Jeremy add 
 
-assign create_one   = (chgflow_valid[3:0] [3:0] == 3'b100) ||
-                      (chgflow_valid[3:0] [3:0] == 3'b010) ||
-                      (chgflow_valid[3:0] [3:0] == 3'b001);
+assign create_one   = (chgflow_valid[3:0] [3:0] == 4'b1000) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b0100) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b0010) ||
+                      (chgflow_valid[3:0] [3:0] == 4'b0001);//Jeremy add 
 
 assign wptr_sel_0[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_0[PTR_WIDTH-2:0];
 assign wptr_sel_1[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_1[PTR_WIDTH-2:0];
 assign wptr_sel_2[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_2[PTR_WIDTH-2:0];
+assign wptr_sel_3[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_3[PTR_WIDTH-2:0];//Jeremy add 
 
 assign wptr_sel_1_for_create_two[DEPTH-1:0] = chgflow_valid[3:0] [0] ? wptr_sel_1[DEPTH-1:0] : wptr_sel_0[DEPTH-1:0];
 
@@ -203,18 +208,40 @@ begin
     pcfifo_reg[i][WIDTH-1:0] <= {WIDTH{1'b0}};
   else if (inst0_chgflow_vld && wptr_sel_0[i])
     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_0[WIDTH-1:0];
-  else if (inst1_chgflow_vld && (create_three && wptr_sel_1[i] || create_two && wptr_sel_1_for_create_two[i] || create_one && wptr_sel_0[i]))
+  else if (inst1_chgflow_vld && (create_four && wptr_sel_1[i] || create_three && wptr_sel_2[i]|| create_two && wptr_sel_1_for_create_two[i] || create_one && wptr_sel_0[i]))
     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_1[WIDTH-1:0];
-  else if (inst2_chgflow_vld && (create_three && wptr_sel_2[i] || create_two && wptr_sel_1[i] || create_one && wptr_sel_0[i]))
+  else if (inst2_chgflow_vld && (create_four && wptr_sel_2[i] || create_three && wptr_sel_2[i] || create_two && wptr_sel_1[i] || create_one && wptr_sel_0[i]))
     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_2[WIDTH-1:0];
-  else if (inst3_chgflow_vld && (create_three && wptr_sel_3[i] || create_two && wptr_sel_1[i] || create_one && wptr_sel_0[i]))//Jeremy add
-    pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_3[WIDTH-1:0];
+  else if (inst3_chgflow_vld && (create_four && wptr_sel_3[i] || create_three && wptr_sel_2[i] || create_two && wptr_sel_1[i] || create_one && wptr_sel_0[i]))//Jeremy add
+    pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_3[WIDTH-1:0];//Jeremy add 
   else 
     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_reg[i][WIDTH-1:0];
 end
 end
 endgenerate
 //csky vperl_on
+
+// //csky vperl_off
+// reg     [WIDTH-1:0]  pcfifo_reg  [DEPTH-1:0];
+// genvar i;
+// generate
+// for(i=0; i<DEPTH; i=i+1) begin: PCFIFO_GEN
+// always @(posedge cpuclk or negedge cpurst_b)
+// begin
+//   if (!cpurst_b)
+//     pcfifo_reg[i][WIDTH-1:0] <= {WIDTH{1'b0}};
+//   else if (inst0_chgflow_vld && wptr_sel_0[i])
+//     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_0[WIDTH-1:0];
+//   else if (inst1_chgflow_vld && (create_three && wptr_sel_1[i] || create_two && wptr_sel_1_for_create_two[i] || create_one && wptr_sel_0[i]))
+//     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_1[WIDTH-1:0];
+//   else if (inst2_chgflow_vld && (create_three && wptr_sel_2[i] || create_two && wptr_sel_1[i] || create_one && wptr_sel_0[i]))
+//     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_din_2[WIDTH-1:0];
+//   else 
+//     pcfifo_reg[i][WIDTH-1:0] <= pcfifo_reg[i][WIDTH-1:0];
+// end
+// end
+// endgenerate
+// //csky vperl_on
 
 //==========================================================
 //                   PCFIFO read
@@ -246,6 +273,9 @@ assign pcfifo_empty = (wptr[PTR_WIDTH-2:0] == rptr[PTR_WIDTH-2:0]) &&
 
 assign pcfifo_full  = (wptr[PTR_WIDTH-2:0] == rptr[PTR_WIDTH-2:0]) &&
                       (wptr[PTR_WIDTH-1]   ^  rptr[PTR_WIDTH-1]);
+//Jeremy add
+assign three_entry_left = (wptr_3[PTR_WIDTH-2:0] == rptr[PTR_WIDTH-2:0]) &&
+                        (wptr_3[PTR_WIDTH-1]   ^  rptr[PTR_WIDTH-1]);
 
 assign two_entry_left = (wptr_2[PTR_WIDTH-2:0] == rptr[PTR_WIDTH-2:0]) &&
                         (wptr_2[PTR_WIDTH-1]   ^  rptr[PTR_WIDTH-1]);
@@ -268,34 +298,42 @@ begin
     wptr[PTR_WIDTH-1:0] <= wptr[PTR_WIDTH-1:0];
 end
 
-assign wptr_inc[PTR_WIDTH-1:0] = create_three 
-                               ? {{(PTR_WIDTH-2){1'b0}},2'b11}
-                               : create_two ? {{(PTR_WIDTH-2){1'b0}},2'b10} 
-                                            : {{(PTR_WIDTH-2){1'b0}},2'b01};
+assign wptr_inc[PTR_WIDTH-1:0] = create_four 
+                               ? {{(PTR_WIDTH-3){1'b0}},3'b100}
+                               : create_three ? {{(PTR_WIDTH-2){1'b0}},2'b11} 
+                                                     : create_two ? {{(PTR_WIDTH-2){1'b0}},2'b10} 
+                                                                        : {{(PTR_WIDTH-2){1'b0}},2'b01};//Jeremy change this logic
 
 assign wptr_0[PTR_WIDTH-1:0] = wptr[PTR_WIDTH-1:0];
 assign wptr_1[PTR_WIDTH-1:0] = wptr[PTR_WIDTH-1:0] + {{(PTR_WIDTH-1){1'b0}},1'b1};
 assign wptr_2[PTR_WIDTH-1:0] = wptr[PTR_WIDTH-1:0] + {{(PTR_WIDTH-2){1'b0}},2'b10};
+assign wptr_3[PTR_WIDTH-1:0] = wptr[PTR_WIDTH-1:0] + {{(PTR_WIDTH-3){1'b0}},3'b100};//Jeremy add 
 
 //==========================================================
 //                 PCFIFO rptr maintenance
 //==========================================================
+assign rptr_inc_4 = create_vld && 
+                    pcfifo_full && create_four;//Jeremy add 
 assign rptr_inc_3 = create_vld && 
-                    pcfifo_full && create_three;
+                    (one_entry_left && create_four || //Jeremy add
+                    pcfifo_full && create_three);
 assign rptr_inc_2 = create_vld &&
-                    (one_entry_left && create_three || 
+                    (two_entry_left && create_four || //Jeremy add
+                     one_entry_left && create_three || 
                      pcfifo_full && create_two);
 assign rptr_inc_1 = create_vld && 
-                    (two_entry_left && create_three ||
+                    (three_entry_left && create_four ||//Jeremy add
+                     two_entry_left && create_three ||
                      one_entry_left && create_two ||
                      pcfifo_full && create_one) ||
                     ctrl_pcfifo_ren;
 
-assign rptr_inc[PTR_WIDTH-1:0] = rptr_inc_3 
-                               ? {{(PTR_WIDTH-2){1'b0}},2'b11}
-                               : rptr_inc_2 ? {{(PTR_WIDTH-2){1'b0}},2'b10}
-                                            : rptr_inc_1 ? {{(PTR_WIDTH-2){1'b0}},2'b01}
-                                                         : {PTR_WIDTH{1'b0}};
+assign rptr_inc[PTR_WIDTH-1:0] = rptr_inc_4 
+                               ? {{(PTR_WIDTH-3){1'b0}},3'b100}
+                               : rptr_inc_3 ? {{(PTR_WIDTH-2){1'b0}},2'b11}
+                                                 : rptr_inc_2 ? {{(PTR_WIDTH-2){1'b0}},2'b10}
+                                                                   : rptr_inc_1 ? {{(PTR_WIDTH-2){1'b0}},2'b01}
+                                                                                     : {PTR_WIDTH{1'b0}};//Jeremy change this logic
 // rptr increase condition:
 //   1. read enable
 //   2. write while pcfifo full
