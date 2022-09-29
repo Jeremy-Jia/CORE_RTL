@@ -1,0 +1,129 @@
+read_file -type verilog {../rtl/ct_ifu_addrgen.v ../rtl/ct_ifu_bht.v ../rtl/ct_ifu_bht_pre_array.v ../rtl/ct_ifu_bht_sel_array.v ../rtl/ct_ifu_btb.v ../rtl/ct_ifu_btb_data_array.v ../rtl/ct_ifu_btb_tag_array.v ../rtl/ct_ifu_debug.v ../rtl/ct_ifu_decd_normal.v ../rtl/ct_ifu_ibctrl.v ../rtl/ct_ifu_ibdp.v ../rtl/ct_ifu_ibuf.v ../rtl/ct_ifu_ibuf_entry.v ../rtl/ct_ifu_icache_data_array0.v ../rtl/ct_ifu_icache_data_array1.v ../rtl/ct_ifu_icache_if.v ../rtl/ct_ifu_icache_predecd_array0.v ../rtl/ct_ifu_icache_predecd_array1.v ../rtl/ct_ifu_icache_tag_array.v ../rtl/ct_ifu_ifctrl.v ../rtl/ct_ifu_ifdp.v ../rtl/ct_ifu_ind_btb.v ../rtl/ct_ifu_ind_btb_array.v ../rtl/ct_ifu_ipb.v ../rtl/ct_ifu_ipctrl.v ../rtl/ct_ifu_ipdecode.v ../rtl/ct_ifu_ipdp.v ../rtl/ct_ifu_l0_btb.v ../rtl/ct_ifu_l0_btb_entry.v ../rtl/ct_ifu_l1_refill.v ../rtl/ct_ifu_lbuf.v ../rtl/ct_ifu_lbuf_entry.v ../rtl/ct_ifu_pcfifo_if.v ../rtl/ct_ifu_pcgen.v ../rtl/ct_ifu_precode.v ../rtl/ct_ifu_ras.v ../rtl/ct_ifu_sfp.v ../rtl/ct_ifu_sfp_entry.v ../rtl/ct_ifu_top.v ../rtl/ct_ifu_vector.v ../rtl/ct_spsram_128x16.v ../rtl/ct_spsram_256x23.v ../rtl/ct_spsram_256x59.v ../rtl/ct_spsram_512x22.v ../rtl/ct_spsram_512x44.v ../rtl/ct_spsram_512x59.v ../rtl/ct_spsram_1024x59.v ../rtl/ct_spsram_1024x64.v ../rtl/ct_spsram_2048x32_split.v ../rtl/ct_spsram_2048x59.v}
+
+
+
+current_goal Design_Read -alltop
+
+
+link_design -force
+
+gui_select_message -rule INFO_1017 -msg {Maximum permissible error count of ( 200 ) exceeded. Analysis terminated}
+gui_select_message -rule STX_VE_1360 -msg {Invalid base ( 1 ) used in based number}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ or ] - Illegal use of Verilog keyword 'or' )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( begin )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( begin )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( = )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( begin )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( = )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ end ] - Illegal use of Verilog keyword 'end' )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ end ] - Illegal use of Verilog keyword 'end' )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ end ] - Illegal use of Verilog keyword 'end' )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( pop_h4_32_start )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( pop_h4_32_start )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( pop_h4_32_start )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( bypass_way_h4_32_start )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( ibuf_pop_inst3_data )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( = )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( 'b )}
+link_design -force
+
+gui_select_message -rule STX_VE_569 -msg {Keyword 'end' missing}
+gui_select_message -rule STX_VE_569 -msg {Keyword 'end' missing}
+link_design -force
+
+gui_select_message -rule STX_VE_606 -msg {Identifier ( inst3_expt_vld ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( inst3_pc ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( inst3 ) not declared in current scope}
+link_design -force
+
+gui_select_message -rule STX_VE_606 -msg {Identifier ( pop_4_vld ) not declared in current scope}
+link_design -force
+
+link_design -force
+
+link_design -force
+
+gui_select_message -rule STX_VE_569 -msg {Keyword 'end' missing}
+link_design -force
+
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_inst2_32_start ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_inst2_32_start ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_inst3_valid ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_inst2_32_start ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_inst3_pc ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_inst3_expt ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_inst3_bkpta ) not declared in current scope}
+link_design -force
+
+gui_select_message -rule STX_VE_479 -msg {Syntax error near ( ; ). Please use 'set_option enableSV yes' to support SystemVerilog construct ( Null statement )}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_4_vld ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_inst2_32_start ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_inst2_32_start ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( bypass_way_4_vld ) not declared in current scope}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( = )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( = )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ or ] - Illegal use of Verilog keyword 'or' )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( = )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( = )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( = )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( rtu_path_reg_0_pre )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( ; )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( = )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ or ] - Illegal use of Verilog keyword 'or' )}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( [ )}
+link_design -force
+
+gui_select_message -rule STX_VE_606 -msg {Identifier ( CNT_REG_VAL ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( INV_CNT_VAL ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( CNT_REG_VAL ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( merge_way_inst1_num ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( CNT_REG_VAL ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( merge_way_inst1_num ) not declared in current scope}
+link_design -force
+
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_481 -msg {Syntax error near ( . )}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( CNT_REG_VAL ) not declared in current scope}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( INV_CNT_VAL ) not declared in current scope}
+gui_exit
+gui_exit

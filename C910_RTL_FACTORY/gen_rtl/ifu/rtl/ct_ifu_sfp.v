@@ -556,7 +556,7 @@ always @( rtu_ifu_retire_inst0_vl_hit
        or sfp_inst3_updt_vld
        or rtu_ifu_retire_inst0_no_spec_miss
        or rtu_ifu_retire_inst1_cur_pc[19:0]
-       or rtu_ifu_retire_inst2_no_spec_hit)
+       or rtu_ifu_retire_inst2_no_spec_hit
        or rtu_ifu_retire_inst3_no_spec_hit)
 begin
 // casez({sfp_inst0_updt_vld,sfp_inst1_updt_vld,sfp_inst2_updt_vld})

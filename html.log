@@ -1,0 +1,11 @@
+SpyGlass Predictive Analyzer(R) - SpyGlass_vL-2016.06
+All Rights Reserved. Use, disclosure or duplication 
+without prior written permission of Synopsys Inc. is prohibited.
+Technical support: email spyglass_support@synopsys.com 
+
+Creating 'html' reports using config file '/tmp/config_51380'
+##cwd         : /home/ICer/CORE_RTL
+##system      : Linux IC_EDA 3.10.0-1160.71.1.el7.x86_64 #1 SMP Tue Jun 28 15:37:28 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+##Date & Time : Thu Sep 29 14:24:27 2022
+Error: Failed to checkout license feature 'dashboard'
+Report creation failed.

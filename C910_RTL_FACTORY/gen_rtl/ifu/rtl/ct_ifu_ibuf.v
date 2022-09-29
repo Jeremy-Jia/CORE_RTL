@@ -516,7 +516,8 @@ reg     [3 :0]  bypass_way_inst1_vec;
 reg     [7 :0]  bypass_way_inst1_vl;                   
 reg             bypass_way_inst1_vl_pred;              
 reg     [1 :0]  bypass_way_inst1_vlmul;                
-reg     [2 :0]  bypass_way_inst1_vsew;                 
+reg     [2 :0]  bypass_way_inst1_vsew;      
+reg             bypass_way_inst2_32_start;               
 reg             bypass_way_inst2_bkpta;                
 reg             bypass_way_inst2_bkptb;                
 reg     [31:0]  bypass_way_inst2_data;                 
@@ -533,7 +534,25 @@ reg     [3 :0]  bypass_way_inst2_vec;
 reg     [7 :0]  bypass_way_inst2_vl;                   
 reg             bypass_way_inst2_vl_pred;              
 reg     [1 :0]  bypass_way_inst2_vlmul;                
-reg     [2 :0]  bypass_way_inst2_vsew;                 
+reg     [2 :0]  bypass_way_inst2_vsew; 
+//Jeremy add                 
+reg             bypass_way_inst3_bkpta;                
+reg             bypass_way_inst3_bkptb;                
+reg     [31:0]  bypass_way_inst3_data;                 
+reg             bypass_way_inst3_ecc_err;              
+reg             bypass_way_inst3_expt;                 
+reg             bypass_way_inst3_fence;                
+reg             bypass_way_inst3_high_expt;            
+reg             bypass_way_inst3_no_spec;              
+reg     [14:0]  bypass_way_inst3_pc;                   
+reg             bypass_way_inst3_split0;               
+reg             bypass_way_inst3_split1;               
+reg             bypass_way_inst3_valid;                
+reg     [3 :0]  bypass_way_inst3_vec;                  
+reg     [7 :0]  bypass_way_inst3_vl;                   
+reg             bypass_way_inst3_vl_pred;              
+reg     [1 :0]  bypass_way_inst3_vlmul;                
+reg     [2 :0]  bypass_way_inst3_vsew;                 
 reg     [4 :0]  create_num_pre;                        
 reg     [4 :0]  create_num_pre_bypass;                 
 reg     [31:0]  create_pointer_pre;                    
@@ -6997,7 +7016,7 @@ case(ibuf_retire_pointer5[31:0])
   32'h80000000 : pop_h5_pc[14:0] = entry_pc_31[14:0];
   default      : pop_h5_pc[14:0] = {15{1'bx}};
 endcase
-
+end
 
 // &CombBeg; @2950
 always @( entry_pc_10[14:0]
@@ -7069,9 +7088,7 @@ case(ibuf_retire_pointer6[31:0])
   32'h80000000 : pop_h6_pc[14:0] = entry_pc_31[14:0];
   default      : pop_h6_pc[14:0] = {15{1'bx}};
 endcase
-// &CombEnd; @2986
-end
-// &CombEnd; @2986
+
 end
 
 
@@ -8541,8 +8558,7 @@ case(ibuf_retire_pointer5[31:0])
   32'h80000000 : pop_h5_vl[7:0] = entry_vl_31[7:0];
   default      : pop_h5_vl[7:0] = {8{1'bx}};
 endcase
-// &CombEnd; @3560
-
+end
 // &CombBeg; @3524
 always @( entry_vl_31[7:0]
        or entry_vl_18[7:0]
@@ -8615,9 +8631,6 @@ case(ibuf_retire_pointer6[31:0])
 endcase
 // &CombEnd; @3560
 end
-
-end
-
 
 
 
@@ -9035,12 +9048,13 @@ always @( pop_h1_vsew[2:0]
        or pop_h7_data[15:0]
 )
 begin
+  //Jeremy
 // modify to generate 4 inst //jeremy 
 // toal 8 hn, if we generate 3 inst, max num of hn is 6 and we need 5 bit to judge ,
 // because if h4 is a  start of 32-bit inst, h5 must be the top half of the last 32-bit 
 // inst, and there have 8 possibilities.
 // thus if we genarate 4 inst we need 7bit to judge, and there has 16 possibilities.
-casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
+casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start,
        pop_h4_32_start,pop_h5_32_start,pop_h6_32_start})
       7'b0000??? : begin
                   ibuf_pop_inst0_valid      = pop_h0_vld;
@@ -9315,7 +9329,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h2_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h2_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_4_vld;
+                  ibuf_pop_inst3_valid      = pop_h4_vld;
                   ibuf_pop_inst3_data[31:0] = {pop_h5_data[15:0],pop_h4_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h4_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h4_expt;
@@ -9388,7 +9402,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h3_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_4_vld;
+                  ibuf_pop_inst3_valid      = pop_h4_vld;
                   ibuf_pop_inst3_data[31:0] = {16'h0,pop_h4_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h4_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h4_expt;
@@ -9461,7 +9475,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h3_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_4_vld;
+                  ibuf_pop_inst3_valid      = pop_h4_vld;
                   ibuf_pop_inst3_data[31:0] = {pop_h5_data[15:0],pop_h4_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h4_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h4_expt;
@@ -9534,7 +9548,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h3_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_5_vld;
+                  ibuf_pop_inst3_valid      = pop_h5_vld;
                   ibuf_pop_inst3_data[31:0] = {16'h0,pop_h5_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h5_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h5_expt;
@@ -9607,7 +9621,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h3_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_5_vld;
+                  ibuf_pop_inst3_valid      = pop_h5_vld;
                   ibuf_pop_inst3_data[31:0] = {pop_h6_data,pop_h5_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h5_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h5_expt;
@@ -9680,7 +9694,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h3_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_4_vld;
+                  ibuf_pop_inst3_valid      = pop_h4_vld;
                   ibuf_pop_inst3_data[31:0] = {16'h0,pop_h4_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h4_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h4_expt;
@@ -9753,7 +9767,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h3_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_4_vld;
+                  ibuf_pop_inst3_valid      = pop_h4_vld;
                   ibuf_pop_inst3_data[31:0] = {pop_h5_data[15:0],pop_h4_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h4_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h4_expt;
@@ -9826,7 +9840,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h3_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_5_vld;
+                  ibuf_pop_inst3_valid      = pop_h5_vld;
                   ibuf_pop_inst3_data[31:0] = {16'h0,pop_h5_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h5_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h5_expt;
@@ -9899,7 +9913,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h3_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_5_vld;
+                  ibuf_pop_inst3_valid      = pop_h5_vld;
                   ibuf_pop_inst3_data[31:0] = {pop_h6_data[15:0],pop_h5_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h5_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h5_expt;
@@ -9972,7 +9986,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h4_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h4_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_5_vld;
+                  ibuf_pop_inst3_valid      = pop_h5_vld;
                   ibuf_pop_inst3_data[31:0] = {16'h0,pop_h5_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h5_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h5_expt;
@@ -10045,7 +10059,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h4_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h4_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_5_vld;
+                  ibuf_pop_inst3_valid      = pop_h5_vld;
                   ibuf_pop_inst3_data[31:0] = {pop_h6_data[15:0],pop_h5_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h5_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h5_expt;
@@ -10118,7 +10132,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h4_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h4_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_6_vld;
+                  ibuf_pop_inst3_valid      = pop_h6_vld;
                   ibuf_pop_inst3_data[31:0] = {16'h0,pop_h6_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h6_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h6_expt;
@@ -10138,7 +10152,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop4_half_num[3:0]   = 4'b0111;
                   ibuf_pop4_retire_vld[7:0] = 8'b1111_1110;
                   end
-      7'1?1?1?1 : begin
+      7'b1?1?1?1 : begin
                   ibuf_pop_inst0_valid      = pop_h0_vld;
                   ibuf_pop_inst0_data[31:0] = {pop_h1_data[15:0],pop_h0_data[15:0]};
                   ibuf_pop_inst0_pc[14:0]   = pop_h0_pc[14:0];                  
@@ -10191,7 +10205,7 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  = pop_h4_vsew[2:0];
                   ibuf_pop_inst2_vl[7:0]    = pop_h4_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = pop_6_vld;
+                  ibuf_pop_inst3_valid      = pop_h6_vld;
                   ibuf_pop_inst3_data[31:0] = {pop_h7_data[15:0],pop_h6_data[15:0]};
                   ibuf_pop_inst3_pc[14:0]   = pop_h6_pc[14:0];
                   ibuf_pop_inst3_expt       = pop_h6_expt;
@@ -10264,24 +10278,24 @@ casez({pop_h0_32_start,pop_h1_32_start,pop_h2_32_start,pop_h3_32_start
                   ibuf_pop_inst2_vsew[2:0]  =  3'b0;
                   ibuf_pop_inst2_vl[7:0]    =  8'b0;
                   // modify to generate 4 inst //jeremy
-                  ibuf_pop_inst3_valid      = 1'b0
-                  ibuf_pop_inst3_data[31:0] = 32'b0
-                  ibuf_pop_inst3_pc[14:0]   = 15'b0
-                  ibuf_pop_inst3_expt       = 1'b0
-                  ibuf_pop_inst3_vec[3:0]   = 4'b0
-                  ibuf_pop_inst3_high_expt  = 1'b0
-                  ibuf_pop_inst3_ecc_err    = 1'b0
-                  ibuf_pop_inst3_split1     = 1'b0
-                  ibuf_pop_inst3_split0     = 1'b0
-                  ibuf_pop_inst3_fence      = 1'b0
-                  ibuf_pop_inst3_bkpta      = 1'b0
-                  ibuf_pop_inst3_bkptb      = 1'b0
-                  ibuf_pop_inst3_no_spec    = 1'b0
-                  ibuf_pop_inst3_vl_pred    = 1'b0
-                  ibuf_pop_inst3_vlmul[1:0] = 2'b0
-                  ibuf_pop_inst3_vsew[2:0]  = 3'b0
-                  ibuf_pop_inst3_vl[7:0]    = 8'b0
-                  ibuf_pop4_half_num[3:0]   = 3'b0; 
+                  ibuf_pop_inst3_valid      = 1'b0;
+                  ibuf_pop_inst3_data[31:0] = 32'b0;
+                  ibuf_pop_inst3_pc[14:0]   = 15'b0;
+                  ibuf_pop_inst3_expt       = 1'b0;
+                  ibuf_pop_inst3_vec[3:0]   = 4'b0;
+                  ibuf_pop_inst3_high_expt  = 1'b0;
+                  ibuf_pop_inst3_ecc_err    = 1'b0;
+                  ibuf_pop_inst3_split1     = 1'b0;
+                  ibuf_pop_inst3_split0     = 1'b0;
+                  ibuf_pop_inst3_fence      = 1'b0;
+                  ibuf_pop_inst3_bkpta      = 1'b0;
+                  ibuf_pop_inst3_bkptb      = 1'b0;
+                  ibuf_pop_inst3_no_spec    = 1'b0;
+                  ibuf_pop_inst3_vl_pred    = 1'b0;
+                  ibuf_pop_inst3_vlmul[1:0] = 2'b0;
+                  ibuf_pop_inst3_vsew[2:0]  = 3'b0;
+                  ibuf_pop_inst3_vl[7:0]    = 8'b0;
+                  ibuf_pop4_half_num[3:0]   = 3'b0;
                   ibuf_pop4_retire_vld[7:0] = 8'b00000000;
                   end
 endcase
@@ -10628,7 +10642,7 @@ always @( bypass_way_h4_split1
        or bypass_way_h7_data[15:0]
 )
 begin
-  casez({bypass_way_h0_32_start,bypass_way_h1_32_start,bypass_way_h2_32_start,bypass_way_h3_32_start
+  casez({bypass_way_h0_32_start,bypass_way_h1_32_start,bypass_way_h2_32_start,bypass_way_h3_32_start,//Jeremy fix error
        bypass_way_h4_32_start,bypass_way_h5_32_start,bypass_way_h6_32_start})
       7'b0000??? : begin
                   bypass_way_inst0_32_start   = bypass_way_h0_32_start;
@@ -10641,6 +10655,7 @@ begin
                   bypass_way_inst0_ecc_err    = bypass_way_h0_ecc_err;
                   bypass_way_inst0_split1     = bypass_way_h0_split1;
                   bypass_way_inst0_split0     = bypass_way_h0_split0;
+
                   bypass_way_inst0_fence      = bypass_way_h0_fence;
                   bypass_way_inst0_bkpta      = bypass_way_h0_bkpta;
                   bypass_way_inst0_bkptb      = bypass_way_h0_bkptb;
@@ -10762,7 +10777,12 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h2_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h2_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_h3_vld3'b011h_expt;
+                  bypass_way_inst3_valid      = bypass_way_h3_vld;
+                  bypass_way_inst3_data[31:0] = {bypass_way_h4_data[15:0],bypass_way_h3_data[15:0]};
+                  bypass_way_inst3_pc[14:0]   = bypass_way_h3_pc[14:0];
+                  bypass_way_inst3_expt       = bypass_way_h3_expt;
+                  bypass_way_inst3_vec[3:0]   = bypass_way_h3_vec[3:0];
+                  bypass_way_inst3_high_expt  = bypass_way_h3_high_expt;
                   bypass_way_inst3_ecc_err    = bypass_way_h3_ecc_err;
                   bypass_way_inst3_split1     = bypass_way_h3_split1;
                   bypass_way_inst3_split0     = bypass_way_h3_split0;
@@ -10907,7 +10927,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h2_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h2_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_4_vld;
+                  bypass_way_inst3_valid      = bypass_way_h4_vld;
                   bypass_way_inst3_data[31:0] = {bypass_way_h5_data[15:0],bypass_way_h4_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h4_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h4_expt;
@@ -10982,7 +11002,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h3_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_4_vld;
+                  bypass_way_inst3_valid      = bypass_way_h4_vld;
                   bypass_way_inst3_data[31:0] = {16'h0,bypass_way_h4_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h4_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h4_expt;
@@ -11057,7 +11077,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h3_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_4_vld;
+                  bypass_way_inst3_valid      = bypass_way_h4_vld;
                   bypass_way_inst3_data[31:0] = {bypass_way_h5_data[15:0],bypass_way_h4_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h4_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h4_expt;
@@ -11132,7 +11152,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h3_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_5_vld;
+                  bypass_way_inst3_valid      = bypass_way_h5_vld;
                   bypass_way_inst3_data[31:0] = {16'h0,bypass_way_h5_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h5_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h5_expt;
@@ -11207,7 +11227,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h3_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_5_vld;
+                  bypass_way_inst3_valid      = bypass_way_h5_vld;
                   bypass_way_inst3_data[31:0] = {bypass_way_h6_data,bypass_way_h5_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h5_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h5_expt;
@@ -11282,7 +11302,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h3_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_4_vld;
+                  bypass_way_inst3_valid      = bypass_way_h4_vld;
                   bypass_way_inst3_data[31:0] = {16'h0,bypass_way_h4_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h4_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h4_expt;
@@ -11357,7 +11377,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h3_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_4_vld;
+                  bypass_way_inst3_valid      = bypass_way_h4_vld;
                   bypass_way_inst3_data[31:0] = {bypass_way_h5_data[15:0],bypass_way_h4_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h4_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h4_expt;
@@ -11432,7 +11452,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h3_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_5_vld;
+                  bypass_way_inst3_valid      = bypass_way_h5_vld;
                   bypass_way_inst3_data[31:0] = {16'h0,bypass_way_h5_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h5_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h5_expt;
@@ -11507,7 +11527,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h3_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h3_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_5_vld;
+                  bypass_way_inst3_valid      = bypass_way_h5_vld;
                   bypass_way_inst3_data[31:0] = {bypass_way_h6_data[15:0],bypass_way_h5_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h5_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h5_expt;
@@ -11582,7 +11602,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h4_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h4_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_5_vld;
+                  bypass_way_inst3_valid      = bypass_way_h5_vld;
                   bypass_way_inst3_data[31:0] = {16'h0,bypass_way_h5_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h5_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h5_expt;
@@ -11657,7 +11677,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h4_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h4_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_5_vld;
+                  bypass_way_inst3_valid      = bypass_way_h5_vld;
                   bypass_way_inst3_data[31:0] = {bypass_way_h6_data[15:0],bypass_way_h5_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h5_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h5_expt;
@@ -11732,7 +11752,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h4_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h4_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_6_vld;
+                  bypass_way_inst3_valid      = bypass_way_h6_vld;
                   bypass_way_inst3_data[31:0] = {16'h0,bypass_way_h6_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h6_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h6_expt;
@@ -11749,7 +11769,7 @@ begin
                   bypass_way_inst3_vlmul[1:0] = bypass_way_h6_vlmul[1:0];
                   bypass_way_inst3_vsew[2:0]  = bypass_way_h6_vsew[2:0];
                   bypass_way_inst3_vl[7:0]    = bypass_way_h6_vl[7:0];
-                  bypass_way_half_num[3:0]     = 4'b0111;;
+                  bypass_way_half_num[3:0]     = 4'b0111;
                   end
        default  : begin
                  bypass_way_inst0_valid      = bypass_way_h0_vld;
@@ -11807,7 +11827,7 @@ begin
                   bypass_way_inst2_vsew[2:0]  = bypass_way_h4_vsew[2:0];
                   bypass_way_inst2_vl[7:0]    = bypass_way_h4_vl[7:0];
                   // modify to generate 4 inst //jeremy
-                  bypass_way_inst3_valid      = bypass_way_6_vld;
+                  bypass_way_inst3_valid      = bypass_way_h6_vld;
                   bypass_way_inst3_data[31:0] = {bypass_way_h7_data[15:0],bypass_way_h6_data[15:0]};
                   bypass_way_inst3_pc[14:0]   = bypass_way_h6_pc[14:0];
                   bypass_way_inst3_expt       = bypass_way_h6_expt;
@@ -12795,7 +12815,7 @@ assign ibuf_nopass_merge_mask[8:0] = (ibctrl_ibuf_merge_vld && !ibuf_pop_inst2_v
                                    : 9'b111111111;  
 //merge num selet
 assign merge_half_num[4:0]       = (merge_way_inst2_sel && ibctrl_ibuf_merge_vld && bypass_way_inst1_valid && bypass_way_inst0_valid)
-                                 ? merge_way_inst1_num[4:0]
+                                 ? merge_way_inst2_num[4:0]
                                  : 5'b0;
 assign ibuf_merge_retire_pointer[ENTRY_NUM-1:0] = (merge_way_inst2_sel && ibctrl_ibuf_merge_vld && bypass_way_inst1_valid && bypass_way_inst0_valid)
                                                 ? merge_way_retire_pointer[ENTRY_NUM-1:0]

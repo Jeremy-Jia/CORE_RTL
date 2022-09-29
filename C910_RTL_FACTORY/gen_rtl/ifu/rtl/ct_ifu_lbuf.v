@@ -2524,7 +2524,10 @@ gated_clk_cell  x_back_buffer_update_clk (
 //           .global_en      (cp0_yy_clk_en), @1091
 //           .local_en       (back_buffer_update_clk_en),//Local Condition @1092
 //           .module_en      (cp0_ifu_icg_en) @10932022.8.8
-                                   fill_state_enter; 
+assign front_buffer_update_clk_en = front_entry_update || 
+                                    front_entry_body_filled_update_gateclk_en || 
+                                    lbuf_flush || 
+                                    fill_state_enter; //Jeremy fix this
 
 //Back branch Buffer Entry
 always @(posedge back_buffer_update_clk or negedge cpurst_b)
@@ -8385,7 +8388,7 @@ assign active_idle_vl_pre[7:0]   = (lbuf_pop_inst3_valid)
                                            : (lbuf_pop_inst1_valid)
                                              ? lbuf_pop_inst1_vl[7:0]
                                              : lbuf_pop_inst0_vl[7:0];
-assign active_front_fill_vl_pre[7:0] [7:0]   = (lbuf_pop_inst3_valid) 
+assign active_front_fill_vl_pre[7:0]   = (lbuf_pop_inst3_valid) //Jeremy fix error
                                                  ? lbuf_pop_inst3_vl[7:0]
                                                  : (lbuf_pop_inst2_valid)
                                                    ? lbuf_pop_inst2_vl[7:0]

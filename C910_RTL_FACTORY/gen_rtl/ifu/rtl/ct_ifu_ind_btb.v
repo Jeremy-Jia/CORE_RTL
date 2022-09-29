@@ -45,7 +45,7 @@ module ct_ifu_ind_btb(
   rtu_ifu_retire1_chk_idx,
   rtu_ifu_retire1_jmp,
   rtu_ifu_retire2_chk_idx,
-  rtu_ifu_retire2_jmp
+  rtu_ifu_retire2_jmp,
   //Jeremy add inst3
   rtu_ifu_retire3_chk_idx,
   rtu_ifu_retire3_jmp
@@ -80,7 +80,7 @@ input   [7 :0]  rtu_ifu_retire2_chk_idx;
 input           rtu_ifu_retire2_jmp;
 //Jeremy add inst3 jump info
 input   [7 :0]  rtu_ifu_retire3_chk_idx;    
-input           rtu_ifu_retire3_jmp        
+input           rtu_ifu_retire3_jmp;        
 output  [22:0]  ind_btb_ibctrl_dout;        
 output  [1 :0]  ind_btb_ibctrl_priv_mode;   
 output          ind_btb_ifctrl_inv_done;    
@@ -410,7 +410,7 @@ always @( rtu_ifu_retire1_chk_idx[7:0]
        or rtu_ifu_retire3_jmp
        or rtu_path_reg_0[7:0]
        or rtu_path_reg_3[7:0]
-       or rtu_ifu_retire2_jmp)
+       or rtu_ifu_retire2_jmp
        or rtu_ifu_retire3_jmp)
 begin
 // case({rtu_ifu_retire0_jmp, rtu_ifu_retire1_jmp, rtu_ifu_retire2_jmp})
@@ -529,19 +529,19 @@ case({rtu_ifu_retire0_jmp, rtu_ifu_retire1_jmp, rtu_ifu_retire2_jmp,rtu_ifu_reti
   4'b1001  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
             rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
-            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0]
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
             end
   4'b1010  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_1[7:0];
             rtu_path_reg_2_pre[7:0] = rtu_path_reg_0[7:0];
-            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0]
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
             end
   4'b1011  : begin
             rtu_path_reg_3_pre[7:0] = rtu_path_reg_0[7:0];
-            rtu_path_reg_2_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0]
-            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0]
+            rtu_path_reg_2_pre[7:0] = rtu_ifu_retire0_chk_idx[7:0];
+            rtu_path_reg_1_pre[7:0] = rtu_ifu_retire2_chk_idx[7:0];
             rtu_path_reg_0_pre[7:0] = rtu_ifu_retire3_chk_idx[7:0];
             end
   4'b1100  : begin

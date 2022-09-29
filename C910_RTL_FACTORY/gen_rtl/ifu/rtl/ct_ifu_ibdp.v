@@ -1230,7 +1230,25 @@ reg     [7 :0]  inst2_vl;
 reg             inst2_vl_pred;                   
 reg             inst2_vld;                       
 reg     [1 :0]  inst2_vlmul;                     
-reg     [2 :0]  inst2_vsew;                      
+reg     [2 :0]  inst2_vsew;   
+//Jeremy add inst3                   
+reg     [31:0]  inst3;                           
+reg             inst3_bkpta;                     
+reg             inst3_bkptb;                     
+reg             inst3_ecc_err;                   
+reg             inst3_expt_vld;                  
+reg             inst3_fence;                     
+reg             inst3_high_expt;                 
+reg             inst3_no_spec;                   
+reg     [14:0]  inst3_pc;                        
+reg             inst3_split0;                    
+reg             inst3_split1;                    
+reg     [3 :0]  inst3_vec;                       
+reg     [7 :0]  inst3_vl;                        
+reg             inst3_vl_pred;                   
+reg             inst3_vld;                       
+reg     [1 :0]  inst3_vlmul;                     
+reg     [2 :0]  inst3_vsew;                      
 reg             l0_btb_update_cnt_bit;           
 reg     [36:0]  l0_btb_update_data;              
 reg             l0_btb_update_ras_bit;           
@@ -2152,7 +2170,7 @@ assign ibdp_ibuf_h0_ldst              = ipdp_ibdp_h0_ldst;
 
 //hn_vld should be masked by expt vld,when expt valid,we can just pass one
 //valid half word.
-assign [7:0]          = (ipctrl_ibdp_expt_vld) ? 8'h80 : ibdp_hn_vld[7:0];
+assign ibdp_ibuf_hn_vld[7:0]          = (ipctrl_ibdp_expt_vld) ? 8'h80 : ibdp_hn_vld[7:0];//Jeremy fix error 
 assign ibdp_ibuf_hn_acc_err[7:0]      = ibdp_hn_acc_err[7:0]; 
 assign ibdp_ibuf_hn_mmu_acc_deny[7:0] = ibdp_hn_mmu_acc_deny[7:0];
 assign ibdp_ibuf_hn_pgflt[7:0]        = ibdp_hn_pgflt[7:0];
@@ -2718,7 +2736,7 @@ always @( ibuf_ibdp_inst1[31:0]
        or ibuf_ibdp_bypass_inst3_vl[7 :0]       
        or ibuf_ibdp_bypass_inst3_vl_pred  
        or ibuf_ibdp_bypass_inst3_vlmul[1 :0]    
-       or ibuf_ibdp_bypass_inst3_vsew[2 :0] 
+       or ibuf_ibdp_bypass_inst3_vsew[2 :0]) 
        //jeremy todo : add sensitivw )
 begin
 //jeremy  add this logic:
@@ -3007,7 +3025,6 @@ default: begin
          inst3_vl[7:0]    = 8'b0;
          end
 endcase
-// &CombEnd; @861
 end
 
 //Four inst vld send to idu
