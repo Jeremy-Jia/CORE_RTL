@@ -1,0 +1,36 @@
+2 "ErrorAnalyzeBBox" 1
+"BBoxEng"
+["ct_rtu_compare_iid","BB_NO_MOD_DEF"]
+3 "ErrorAnalyzeBBox" 1
+"BBoxEng"
+["ct_rtu_encode_32","BB_NO_MOD_DEF"]
+4 "ErrorAnalyzeBBox" 1
+"BBoxEng"
+["ct_rtu_expand_32","BB_NO_MOD_DEF"]
+5 "ErrorAnalyzeBBox" 1
+"BBoxEng"
+["ct_rtu_expand_96","BB_NO_MOD_DEF"]
+6 "ErrorAnalyzeBBox" 1
+"BBoxEng"
+["ct_vfdsu_srt_radix16_only_div","BB_NO_MOD_DEF"]
+7 "ErrorAnalyzeBBox" 1
+"BBoxEng"
+["gated_clk_cell","BB_NO_MOD_DEF"]
+8 "ErrorAnalyzeBBox" 1
+"BBoxEng"
+["multiplier_65x65_3_stage","BB_NO_MOD_DEF"]
+-1 "DetectTopDesignUnits" 2
+"RULEGROUP"
+["Design Read"]
+"BUILTIN"
+"1"
+-1 "ElabSummary" 2
+"RULEGROUP"
+["Design Read"]
+"BUILTIN"
+"1"
+-1 "ErrorAnalyzeBBox" 2
+"RULEGROUP"
+["Blackbox Resolution"]
+"BUILTIN"
+"1"

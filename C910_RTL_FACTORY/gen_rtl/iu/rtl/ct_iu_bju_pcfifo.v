@@ -192,9 +192,12 @@ reg     [50 :0]  pcfifo_pop1_data;
 reg     [4  :0]  pcfifo_pop1_pid;                        
 reg     [50 :0]  pcfifo_pop2_data;                       
 reg     [4  :0]  pcfifo_pop2_pid;                        
+reg     [4  :0]  pcfifo_pop3_pid;//Jeremy add                         
 reg     [50 :0]  pcfifo_pop3_data;                       
 reg     [50 :0]  pcfifo_pop4_data;                       
 reg     [50 :0]  pcfifo_pop5_data;                       
+reg     [50 :0]  pcfifo_pop6_data;//Jeremy add                       
+reg     [50 :0]  pcfifo_pop7_data; //Jeremy add                      
 reg     [66 :0]  pcfifo_special_data;                    
 reg     [50 :0]  read_entry0_updt_data;                  
 reg     [50 :0]  read_entry1_updt_data;                  
@@ -604,12 +607,15 @@ wire    [2  :0]  pcfifo_pop0_bypass_sel;
 wire    [2  :0]  pcfifo_pop1_bypass_sel;                 
 wire    [31 :0]  pcfifo_pop1_ptr;                        
 wire    [2  :0]  pcfifo_pop2_bypass_sel;                 
+wire    [2  :0]  pcfifo_pop3_bypass_sel;//Jeremy add                  
 wire    [31 :0]  pcfifo_pop2_ptr;                        
 wire    [31 :0]  pcfifo_pop3_ptr;                        
 wire    [31 :0]  pcfifo_pop4_ptr;                        
 wire    [31 :0]  pcfifo_pop5_ptr;                        
+wire    [31 :0]  pcfifo_pop6_ptr;//Jeremy add                         
+wire    [31 :0]  pcfifo_pop7_ptr;//Jeremy add                         
 wire    [3  :0]  pcfifo_pop_inst;                        
-wire    [3  :0]  pcfifo_pop_inst_num;                    
+wire    [4  :0]  pcfifo_pop_inst_num;                    
 wire             pcfifo_pop_vld;                         
 wire             pop_ptr_clk;                            
 wire             pop_ptr_clk_en;                         
@@ -1692,7 +1698,7 @@ ct_iu_bju_pcfifo_read_entry  x_ct_iu_bju_pcfifo_read_entry2 (
 );
 
 //Jermey add read entry3
-ct_iu_bju_pcfifo_read_entry  x_ct_iu_bju_pcfifo_read_entry2 (
+ct_iu_bju_pcfifo_read_entry  x_ct_iu_bju_pcfifo_read_entry3 (
   .cp0_iu_icg_en                 (cp0_iu_icg_en                ),
   .cp0_yy_clk_en                 (cp0_yy_clk_en                ),
   .cpurst_b                      (cpurst_b                     ),
@@ -2075,38 +2081,38 @@ assign cen2[31:0] = {32{pcfifo_create2_en}} & pcfifo_create2_ptr[31:0];
 // assign cen3[31:0] = {32{pcfifo_create3_en}} & pcfifo_create3_ptr[31:0];//Jeremy add  
 
 //rename for entries
-assign entry0_create_en[3:0]  = {cen2[0], cen1[0], cen0[0]};//Jeremy add  
-assign entry1_create_en[3:0]  = {cen2[1], cen1[1], cen0[1]};//Jeremy add  
-assign entry2_create_en[3:0]  = {cen2[2], cen1[2], cen0[2]};//Jeremy add  
-assign entry3_create_en[3:0]  = {cen2[3], cen1[3], cen0[3]};//Jeremy add  
-assign entry4_create_en[3:0]  = {cen2[4], cen1[4], cen0[4]};//Jeremy add  
-assign entry5_create_en[3:0]  = {cen2[5], cen1[5], cen0[5]};//Jeremy add  
-assign entry6_create_en[3:0]  = {cen2[6], cen1[6], cen0[6]};//Jeremy add  
-assign entry7_create_en[3:0]  = {cen2[7], cen1[7], cen0[7]};//Jeremy add  
-assign entry8_create_en[3:0]  = {cen2[8], cen1[8], cen0[8]};//Jeremy add  
-assign entry9_create_en[3:0]  = {cen2[9], cen1[9], cen0[9]};//Jeremy add  
-assign entry10_create_en[3:0] = {cen2[10],cen1[10],cen0[10]};//Jeremy add  
-assign entry11_create_en[3:0] = {cen2[11],cen1[11],cen0[11]};//Jeremy add  
-assign entry12_create_en[3:0] = {cen2[12],cen1[12],cen0[12]};//Jeremy add  
-assign entry13_create_en[3:0] = {cen2[13],cen1[13],cen0[13]};//Jeremy add  
-assign entry14_create_en[3:0] = {cen2[14],cen1[14],cen0[14]};//Jeremy add  
-assign entry15_create_en[3:0] = {cen2[15],cen1[15],cen0[15]};//Jeremy add  
-assign entry16_create_en[3:0] = {cen2[16],cen1[16],cen0[16]};//Jeremy add  
-assign entry17_create_en[3:0] = {cen2[17],cen1[17],cen0[17]};//Jeremy add  
-assign entry18_create_en[3:0] = {cen2[18],cen1[18],cen0[18]};//Jeremy add  
-assign entry19_create_en[3:0] = {cen2[19],cen1[19],cen0[19]};//Jeremy add  
-assign entry20_create_en[3:0] = {cen2[20],cen1[20],cen0[20]};//Jeremy add  
-assign entry21_create_en[3:0] = {cen2[21],cen1[21],cen0[21]};//Jeremy add  
-assign entry22_create_en[3:0] = {cen2[22],cen1[22],cen0[22]};//Jeremy add  
-assign entry23_create_en[3:0] = {cen2[23],cen1[23],cen0[23]};//Jeremy add  
-assign entry24_create_en[3:0] = {cen2[24],cen1[24],cen0[24]};//Jeremy add  
-assign entry25_create_en[3:0] = {cen2[25],cen1[25],cen0[25]};//Jeremy add  
-assign entry26_create_en[3:0] = {cen2[26],cen1[26],cen0[26]};//Jeremy add  
-assign entry27_create_en[3:0] = {cen2[27],cen1[27],cen0[27]};//Jeremy add  
-assign entry28_create_en[3:0] = {cen2[28],cen1[28],cen0[28]};//Jeremy add  
-assign entry29_create_en[3:0] = {cen2[29],cen1[29],cen0[29]};//Jeremy add  
-assign entry30_create_en[3:0] = {cen2[30],cen1[30],cen0[30]};//Jeremy add  
-assign entry31_create_en[3:0] = {cen2[31],cen1[31],cen0[31]};//Jeremy add  
+assign entry0_create_en[2:0]  = {cen2[0], cen1[0], cen0[0]};//Jeremy add  
+assign entry1_create_en[2:0]  = {cen2[1], cen1[1], cen0[1]};//Jeremy add  
+assign entry2_create_en[2:0]  = {cen2[2], cen1[2], cen0[2]};//Jeremy add  
+assign entry3_create_en[2:0]  = {cen2[3], cen1[3], cen0[3]};//Jeremy add  
+assign entry4_create_en[2:0]  = {cen2[4], cen1[4], cen0[4]};//Jeremy add  
+assign entry5_create_en[2:0]  = {cen2[5], cen1[5], cen0[5]};//Jeremy add  
+assign entry6_create_en[2:0]  = {cen2[6], cen1[6], cen0[6]};//Jeremy add  
+assign entry7_create_en[2:0]  = {cen2[7], cen1[7], cen0[7]};//Jeremy add  
+assign entry8_create_en[2:0]  = {cen2[8], cen1[8], cen0[8]};//Jeremy add  
+assign entry9_create_en[2:0]  = {cen2[9], cen1[9], cen0[9]};//Jeremy add  
+assign entry10_create_en[2:0] = {cen2[10],cen1[10],cen0[10]};//Jeremy add  
+assign entry11_create_en[2:0] = {cen2[11],cen1[11],cen0[11]};//Jeremy add  
+assign entry12_create_en[2:0] = {cen2[12],cen1[12],cen0[12]};//Jeremy add  
+assign entry13_create_en[2:0] = {cen2[13],cen1[13],cen0[13]};//Jeremy add  
+assign entry14_create_en[2:0] = {cen2[14],cen1[14],cen0[14]};//Jeremy add  
+assign entry15_create_en[2:0] = {cen2[15],cen1[15],cen0[15]};//Jeremy add  
+assign entry16_create_en[2:0] = {cen2[16],cen1[16],cen0[16]};//Jeremy add  
+assign entry17_create_en[2:0] = {cen2[17],cen1[17],cen0[17]};//Jeremy add  
+assign entry18_create_en[2:0] = {cen2[18],cen1[18],cen0[18]};//Jeremy add  
+assign entry19_create_en[2:0] = {cen2[19],cen1[19],cen0[19]};//Jeremy add  
+assign entry20_create_en[2:0] = {cen2[20],cen1[20],cen0[20]};//Jeremy add  
+assign entry21_create_en[2:0] = {cen2[21],cen1[21],cen0[21]};//Jeremy add  
+assign entry22_create_en[2:0] = {cen2[22],cen1[22],cen0[22]};//Jeremy add  
+assign entry23_create_en[2:0] = {cen2[23],cen1[23],cen0[23]};//Jeremy add  
+assign entry24_create_en[2:0] = {cen2[24],cen1[24],cen0[24]};//Jeremy add  
+assign entry25_create_en[2:0] = {cen2[25],cen1[25],cen0[25]};//Jeremy add  
+assign entry26_create_en[2:0] = {cen2[26],cen1[26],cen0[26]};//Jeremy add  
+assign entry27_create_en[2:0] = {cen2[27],cen1[27],cen0[27]};//Jeremy add  
+assign entry28_create_en[2:0] = {cen2[28],cen1[28],cen0[28]};//Jeremy add  
+assign entry29_create_en[2:0] = {cen2[29],cen1[29],cen0[29]};//Jeremy add  
+assign entry30_create_en[2:0] = {cen2[30],cen1[30],cen0[30]};//Jeremy add  
+assign entry31_create_en[2:0] = {cen2[31],cen1[31],cen0[31]};//Jeremy add  
 // assign entry0_create_en[3:0]  = {cen3[0], cen2[0], cen1[0], cen0[0]};//Jeremy add  
 // assign entry1_create_en[3:0]  = {cen3[1], cen2[1], cen1[1], cen0[1]};//Jeremy add  
 // assign entry2_create_en[3:0]  = {cen3[2], cen2[2], cen1[2], cen0[2]};//Jeremy add  
@@ -2769,7 +2775,7 @@ assign pcfifo_pop_inst_num[1] =
      !pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&   pcfifo_pop_inst[0] //Jeremy re-write this logic
   || !pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] &&  pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0] //Jeremy re-write this logic
   || !pcfifo_pop_inst[3] &&  pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0] //Jeremy re-write this logic
-  ||  pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0] //Jeremy re-write this logic
+  ||  pcfifo_pop_inst[3] && !pcfifo_pop_inst[2] && !pcfifo_pop_inst[1] &&  !pcfifo_pop_inst[0]; //Jeremy re-write this logic
 assign pcfifo_pop_inst_num[0] = !(|pcfifo_pop_inst[3:0]);
 
 //----------------------------------------------------------

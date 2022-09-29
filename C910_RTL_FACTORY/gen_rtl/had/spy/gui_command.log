@@ -1,0 +1,31 @@
+read_file -type verilog {../rtl/ct_had_bkpt.v ../rtl/ct_had_common_dbg_info.v ../rtl/ct_had_common_regs.v ../rtl/ct_had_common_top.v ../rtl/ct_had_ctrl.v ../rtl/ct_had_dbg_info.v ../rtl/ct_had_ddc_ctrl.v ../rtl/ct_had_ddc_dp.v ../rtl/ct_had_etm.v ../rtl/ct_had_etm_if.v ../rtl/ct_had_event.v ../rtl/ct_had_io.v ../rtl/ct_had_ir.v ../rtl/ct_had_nirv_bkpt.v ../rtl/ct_had_pcfifo.v ../rtl/ct_had_private_ir.v ../rtl/ct_had_private_top.v ../rtl/ct_had_regs.v ../rtl/ct_had_serial.v ../rtl/ct_had_sm.v ../rtl/ct_had_sync_3flop.v ../rtl/ct_had_trace.v}
+
+
+
+current_goal Design_Read -alltop
+
+
+link_design -force
+
+gui_select_message -rule STX_VE_394 -msg {Invalid reference to memory ( chgflow_valid )}
+gui_select_message -rule STX_VE_394 -msg {Invalid reference to memory ( chgflow_valid )}
+gui_select_message -rule STX_VE_394 -msg {Invalid reference to memory ( chgflow_valid )}
+gui_select_message -rule STX_VE_394 -msg {Invalid reference to memory ( chgflow_valid )}
+gui_select_message -rule STX_VE_394 -msg {Invalid reference to memory ( chgflow_valid )}
+gui_select_message -rule STX_VE_394 -msg {Invalid reference to memory ( chgflow_valid )}
+gui_select_message -rule STX_VE_394 -msg {Invalid reference to memory ( chgflow_valid )}
+link_design -force
+
+gui_select_message -rule STX_VE_394 -msg {Invalid reference to memory ( chgflow_valid )}
+gui_select_message -rule STX_VE_394 -msg {Invalid reference to memory ( chgflow_valid )}
+link_design -force
+
+gui_select_message -rule STX_VE_533 -msg {Used macro ( PA_WIDTH ) has not been defined. Trace: (None)}
+gui_select_message -rule STX_VE_533 -msg {Used macro ( PA_WIDTH ) has not been defined. Trace: (None)}
+gui_select_message -rule STX_VE_533 -msg {Used macro ( PA_WIDTH ) has not been defined. Trace: (None)}
+gui_select_message -rule STX_VE_606 -msg {Identifier ( WIDTH ) not declared in current scope}
+gui_select_message -rule STX_VE_689 -msg {Multiple connections to port ( idu_had_id_inst2_info ) in instance ( x_ct_had_dbg_info )}
+link_design -force
+
+gui_exit
+gui_exit

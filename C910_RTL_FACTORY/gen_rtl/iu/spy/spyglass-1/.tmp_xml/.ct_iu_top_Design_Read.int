@@ -1,0 +1,5 @@
+INPUT@@/home/ICer/CORE_RTL/C910_RTL_FACTORY/gen_rtl/iu/spy/spyglass-1/Design_Read/spyglass_reports@@/home/ICer/CORE_RTL/C910_RTL_FACTORY/gen_rtl/iu/spy/spyglass-1/html_reports/data_files/@@ct_iu_top@@Design_Read@@
+COPY@@/home/ICer/CORE_RTL/C910_RTL_FACTORY/gen_rtl/iu/spy/spyglass-1/Design_Read/spyglass_reports/moresimple.rpt@@data_files/ct_iu_top_Design_Read_moresimple.rpt@@
+COPY@@/home/ICer/CORE_RTL/C910_RTL_FACTORY/gen_rtl/iu/spy/spyglass-1/Design_Read/spyglass_reports/no_msg_reporting_rules.rpt@@data_files/ct_iu_top_Design_Read_no_msg_reporting_rules.rpt@@
+PROCESS@@SpyGlass
+COPY@@/home/ICer/CORE_RTL/C910_RTL_FACTORY/gen_rtl/iu/spy/spyglass-1/Design_Read/spyglass.log@@data_files/ct_iu_top_Design_Read_spyglass.log@@

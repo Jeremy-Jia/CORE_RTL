@@ -48,7 +48,7 @@ input   [38:0]  rtu_had_xx_pcfifo_inst3_next_pc; //Jeremy add
 output  [63:0]  pcfifo_regs_data;               
 
 // &Regs; @25
-reg     [3 :0]  chgflow_valid[3:0] ;//Jeremy  changge width from 3-4                  
+reg     [3 :0]  chgflow_valid;//Jeremy  changge width from 3-4                  
 reg             ctrl_pcfifo_wen_flop;           
 reg     [39:0]  pcfifo_din_0;                   
 reg     [39:0]  pcfifo_din_1;                   
@@ -133,11 +133,11 @@ end
 always@(posedge cpuclk or negedge cpurst_b)
 begin
   if (!cpurst_b)
-    chgflow_valid[3:0] [3:0] <= 3'b0;
+    chgflow_valid[3:0] <= 4'b0;
   else if (|chgflow_valid_pre[3:0])
-    chgflow_valid[3:0] [3:0] <= chgflow_valid_pre[3:0];
+    chgflow_valid[3:0] <= chgflow_valid_pre[3:0];
   else
-    chgflow_valid[3:0] [3:0] <= 3'b0;
+    chgflow_valid[3:0] <= 4'b0;
 end
 
 always@(posedge cpuclk)
@@ -164,38 +164,38 @@ begin
     pcfifo_din_3[WIDTH-1:0] <= {rtu_had_xx_pcfifo_inst3_next_pc[38:0], 1'b0};
 end
 
-assign inst0_chgflow_vld  = chgflow_valid[3:0] [0] && ctrl_pcfifo_wen_flop;
-assign inst1_chgflow_vld  = chgflow_valid[3:0] [1] && ctrl_pcfifo_wen_flop;
-assign inst2_chgflow_vld  = chgflow_valid[3:0] [2] && ctrl_pcfifo_wen_flop;
-assign inst3_chgflow_vld  = chgflow_valid[3:0] [3] && ctrl_pcfifo_wen_flop;//Jeremy add
+assign inst0_chgflow_vld  = chgflow_valid[0] && ctrl_pcfifo_wen_flop;
+assign inst1_chgflow_vld  = chgflow_valid[1] && ctrl_pcfifo_wen_flop;
+assign inst2_chgflow_vld  = chgflow_valid[2] && ctrl_pcfifo_wen_flop;
+assign inst3_chgflow_vld  = chgflow_valid[3] && ctrl_pcfifo_wen_flop;//Jeremy add
 
-assign create_vld   = |chgflow_valid[3:0] [3:0] && ctrl_pcfifo_wen_flop;
+assign create_vld   = |chgflow_valid[3:0] && ctrl_pcfifo_wen_flop;
 
-assign create_four = &chgflow_valid[3:0] [3:0];//Jeremy add 
+assign create_four = &chgflow_valid[3:0];//Jeremy add 
                       
-assign create_three = (chgflow_valid[3:0] [3:0] == 4'b1110) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b1101) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b1011) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b0111);//Jeremy add  
+assign create_three = (chgflow_valid[3:0] == 4'b1110) ||
+                      (chgflow_valid[3:0] == 4'b1101) ||
+                      (chgflow_valid[3:0] == 4'b1011) ||
+                      (chgflow_valid[3:0] == 4'b0111);//Jeremy add  
 
-assign create_two   = (chgflow_valid[3:0] [3:0] == 4'b1100) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b1010) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b1001) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b0110) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b0101) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b0011);//Jeremy add 
+assign create_two   = (chgflow_valid[3:0] == 4'b1100) ||
+                      (chgflow_valid[3:0] == 4'b1010) ||
+                      (chgflow_valid[3:0] == 4'b1001) ||
+                      (chgflow_valid[3:0] == 4'b0110) ||
+                      (chgflow_valid[3:0] == 4'b0101) ||
+                      (chgflow_valid[3:0] == 4'b0011);//Jeremy add 
 
-assign create_one   = (chgflow_valid[3:0] [3:0] == 4'b1000) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b0100) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b0010) ||
-                      (chgflow_valid[3:0] [3:0] == 4'b0001);//Jeremy add 
+assign create_one   = (chgflow_valid[3:0] == 4'b1000) ||
+                      (chgflow_valid[3:0] == 4'b0100) ||
+                      (chgflow_valid[3:0] == 4'b0010) ||
+                      (chgflow_valid[3:0] == 4'b0001);//Jeremy add 
 
 assign wptr_sel_0[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_0[PTR_WIDTH-2:0];
 assign wptr_sel_1[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_1[PTR_WIDTH-2:0];
 assign wptr_sel_2[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_2[PTR_WIDTH-2:0];
 assign wptr_sel_3[DEPTH-1:0] = {{(DEPTH-1){1'b0}},1'b1} << wptr_3[PTR_WIDTH-2:0];//Jeremy add 
 
-assign wptr_sel_1_for_create_two[DEPTH-1:0] = chgflow_valid[3:0] [0] ? wptr_sel_1[DEPTH-1:0] : wptr_sel_0[DEPTH-1:0];
+assign wptr_sel_1_for_create_two[DEPTH-1:0] = chgflow_valid[0] ? wptr_sel_1[DEPTH-1:0] : wptr_sel_0[DEPTH-1:0];
 
 //csky vperl_off
 reg     [WIDTH-1:0]  pcfifo_reg  [DEPTH-1:0];

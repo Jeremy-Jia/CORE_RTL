@@ -1,0 +1,20 @@
+read_file -type verilog {../rtl/ct_iu_alu.v ../rtl/ct_iu_bju.v ../rtl/ct_iu_bju_pcfifo.v ../rtl/ct_iu_bju_pcfifo_entry.v ../rtl/ct_iu_bju_pcfifo_read_entry.v ../rtl/ct_iu_cbus.v ../rtl/ct_iu_div.v ../rtl/ct_iu_div_entry.v ../rtl/ct_iu_div_srt_radix16.v ../rtl/ct_iu_mult.v ../rtl/ct_iu_rbus.v ../rtl/ct_iu_special.v ../rtl/ct_iu_top.v}
+
+
+
+current_goal Design_Read -alltop
+
+
+link_design -force
+
+gui_select_message -rule ErrorAnalyzeBBox -msg {Design Unit 'ct_rtu_encode_32' has no definition; black-box behavior assumed}
+gui_select_message -rule ErrorAnalyzeBBox -msg {Design Unit 'ct_rtu_expand_32' has no definition; black-box behavior assumed}
+gui_select_message -rule ErrorAnalyzeBBox -msg {Design Unit 'ct_rtu_expand_96' has no definition; black-box behavior assumed}
+gui_select_message -rule ErrorAnalyzeBBox -msg {Design Unit 'ct_rtu_compare_iid' has no definition; black-box behavior assumed}
+gui_select_message -rule ErrorAnalyzeBBox -msg {Design Unit 'ct_rtu_expand_32' has no definition; black-box behavior assumed}
+gui_select_message -rule ErrorAnalyzeBBox -msg {Design Unit 'gated_clk_cell' has no definition; black-box behavior assumed}
+gui_select_message -rule ErrorAnalyzeBBox -msg {Design Unit 'ct_rtu_expand_32' has no definition; black-box behavior assumed}
+gui_select_message -rule ErrorAnalyzeBBox -msg {Design Unit 'ct_vfdsu_srt_radix16_only_div' has no definition; black-box behavior assumed}
+gui_select_message -rule ErrorAnalyzeBBox -msg {Design Unit 'gated_clk_cell' has no definition; black-box behavior assumed}
+gui_exit
+gui_exit
